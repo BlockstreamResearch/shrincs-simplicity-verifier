@@ -1,0 +1,91 @@
+#ifndef IMPORTED_UTILS_SIMF
+#define IMPORTED_UTILS_SIMF
+fn get_bit_at(value: u256, possition: u8) -> u1 {
+    let (a, b, c, d): (u64, u64, u64, u64) = <u256>::into(value);
+
+    let part: u64 = match jet::lt_8(possition, 64) {
+        true => d,
+        false => {
+            match jet::lt_8(possition, 128) {
+                true => c,
+                false => {
+                    match jet::lt_8(possition, 192) {
+                        true => b,
+                        false => a,
+                    }
+                },
+            }
+        },
+    };
+
+    let (_, in_part_possition): (u8, u8) = jet::div_mod_8(possition, 64);
+
+    <bool>::into(jet::lt_64(0, jet::and_64(part, jet::left_shift_64(in_part_possition, 1))))
+}
+
+fn get_byte_at(value: u256, possition: u8) -> u8 {
+    assert!(jet::lt_8(possition, 32));
+    let (a, b, c, d): (u64, u64, u64, u64) = <u256>::into(value);
+
+    let part: u64 = match jet::lt_8(possition, 8) {
+        true => d,
+        false => {
+            match jet::lt_8(possition, 16) {
+                true => c,
+                false => {
+                    match jet::lt_8(possition, 24) {
+                        true => b,
+                        false => a,
+                    }
+                },
+            }
+        },
+    };
+
+    let (_, possition): (u8, u8) = jet::div_mod_8(possition, 8);
+    let (a, b, c, d): (u16, u16, u16, u16) = <u64>::into(part);
+
+    let part: u16 = match jet::lt_8(possition, 2) {
+        true => d,
+        false => {
+            match jet::lt_8(possition, 4) {
+                true => c,
+                false => {
+                    match jet::lt_8(possition, 6) {
+                        true => b,
+                        false => a,
+                    }
+                },
+            }
+        },
+    };
+
+    let (_, possition): (u8, u8) = jet::div_mod_8(possition, 2);
+    let (a, b): (u8, u8) = <u16>::into(part);
+    match jet::eq_8(possition, 0) {
+        true => b,
+        false => a,
+    }
+}
+
+fn get_ar_array_iter(el: u256, ctx: (u8, u8, u256)) -> (u8, u8, u256) {
+    let (idx, pos, saved): (u8, u8, u256) = ctx;
+    match jet::eq_8(idx, pos) {
+        true => {
+            let (_, new_pos): (bool, u8) = jet::add_8(pos, 1);
+            (idx, new_pos, el)
+        },
+        false => {
+            let (_, new_pos): (bool, u8) = jet::add_8(pos, 1);
+            (idx, new_pos, saved)
+        }
+    }
+}
+
+#define DEFINE_GET_AT_ARR(N) \
+fn get_at_array_##N(arr: [u256; N], index: u8) -> u256 { \
+    let (_, _, el): (u8, u8, u256) = array_fold::<get_ar_array_iter, N>(arr, (index, 0, 0)); \
+    el \
+}
+
+#endif

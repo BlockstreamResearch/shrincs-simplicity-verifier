@@ -1,0 +1,33 @@
+#ifndef UTILS_ARRAY_MAP_SIMF
+#define UTILS_ARRAY_MAP_SIMF
+
+/// Map an array of size 1.
+/// * `T1` is the type of the elements in the array.
+/// * `T2` is the type of the elements in the array after mapping.
+/// * `CTX` is the context of the mapping function.
+/// * `F` is the mapping function: (T1, CTX) -> (T2, CTX).
+/// Returns a tuple of the mapped array and the updated context.
+#define DEFINE_MAP_ARR_1(T1, T2, CTX, F) \
+fn F##_map_arr_1(arr: [T1; 1], ctx: CTX) -> ([T2; 1], CTX) { \
+    let elt: T1 = <[T1; 1]>::into(arr); \
+    let (res, ctx): (T2, CTX) = F(elt, ctx); \
+    ([res], ctx) \
+}
+
+/// Map an array of size N = 2^k.
+/// * `T1` is the type of the elements in the array.
+/// * `T2` is the type of the elements in the array after mapping.
+/// * `N` is the size of the array.
+/// * `HALF_N` is the size of the array after splitting in half.
+/// * `CTX` is the context of the mapping function: (T1, CTX) -> (T2, CTX).
+/// Returns a tuple of the mapped array and the updated context.
+#define DEFINE_MAP_ARR(T1, T2, CTX, F, N, HALF_N) \
+fn F##_map_arr_##N(arr: [T1; N], ctx: CTX) -> ([T2; N], CTX) { \
+    let (arr1, arr2): ([T1; HALF_N], [T1; HALF_N]) = <[T1; N]>::into(arr); \
+    let (res1, ctx): ([T2; HALF_N], CTX) = F##_map_arr_##HALF_N(arr1, ctx); \
+    let (res2, ctx): ([T2; HALF_N], CTX) = F##_map_arr_##HALF_N(arr2, ctx); \
+    let res: [T2; N] = <([T2; HALF_N], [T2; HALF_N])>::into((res1, res2)); \
+    (res, ctx) \
+}
+
+#endif

@@ -1,0 +1,7 @@
+#include "lamport.simf"
+
+fn main() {
+    let proof: SignProof = (witness::MESSAGE_HASH, witness::SIGNATURE, witness::PUBLIC_KEY);
+
+    lamport_verify(proof);
+}

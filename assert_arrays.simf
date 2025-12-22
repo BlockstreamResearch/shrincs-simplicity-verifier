@@ -1,0 +1,31 @@
+#ifndef UTILS_ARRAY_EQ_SIMF
+#define UTILS_ARRAY_EQ_SIMF
+
+/// Assert if arrays of size 1 are equals.
+/// * `T1` is the type of the elements in the first array.
+/// * `T2` is the type of the elements in the second array.
+/// * `F` is the function: (T1, T2) -> bool.
+/// * `ID` is an identifier to make the group of functions unique.
+#define DEFINE_ASSERT_EQ_ARR_1(T1, T2, F, ID) \
+fn ID##_assert_eq_arr_1(arr1: [T1; 1], arr2: [T2; 1]) { \
+    let el1: T1 = <[T1; 1]>::into(arr1); \
+    let el2: T2 = <[T2; 1]>::into(arr2); \
+    assert!(F(el1, el2)); \
+}
+
+/// Assert if arrays are equals.
+/// * `T1` is the type of the elements in the first array.
+/// * `T2` is the type of the elements in the second array.
+/// * `F` is the function: (T1, T2) -> bool.
+/// * `N` is the size of the arrays.
+/// * `HALF_N` is the size of the arrays after splitting in half.
+/// * `ID` is an identifier to make the group of functions unique.
+#define DEFINE_ASSERT_EQ_ARR(T1, T2, F, N, HALF_N, ID) \
+fn ID##_assert_eq_arr_##N(arr1: [T1; N], arr2: [T2; N]) { \
+    let (arr1_1, arr1_2): ([T1; HALF_N], [T1; HALF_N]) = <[T1; N]>::into(arr1); \
+    let (arr2_1, arr2_2): ([T2; HALF_N], [T2; HALF_N]) = <[T2; N]>::into(arr2); \
+    ID##_assert_eq_arr_##HALF_N(arr1_1, arr2_1); \
+    ID##_assert_eq_arr_##HALF_N(arr1_2, arr2_2); \
+}
+
+#endif

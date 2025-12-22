@@ -1,0 +1,12 @@
+#define TESTING
+#include "lamport.simf"
+#include "wots.simf"
+#include "wots_tw.simf"
+#include "xmss.simf"
+
+fn main() {
+    test_lamport_sign_verify();
+    test_wots_sign_verify();
+    test_wots_tw_sign_verify();
+    test_xmss_sign_verify();
+}

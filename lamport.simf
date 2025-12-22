@@ -1,0 +1,153 @@
+#ifndef LAMPORT_SIGNATURE
+#define LAMPORT_SIGNATURE
+
+#include "array_map.simf"
+#include "utils.simf"
+
+type KeyPair = (u256, u256);
+// Represent signature proof as (message_hash, signature, public_key)
+type LamportSignProof = (u256, [u256; 256], [KeyPair; 256]);
+
+fn get_lamport_pub_key(private: KeyPair, ctx: ()) -> (KeyPair, ()) {
+    let (key1, key2): KeyPair = private;
+
+    let hash1: Ctx8 = jet::sha_256_ctx_8_init();
+    let hash1: Ctx8 = jet::sha_256_ctx_8_add_32(hash1, key1);
+    let hash1: u256 = jet::sha_256_ctx_8_finalize(hash1);
+
+    let hash2: Ctx8 = jet::sha_256_ctx_8_init();
+    let hash2: Ctx8 = jet::sha_256_ctx_8_add_32(hash2, key2);
+    let hash2: u256 = jet::sha_256_ctx_8_finalize(hash2);
+
+    ((hash1, hash2), ())
+}
+
+fn get_lamport_signature(el: KeyPair, ctx: (u256, u8)) -> (u256, (u256, u8)) {
+    let (message_hash, idx): (u256, u8) = ctx;
+    let bit: u1 = get_bit_at(message_hash, idx);
+
+    let (key1, key2): KeyPair = el;
+    let required_key: u256 = match jet::eq_1(bit, 0) {
+        true => key1,
+        false => key2,
+    };
+    
+    let (_, new_idx): (bool, u8) = jet::add_8(idx, 1);
+    (required_key, (message_hash, new_idx))
+}
+
+DEFINE_MAP_ARR_1(KeyPair, KeyPair, (), get_lamport_pub_key)
+DEFINE_MAP_ARR(KeyPair, KeyPair, (), get_lamport_pub_key, 2, 1)
+DEFINE_MAP_ARR(KeyPair, KeyPair, (), get_lamport_pub_key, 4, 2)
+DEFINE_MAP_ARR(KeyPair, KeyPair, (), get_lamport_pub_key, 8, 4)
+DEFINE_MAP_ARR(KeyPair, KeyPair, (), get_lamport_pub_key, 16, 8)
+DEFINE_MAP_ARR(KeyPair, KeyPair, (), get_lamport_pub_key, 32, 16)
+DEFINE_MAP_ARR(KeyPair, KeyPair, (), get_lamport_pub_key, 64, 32)
+DEFINE_MAP_ARR(KeyPair, KeyPair, (), get_lamport_pub_key, 128, 64)
+DEFINE_MAP_ARR(KeyPair, KeyPair, (), get_lamport_pub_key, 256, 128)
+
+DEFINE_MAP_ARR_1(KeyPair, u256, (u256, u8), get_lamport_signature)
+DEFINE_MAP_ARR(KeyPair, u256, (u256, u8), get_lamport_signature, 2, 1)
+DEFINE_MAP_ARR(KeyPair, u256, (u256, u8), get_lamport_signature, 4, 2)
+DEFINE_MAP_ARR(KeyPair, u256, (u256, u8), get_lamport_signature, 8, 4)
+DEFINE_MAP_ARR(KeyPair, u256, (u256, u8), get_lamport_signature, 16, 8)
+DEFINE_MAP_ARR(KeyPair, u256, (u256, u8), get_lamport_signature, 32, 16)
+DEFINE_MAP_ARR(KeyPair, u256, (u256, u8), get_lamport_signature, 64, 32)
+DEFINE_MAP_ARR(KeyPair, u256, (u256, u8), get_lamport_signature, 128, 64)
+DEFINE_MAP_ARR(KeyPair, u256, (u256, u8), get_lamport_signature, 256, 128)
+
+fn get_lamport_public_key(private_key: [KeyPair; 256]) -> [KeyPair; 256] {
+    let (res, _): ([KeyPair; 256], ()) = get_lamport_pub_key_map_arr_256(private_key, ());
+    res
+}
+
+fn lamport_signature(message_hash: u256, private_key: [KeyPair; 256]) -> [u256; 256] {
+    let (signature, _): ([u256; 256], (u256, u8)) = get_lamport_signature_map_arr_256(private_key, (message_hash, 0));
+    signature
+}
+
+fn get_lamport_pub_key_iter(el: KeyPair, ctx: (u8, u8, u256, u1)) -> (u8, u8, u256, u1) {
+    let (idx, pos, hash, bit): (u8, u8, u256, u1) = ctx;
+    let (_, new_idx): (bool, u8) = jet::add_8(idx, 1);
+    match jet::eq_8(idx, pos) {
+        true => {
+            let (key1, key2): KeyPair = el;
+            let required_key: u256 = match jet::eq_1(bit, 0) {
+                true => key1,
+                false => key2,
+            };
+
+            (new_idx, pos, required_key, bit)
+        },
+        false => (new_idx, pos, hash, bit),
+    }
+}
+
+fn check_lamport_signature(el: u256, ctx: (u8, u256, [KeyPair; 256])) -> (u8, u256, [KeyPair; 256]) {
+    let (idx, message_hash, pub_key): (u8, u256, [KeyPair; 256]) = ctx;
+    let (_, bit_pos): (bool, u8) = jet::subtract_8(255, idx);
+    let bit: u1 = get_bit_at(message_hash, bit_pos);
+    let (_, _, pk_elem, _): (u8, u8, u256, u1) = array_fold::<get_lamport_pub_key_iter, 256>(pub_key, (0, idx, 0, bit));
+
+    let hash: Ctx8 = jet::sha_256_ctx_8_init();
+    let hash: Ctx8 = jet::sha_256_ctx_8_add_32(hash, el);
+    let hash: u256 = jet::sha_256_ctx_8_finalize(hash);
+
+    assert!(jet::eq_256(hash, pk_elem));
+
+    let (_, new_idx): (bool, u8) = jet::add_8(idx, 1);
+    (new_idx, message_hash, pub_key)
+}
+
+fn lamport_verify(proof: LamportSignProof) {
+    let (message_hash, signature, public_key): LamportSignProof = proof;
+    let _: (u8, u256, [KeyPair; 256]) = array_fold::<check_lamport_signature, 256>(signature, (0, message_hash, public_key));
+}
+
+#ifdef TESTING
+
+fn test_lamport_sign_verify() {
+    let private_key: [KeyPair; 256] = [
+        (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1),
+        (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1),
+        (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1),
+        (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1),
+        (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1),
+        (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1),
+        (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1),
+        (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1),
+        (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1),
+        (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1),
+        (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1),
+        (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1),
+        (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1),
+        (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1),
+        (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1),
+        (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1),
+        (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1),
+        (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1),
+        (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1),
+        (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1),
+        (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1),
+        (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1),
+        (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1),
+        (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1),
+        (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1),
+        (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1),
+        (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1),
+        (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1),
+        (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1),
+        (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1),
+        (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1),
+        (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1), (0, 1),
+    ];
+
+    let signature: [u256; 256] = lamport_signature(0, private_key);
+
+    let proof: LamportSignProof = (0, signature, get_lamport_public_key(private_key));
+
+    lamport_verify(proof);
+}
+
+#endif
+#endif
