@@ -2,8 +2,8 @@
 #ifndef WOTS_SIGNATURE
 #define WOTS_SIGNATURE
 
-#include "array_map.simf"
-#include "assert_arrays.simf"
+#include "templates/array_map.simf"
+#include "templates/assert_arrays.simf"
 #include "utils.simf"
 
 type WOTSSignature = ([u256; 64], [u256; 3]);

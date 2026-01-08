@@ -1,7 +1,7 @@
 #ifndef LAMPORT_SIGNATURE
 #define LAMPORT_SIGNATURE
 
-#include "array_map.simf"
+#include "templates/array_map.simf"
 #include "utils.simf"
 
 type KeyPair = (u256, u256);

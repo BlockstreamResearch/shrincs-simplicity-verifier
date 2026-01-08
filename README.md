@@ -12,17 +12,9 @@ brew install mcpp
 
 `wots.simf` - contains Winternitz One Time Signature implementation
 
-`wots_tw.simf` - contains WOTS-TW implementation
+`sphincs/sphincs.simf` - contains SLH-DSA ([FIPS 205](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.205.pdf)) signature implementation (sphincs_verify only)
 
-`xmss.simf` - contains XMSS implementation based on WOTS-TW
-
-Each file contains these methods (X - signature name):
-
-`X_signature` - returns signature from private key and message hash
-
-`get_X_public_key` - returns public key from private key
-
-`X_verify` - verifies the validity of the signature for the corresponding message hash and public key
+Each signature contains method `X_verify` (where X - signature name) that verifies the validity of the signature for the corresponding message hash and public key
 
 ## Running tests
 `make test` - running all tests

@@ -1,0 +1,64 @@
+#ifndef SPHINCS_UTILS
+#define SPHINCS_UTILS
+
+fn add_compressed_adrs_to_ctx8(ctx: Ctx8, adrs: u256) -> Ctx8 {
+    let ((((_, _, _, layer_adrs), _), tree_adrs), (((_, _, _, adrs_type), other1), other2)): 
+    ((((u8, u8, u8, u8), u32), u64), (((u8, u8, u8, u8), u32), u64)) = <u256>::into(adrs);
+
+    let ctx: Ctx8 = jet::sha_256_ctx_8_add_1(ctx, layer_adrs);
+    let ctx: Ctx8 = jet::sha_256_ctx_8_add_8(ctx, tree_adrs);
+    let ctx: Ctx8 = jet::sha_256_ctx_8_add_1(ctx, adrs_type);
+    let ctx: Ctx8 = jet::sha_256_ctx_8_add_4(ctx, other1);
+    jet::sha_256_ctx_8_add_8(ctx, other2)
+}
+
+// Return m (30) bytes len mask
+fn mgf1_sha_256(r: u128, pk_seed: u128, pk_root: u128, message: u256) -> u256 {
+    let hash: Ctx8 = jet::sha_256_ctx_8_init();
+    let hash: Ctx8 = jet::sha_256_ctx_8_add_16(hash, r);
+    let hash: Ctx8 = jet::sha_256_ctx_8_add_16(hash, pk_seed);
+    let hash: Ctx8 = jet::sha_256_ctx_8_add_16(hash, pk_root);
+    // empty ctx
+    let hash: Ctx8 = jet::sha_256_ctx_8_add_2(hash, 0);
+    let hash: Ctx8 = jet::sha_256_ctx_8_add_32(hash, message);
+
+    let mgf: Ctx8 = jet::sha_256_ctx_8_init();
+    let mgf: Ctx8 = jet::sha_256_ctx_8_add_16(mgf, r);
+    let mgf: Ctx8 = jet::sha_256_ctx_8_add_16(mgf, pk_seed);
+    let mgf: Ctx8 = jet::sha_256_ctx_8_add_32(mgf, jet::sha_256_ctx_8_finalize(hash));
+    let mgf: Ctx8 = jet::sha_256_ctx_8_add_4(mgf, 0);
+
+    jet::sha_256_ctx_8_finalize(mgf)
+}
+
+#ifdef TESTING
+
+fn mgf1_sha_256_ignore_ctx(r: u128, pk_seed: u128, pk_root: u128, message: u256) -> u256 {
+    let hash: Ctx8 = jet::sha_256_ctx_8_init();
+    let hash: Ctx8 = jet::sha_256_ctx_8_add_16(hash, r);
+    let hash: Ctx8 = jet::sha_256_ctx_8_add_16(hash, pk_seed);
+    let hash: Ctx8 = jet::sha_256_ctx_8_add_16(hash, pk_root);
+    let hash: Ctx8 = jet::sha_256_ctx_8_add_32(hash, message);
+
+    let mgf: Ctx8 = jet::sha_256_ctx_8_init();
+    let mgf: Ctx8 = jet::sha_256_ctx_8_add_16(mgf, r);
+    let mgf: Ctx8 = jet::sha_256_ctx_8_add_16(mgf, pk_seed);
+    let mgf: Ctx8 = jet::sha_256_ctx_8_add_32(mgf, jet::sha_256_ctx_8_finalize(hash));
+    let mgf: Ctx8 = jet::sha_256_ctx_8_add_4(mgf, 0);
+
+    jet::sha_256_ctx_8_finalize(mgf)
+}
+
+fn test_mgf1_sha_256() {
+    let r: u128 = 0xECCCED2DCC637F685DC702046C89C62F;
+    let pk_seed: u128 = 0x6EDB8128B323E5BF073BF9301BBBBBDC;
+    let pk_root: u128 = 0xd49705b87f1a0d0855bf0401c53e8cf0;
+   
+    let message: u256 = 0xD81C4D8D734FCBFBEADE3D3F8A039FAA2A2C9957E835AD55B22E75BF57BB556A;
+    let expected_mask: u256 = 0x233754C134A6F9D7F8A8AEBB5337EF376F0F2C03E4D784CD7CE45B8D311849B9;
+
+    assert!(jet::eq_256(expected_mask, mgf1_sha_256_ignore_ctx(r, pk_seed, pk_root, message)));
+}
+
+#endif
+#endif
