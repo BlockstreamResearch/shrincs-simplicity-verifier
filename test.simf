@@ -1,7 +1,7 @@
 #define TESTING
 #include "lamport.simf"
 #include "wots.simf"
-#include "sphincs/sphincs.simf"
+#include "sphincs/sphincs_test.simf"
 
 fn main() {
     // utils
