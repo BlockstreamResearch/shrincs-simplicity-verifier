@@ -23,20 +23,25 @@ type SPHINCSSignature = (u128, SPHINCSFORSSignature, XMSSHTSignature);
 // (Message, PK, Signature)
 type SPHINCSSignProof = (u256, SPHINCSPK, SPHINCSSignature);
 
-fn sphincs_root_from_path_iter(el: XMSSSignature, ctx: (u128, u32, u128, u32, u64)) -> (u128, u32, u128, u32, u64) {
-    let (message, key_index, public_parameter, layer_adrs, tree_adrs_2): (u128, u32, u128, u32, u64) = ctx;
-    let pub_key: u128 = sphincs_get_xmss_pub_key(el, message, key_index, public_parameter, layer_adrs, 0, tree_adrs_2);
+fn sphincs_root_from_path_iter(el: XMSSSignature, ctx: (u128, u32, Ctx8, u32, u32, u64)) -> (u128, u32, Ctx8, u32, u32, u64) {
+    let (message, key_index, hash_ctx, layer_adrs, tree_adrs_1, tree_adrs_2): (u128, u32, Ctx8, u32, u32, u64) = ctx;
+    let pub_key: u128 = sphincs_get_xmss_pub_key(el, message, key_index, hash_ctx, layer_adrs, tree_adrs_1, tree_adrs_2);
 
     let (_, tree_adrs_tmp): (u32, u32) = <u64>::into(tree_adrs_2);
     let key_index: u32 = jet::and_32(tree_adrs_tmp, 0x000001FF);
-    let tree_adrs_2: u64 = jet::right_shift_64(9, tree_adrs_2);
+
+    let adrs_1_bits: u32 = jet::and_32(tree_adrs_1, 0x000001FF);
+    let adrs_1_bits: u64 = jet::left_shift_64(55, <(u32, u32)>::into((0, adrs_1_bits)));
+    let tree_adrs_2: u64 = jet::or_64(adrs_1_bits, jet::right_shift_64(9, tree_adrs_2));
+    let tree_adrs_1: u32 = jet::right_shift_32(9, tree_adrs_1);
+
     let (_, layer_adrs): (bool, u32) = jet::add_32(layer_adrs, 1);
 
-    (pub_key, key_index, public_parameter, layer_adrs, tree_adrs_2)
+    (pub_key, key_index, hash_ctx, layer_adrs, tree_adrs_1, tree_adrs_2)
 }
 
-fn ht_verify(signature: XMSSHTSignature, message: u128, pk_seed: u128, tree_adrs_2: u64, leaf_idx: u32, pk_root: u128) {
-    let (root, _, _, _, _): (u128, u32, u128, u32, u64) = array_fold::<sphincs_root_from_path_iter, 7>(signature, (message, leaf_idx, pk_seed, 0, tree_adrs_2));
+fn ht_verify(signature: XMSSHTSignature, message: u128, hash_ctx: Ctx8, tree_adrs_1: u32, tree_adrs_2: u64, leaf_idx: u32, pk_root: u128) {
+    let (root, _, _, _, _, _): (u128, u32, Ctx8, u32, u32, u64) = array_fold::<sphincs_root_from_path_iter, 7>(signature, (message, leaf_idx, hash_ctx, 0, tree_adrs_1, tree_adrs_2));
 
     assert!(eq_128(root, pk_root));
 }
@@ -60,8 +65,13 @@ fn sphincs_verify(proof: SPHINCSSignProof) {
     // 0x1FF - mod 2^9
     let leaf_idx: u32 = jet::and_32(leaf_idx, 0x000001FF);
 
-    let fors_pk: u128 = sphincs_get_fors_pub_key(fors_signature, pk_seed, digest, leaf_idx, 0, tree_adrs);
-    ht_verify(xmss_ht_signature, fors_pk, pk_seed, tree_adrs, leaf_idx, pk_root);
+    let hash_ctx: Ctx8 = jet::sha_256_ctx_8_init();
+    let hash_ctx: Ctx8 = jet::sha_256_ctx_8_add_16(hash_ctx, pk_seed);
+    let hash_ctx: Ctx8 = jet::sha_256_ctx_8_add_32(hash_ctx, 0);
+    let hash_ctx: Ctx8 = jet::sha_256_ctx_8_add_16(hash_ctx, 0);
+
+    let fors_pk: u128 = sphincs_get_fors_pub_key(fors_signature, hash_ctx, digest, leaf_idx, 0, tree_adrs);
+    ht_verify(xmss_ht_signature, fors_pk, hash_ctx, 0, tree_adrs, leaf_idx, pk_root);
 }
 
 #endif
