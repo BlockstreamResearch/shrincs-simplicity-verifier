@@ -19,10 +19,12 @@ Each signature contains method `X_verify` (where X - signature name) that verifi
 ## Running tests
 `make test` - running all tests
 
-`make example` - running example_main that verify one-time Lamport signature
+`make lamport_example` - running example that verify one-time Lamport signature
+
+`make sphincs_example` - running example that verify slh-dsa signature
 
 ## Usage
-To execute this code import required signature file using `#include` directive (see [example](./example_main.simf)) and then run:
+To execute this code import required signature file using `#include` directive (see [example](./examples/lamport/lamport_main.simf)) and then run:
 ```bash
 mkdir -p target
 mcpp -P -I . your-file.simf -o target/your-file.simf

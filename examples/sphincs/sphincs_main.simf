@@ -1,0 +1,14 @@
+#include "../../sphincs/sphincs.simf"
+
+fn main() {
+    let pk_seed: u128 = 0xF4BB63706BD0B116BA8BDC814999B61E;
+    let pk_root: u128 = 0x91C5EF72E38D7A614C434097AC926995;
+    let pk: SPHINCSPK = (pk_seed, pk_root);
+
+    // it will be tx hash
+    let message: u256 = 0x7BEBFE462371F2EA667DCFE5A0D773D4E3157D1DFEAD8AA213440286A4A07AB0;
+
+    let proof: SPHINCSSignProof = (message, pk, witness::SIG);
+
+    sphincs_verify(proof);
+}

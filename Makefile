@@ -1,5 +1,8 @@
 test:
 	bash scripts/test.sh
 
-example:
-	bash scripts/example.sh
+lamport_example:
+	bash scripts/example_lamport.sh
+
+sphincs_example:
+	bash scripts/example_sphincs.sh
