@@ -1,0 +1,63 @@
+\documentclass[10pt, a4paper]{article}
+
+\usepackage{fullpage}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{hyperref}
+\usepackage{amsmath,amsfonts,amsthm}
+\usepackage{mathtools}
+\usepackage{mdframed}
+\usepackage{appendix}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usepackage{circuitikz}
+    \usetikzlibrary{positioning,arrows.meta,calc}
+
+\usepackage[
+    backend=biber,
+    style=alphabetic,
+    sorting=nyt
+]{biblatex}
+
+\addbibresource{references.bib}
+
+\usepackage[most]{tcolorbox}
+\tcbset{
+  myframe/.style={
+    enhanced,
+    breakable,
+    colback={gray!2},   
+    colframe=black,     
+    arc=2pt,
+    fonttitle=\small\bfseries, % smaller title
+    fontupper=\normalsize,      % normal text
+    boxrule=0.4pt, 
+    coltitle=black,       
+    colbacktitle={gray},   
+    colframe=black,       
+  }
+}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}{Definition}[section]
+
+% Select your own color
+\definecolor{darkgreen}{RGB}{0,100,0}
+\newcommand{\oleks}[1]{{\color{darkgreen} \textbf{Oleks:} {#1}}}
+
+\title{SHINKS specification}
+\author{Blockstream Research}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+% --- Section 1: Introduction ---
+\input{content/1-introduction}
+
+\printbibliography{}
+
+\end{document}
