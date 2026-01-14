@@ -43,11 +43,11 @@
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{definition}{Definition}[section]
 
-% Select your own color
+% Select your own color for comments
 \definecolor{darkgreen}{RGB}{0,100,0}
 \newcommand{\oleks}[1]{{\color{darkgreen} \textbf{Oleks:} {#1}}}
 
-\title{SHINKS specification}
+\title{SHRINKS specification}
 \author{Blockstream Research}
 \date{\today}
 
@@ -55,9 +55,29 @@
 
 \maketitle
 
-% --- Section 1: Introduction ---
-\input{content/1-introduction}
+\begin{abstract}
+  This document specifies \textbf{SHRINKS} (Stateful Hash-based Robust Integrated NIST-Compatible 
+  Signatures), a post-quantum signature scheme optimized for Bitcoin. SHRINKS combines efficient stateful 
+  hash-based signatures (unbalanced XMSS with WOTS+C) for normal operation with a stateless fallback 
+  (SPHINCS+C variant) for recovery scenarios. The scheme achieves minimal 324-byte signatures 
+  during normal stateful operation while maintaining the robustness of stateless signatures as a 
+  backup when state is corrupted or lost.
+\end{abstract}
+
+% --- Section 1: Motivation ---
+\input{content/1-motivation.tex}
+
+% --- Section 2: Notation ---
+\input{content/2-notation.tex}
+
+% --- Section 3: Params ---
+\input{content/3-params.tex}
 
 \printbibliography{}
+
+\appendix
+
+% --- Section 4: Appendix A. Layer types ---
+\input{content/appendix-a-layer-types.tex}
 
 \end{document}

@@ -1,0 +1,23 @@
+\section{Motivation}
+
+Current Bitcoin signature schemes (ECDSA and Schnorr over secp256k1) are vulnerable to quantum 
+attacks via Shor's algorithm. Hash-based signature schemes offer post-quantum security relying 
+only on the security of cryptographic hash functions, which are believed to resist quantum attacks 
+apart from Grover's quadratic speedup.
+
+The key challenges for deploying hash-based signatures in Bitcoin are:
+\begin{enumerate}
+    \item Signature size: NIST-standardized SLH-DSA signatures range from 7KB to 50KB, significantly 
+    larger than current 64-byte Schnorr signatures.
+    \item Stateful vs. Stateless tradeoff: Stateful schemes (XMSS) offer small signatures but require 
+    careful state management. Stateless schemes (SPHINCS+) are robust but produce large signatures.
+    \item Backup compatibility: Bitcoin users expect to restore wallets from seed phrases. Pure stateful 
+    schemes break this model since state cannot be statically backed up.
+\end{enumerate}
+
+SHRINKS addresses these challenges by:
+\begin{itemize}
+    \item Using efficient stateful signatures ($\approx 324$bytes for $q=1$) during normal operation
+    \item Falling back to stateless signatures ($\approx 3-4$KB) when state is lost or corrupted
+    \item Allowing static seed backup while maintaining security guarantees
+\end{itemize}

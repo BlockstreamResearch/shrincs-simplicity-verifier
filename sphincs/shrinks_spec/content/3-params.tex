@@ -1,0 +1,52 @@
+\section{Parameters}
+
+SHRINKS-128
+
+\begin{center}
+\begin{tabular}{ c c c }
+ Parameter & Value & Description \\ 
+ \hline
+ \texttt{n} & $128$ & Security parameter (bits) \\  
+ \texttt{w} & $256$ & Winternitz parameter \\
+ \texttt{l}  & $16$ & Number of WOTS+C chains \\
+ \texttt{Swn} & $2040$ & Target sum for WOTS+C \\
+ \texttt{hsf} & $20$ & Maximum stateful tree height \\
+ \texttt{hsl} & $20$ & Maximum stateless hypertree height \\
+ \texttt{d} & $5$ & Stateless hypertree layers \\
+ \texttt{a} & $14$ & FORS/PORS tree height \\
+ \texttt{k} & $11$ & Number of FORS/PORS trees 
+\end{tabular}
+\end{center}
+
+\subsection{Hash Function Instantiation}
+
+SHRINKS uses SHA-256 truncated to $n$ bits for all internal hash operations. 
+
+\subsection{Tweakable Hash Function}
+
+The following domain-separated functions are defined:
+
+\begin{center}
+\texttt{Tw (P,T,m) = SHA256 (P || T || m)[0:n]}
+\end{center}
+where: 
+\begin{itemize}
+    \item[] \texttt{P} is a public parameter
+    \item[] \texttt{T} is a tweak
+    \item[] \texttt{m} is a message
+\end{itemize}
+
+\subsection{Tweak Structure}
+
+Tweaks are structured as follows to ensure uniqueness across all scheme components:
+
+\begin{center}
+\texttt{T = tweak\_type || tree\_address || chain\_index || position}
+\end{center}
+where: 
+\begin{itemize}
+    \item[] \texttt{tweak\_type} is type of the layer defined in Appendix A.
+    \item[] \texttt{tree\_address} is a position in hypertree
+    \item[] \texttt{chain\_index} is a WOTS chain index
+    \item[] \texttt{position} is a position within a chain
+\end{itemize}
