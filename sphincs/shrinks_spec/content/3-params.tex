@@ -1,22 +1,27 @@
-\section{Parameters}
+\section{Parameters and Primitives}
 
-SHRINKS-128
+We define SHRINKS-SHA2-128s as a SHRINKS instance preferable for Bitcoin. It operates with the 
+following set of parameters:
 
 \begin{center}
 \begin{tabular}{ c c c }
  Parameter & Value & Description \\ 
  \hline
+ \texttt{H} & \texttt{SHA256} & The underlying hash function \\ 
  \texttt{n} & $128$ & Security parameter (bits) \\  
- \texttt{w} & $256$ & Winternitz parameter \\
- \texttt{l}  & $16$ & Number of WOTS+C chains \\
+ \texttt{w} & $256$ & Winternitz parameter (8 bits per chain) \\
+ \texttt{l}  & $16$ & Message digest length, the number of WOTS+C chains \\
  \texttt{Swn} & $2040$ & Target sum for WOTS+C \\
- \texttt{hsf} & $20$ & Maximum stateful tree height \\
- \texttt{hsl} & $20$ & Maximum stateless hypertree height \\
+ \texttt{hsf} & $\color{red}x\color{black}$ & Maximum stateful tree height \\
+ \texttt{hsl} & $\color{red}x\color{black}$ & Maximum stateless hypertree height \\
  \texttt{d} & $5$ & Stateless hypertree layers \\
  \texttt{a} & $14$ & FORS/PORS tree height \\
  \texttt{k} & $11$ & Number of FORS/PORS trees 
 \end{tabular}
 \end{center}
+
+The foundation of SHRINKS is the hash function SHA-256, operated in specific modes to construct 
+WOTS+C (Compressed Winternitz One-Time Signatures) and Unbalanced Merkle Trees.
 
 \subsection{Hash Function Instantiation}
 
@@ -24,19 +29,25 @@ SHRINKS uses SHA-256 truncated to $n$ bits for all internal hash operations.
 
 \subsection{Tweakable Hash Function}
 
-The following domain-separated functions are defined:
+To prevent multi-target attacks and ensure domain separation between the various components 
+(WOTS+, trees, stateless fallback, etc), we employ the Tweakable Hash Function construction defined in 
+FIPS 205:
 
 \begin{center}
-\texttt{Tw (P,T,m) = SHA256 (P || T || m)[0:n]}
+\texttt{Tw (P,T,m) = H (P || T || m)[0:n]}
 \end{center}
 where: 
 \begin{itemize}
-    \item[] \texttt{P} is a public parameter
-    \item[] \texttt{T} is a tweak
+    \item[] \texttt{P} is a public parameters
+    \item[] \texttt{T} is a tweak  (context address)
     \item[] \texttt{m} is a message
 \end{itemize}
 
-\subsection{Tweak Structure}
+This usage of tweaked hashing is critical. It ensures that a hash computed at one position in the 
+Merkle tree cannot be substituted for a hash at another position, effectively mitigating generic 
+tree-grafting attacks.
+
+\subsubsection{Tweak Structure}
 
 Tweaks are structured as follows to ensure uniqueness across all scheme components:
 
@@ -50,3 +61,56 @@ where:
     \item[] \texttt{chain\_index} is a WOTS chain index
     \item[] \texttt{position} is a position within a chain
 \end{itemize}
+
+\subsection{Pseudorandom Function}
+
+\texttt{PRF(SK.seed) = H (0x06 || SK.seed)[0:n]}
+
+\subsection{Message Hash Function}
+
+\texttt{H\_msg(R, PK.seed, PK.root, m) = H(0x05 || R || PK.seed || PK.root || m)}
+
+\subsection{WOTS+C}
+The standard Winternitz One-Time Signature (WOTS+) is the building block of most modern hash-based 
+schemes. It works by encoding the message into a series of small integers and using them to iterate 
+hash chains. A significant portion of a WOTS+ signature size (approx 20\%) is dedicated to a 
+"Checksum," which is necessary to prevent a forgery attack where an adversary extends the hash 
+chains forward.
+
+WOTS+C (Compressed WOTS+) eliminates the transmission of this checksum entirely, achieving a smaller 
+signature size. In WOTS+, the checksum $C$ is calculated from the message digest $D$.
+
+$$C = \sum_{i=1}^{\ell} (w - 1 - d_i)$$
+
+This checksum is then signed using additional chains. In WOTS+C, instead of calculating a checksum 
+for a fixed message digest, the signer modifies the message digest until it possesses a specific, 
+pre-determined checksum property. This is done by appending a counter \texttt{count} and a random 
+salt $R$ to the message before hashing. The signer increments cnt until the resulting hash digest 
+$D$ satisfies a global target condition.
+
+\subsubsection{The Target Condition}
+For SHRINKS-SHA2-128s, we use the Winternitz parameter $w=256$. This means each chain processes 8 
+bits (1 byte) of the digest. The message digest length is 128 bits (16 bytes), so $\ell = 16$. The 
+values $d_i$ are treated as integers in $w$.
+
+We define the expected value of the checksum. If the hash output is uniform, the expected value of a 
+single digit is $(w-1)/2 = 127.5$. For 16 digits, the expected sum is $16 \times 127.5 = 2040$.
+
+The condition for a valid WOTS+C message digest $D$ is:
+$$\sum_{i=0}^{15} (255 - d_i) = 2040$$
+
+By enforcing this condition during signing (including grinding), the verifier can simply assume 
+the checksum is 2040 without receiving it. If the reconstructed digest does not sum to 2040, the 
+signature is invalid. 
+
+\subsection{UXMSS Tree}
+Standard XMSS uses a balanced binary tree, which minimizes the maximum path length but imposes a 
+logarithmic cost on every signature. For $N$ signatures, every signature has size proportional to 
+$\log_2 N$. SHRINKS utilizes an Unbalanced Merkle Tree (specifically a "Right-Skewed" tree) to 
+optimize for the typical Bitcoin use case: a wallet that performs very few transactions in its 
+lifecycle (we are targeting $N < 10$).
+
+In this topology the $k$-th signature requires a path of length $k+1$.This linear growth is superior 
+to logarithmic growth for small $k$. For $k=0$, the path is just 16 bytes. Even for $k=10$, the path 
+is $11 \times 16 = 176$ bytes, which is extremely small compared to the fixed ~2.5 KB of a balanced 
+tree or the ~8 KB of SLH-DSA.

@@ -59,7 +59,7 @@
   This document specifies \textbf{SHRINKS} (Stateful Hash-based Robust Integrated NIST-Compatible 
   Signatures), a post-quantum signature scheme optimized for Bitcoin. SHRINKS combines efficient stateful 
   hash-based signatures (unbalanced XMSS with WOTS+C) for normal operation with a stateless fallback 
-  (SPHINCS+C variant) for recovery scenarios. The scheme achieves minimal 324-byte signatures 
+  (SPHINCS+C variant) for scenarios when state management failed. The scheme achieves minimal 324-byte signatures 
   during normal stateful operation while maintaining the robustness of stateless signatures as a 
   backup when state is corrupted or lost.
 \end{abstract}
