@@ -1,0 +1,77 @@
+\section{Parameters and Primitives}
+
+We define SHRINCS-SHA2-128s as a SHRINCS instance preferable for Bitcoin. It operates with the 
+following set of parameters:
+
+\begin{center}
+\begin{tabular}{ c c c }
+ Parameter & Value & Description \\ 
+ \hline
+ \texttt{H} & \texttt{SHA-256} & The underlying hash function \\ 
+ \texttt{n} & $128$ & Security parameter (bits) \\  
+ \texttt{w} & $256$ & Winternitz parameter (8 bits per chain) \\
+ \texttt{l}  & $16$ & Message digest length, the number of WOTS+C chains \\
+ \texttt{Swn} & $2040$ & Target sum for WOTS+C \\
+ \texttt{hsf} & $\color{red}10\color{black}$ & Maximum stateful tree height \\
+ \texttt{hsl} & $\color{red}63\color{black}$ & Maximum stateless hypertree height \\
+ \texttt{d} & $\color{red}7\color{black}$ & Stateless hypertree layers \\
+ \texttt{a} & $\color{red}12\color{black}$ & FORS/PORS tree height \\
+ \texttt{k} & $\color{red}14\color{black}$ & Number of FORS/PORS trees \\
+ \texttt{c} & $4$ & Counter size for WOTS+C grinding (bytes) \\ 
+\end{tabular}
+\end{center}
+
+The foundation of SHRINCS is the hash function SHA-256, operated in specific modes to construct 
+WOTS+C (Compressed Winternitz One-Time Signatures) and Unbalanced Merkle Trees. At the same time
+SHRINCS utilizes the SLH-DSA for a stateless signature instance. 
+
+\subsection{Hash Function Instantiation}
+
+SHRINCS uses SHA-256 truncated to \texttt{n} bits for all internal hash operations. 
+\begin{center}
+\texttt{H(m) = SHA-256(m)[0:n]}
+\end{center}
+
+\subsection{Tweakable Hash Function}
+
+To prevent multi-target attacks and ensure domain separation between the various components 
+(WOTS+, trees, stateless fallback, etc), we employ the Tweakable Hash Function construction defined in 
+FIPS 205:
+
+\begin{center}
+\texttt{Tw(P, ADRS, m) = H(P || ADRS || m)}
+\end{center}
+where: 
+\begin{itemize}
+    \item[] \texttt{P} is a public parameters
+    \item[] \texttt{ADRS} is a tweak  (context address)
+    \item[] \texttt{m} is a message
+\end{itemize}
+
+This usage of tweaked hashing is critical. It ensures that a hash computed at one position in the 
+Merkle tree cannot be substituted for a hash at another position, effectively mitigating generic 
+tree-grafting attacks.
+
+\subsubsection{Tweak Structure}
+
+Tweaks are structured as follows to ensure uniqueness across all scheme components:
+
+\begin{center}
+\texttt{ADRS = layer || tree\_address || type || words}
+\end{center}
+where: 
+\begin{itemize}
+    \item[] \texttt{layer}: (word 0)layer in hypertree (0 = bottom)
+    \item[] \texttt{tree\_address}: (words 1-3) tree address within layer
+    \item[] \texttt{type}: (word 4) address type (Appendix~A)
+    \item[] \texttt{position}: (words 5-7) type-dependent 12 bytes (Appendix~B)
+\end{itemize}
+
+\subsection{Pseudorandom Function}
+We use PRF for deterministic key derivation
+
+\texttt{PRF(ADRS, SK.seed) = H(0x06 || SK.seed)[0:n]}
+
+\subsection{Message Hash Function}
+
+\texttt{H\_msg(ADRS, R, PK.seed, PK.root, m) = H(0x07 || R || PK.seed || PK.root || m)}
