@@ -1,0 +1,80 @@
+\section{Parameters and Primitives}
+
+We define SHRINCS-SHA2-128+C as a SHRINCS instance preferable for Bitcoin. It operates with the following set of parameters:
+
+\begin{center}
+\begin{tabular}{ c c c }
+ Parameter & Value & Description \\ 
+ \hline
+ \texttt{H} & \texttt{SHA-256} & The underlying hash function \\ 
+ \texttt{OTS} & \texttt{WOTS+C} & The underlying one-time signature \\ 
+ \texttt{FTS} & \texttt{FORS+C} & The underlying few-time signature \\ 
+ \texttt{n} & $16$ & Security parameter (bytes) \\  
+ \texttt{w} & $\color{red}256\color{black}$ & Winternitz parameter (8 bits per chain) \\
+ \texttt{len}  & $\color{red}16\color{black}$ & Message digest length, the number of WOTS+C chains \\
+ \texttt{Swn} & $\color{red}2040\color{black}$ & Target sum for WOTS+C \\
+ \texttt{hsf} & $\color{red}15\color{black}$ & Maximum stateful tree height \\
+ \texttt{hsl} & $\color{red}40\color{black}$ & Maximum stateless hypertree height \\
+ \texttt{d} & $\color{red}5\color{black}$ & Stateless hypertree layers \\
+ \texttt{a} & $\color{red}14\color{black}$ & FORS+C tree height \\
+ \texttt{k} & $\color{red}11\color{black}$ & Number of FORS+C trees \\
+ \texttt{c} & $4$ & Counter size for WOTS+C grinding (bytes) \\ 
+ \texttt{R} & $32$ & Randomness (bytes) \\ 
+\end{tabular}
+\end{center}
+
+\subsection{SHRINCS Key Material}
+SHRINCS keys are derived from a single random seed:
+\begin{verbatim}
+    seed ←$ {0,1}^(3n)
+\end{verbatim}
+Seed allows to derive a private key \texttt{SK ← (SK.seed, SK.prf, PK.seed, PK.sf, PK.sl, PK.root)}:
+\begin{verbatim}
+    SK.seed ← seed[0:n]  // Seed for key derivation
+    SK.prf ← seed[n:2n]  // Secret needed for PRF_msg
+    PK.seed ← seed[2n:3n] // Domain separator for different SHRINCS key pairs
+    PK.sf ← compute_stateful_root(PK.seed, ADRS, SK.seed) // Public stateful key, see Section X
+    PK.sl ← compute_stateless_root(PK.seed, ADRS, SK.seed) // Public stateless key, see Section X
+    PK.root ← H(PK.seed, ADRS, PK_sf, PK_sl) // Root public key
+\end{verbatim}
+where \texttt{ADRS} is a context address (see Section 4.1). \\
+
+The size of the secret key is \texttt{6n} bytes. A public key consists of two values \texttt{PK ← (PK.seed, PK.root)} and has a size of \texttt{2n} bytes.
+
+\subsection{Hash Function}
+
+SHRINCS uses SHA-256 truncated to \texttt{n} bits for all internal hash operations. 
+\begin{center}
+\texttt{H(m) = SHA-256(m)[0:n]}
+\end{center}
+
+\subsection{Tweakable Hash Function}
+
+To prevent multi-target attacks and ensure domain separation between the various components, we employ the tweakable hash function construction defined in FIPS 205:
+
+\begin{center}
+\texttt{Tw(PK.seed, ADRS, m) = H(PK.seed || ADRS || m)}
+\end{center}
+
+This usage of tweaked hashing is critical. It ensures that a hash computed at one position in the Merkle tree cannot be substituted for a hash at another position, effectively mitigating generic tree-grafting attacks.
+
+\subsection{Pseudorandom Functions}
+We use PRF for deterministic key derivation:
+
+\begin{center}
+    \texttt{PRF(PK.seed, ADRS, SK.seed) = Tw(PK.seed || ADRS || SK.seed)[0:n]}
+\end{center}
+
+Additionally we use a pseudorandom function to generate the randomizer \texttt{R} for the randomized hashing of the message to be signed.
+
+\begin{center}
+    \texttt{PRF\_msg(SK.prf, PK.seed, opt\_rand, m) = HMAC-SHA-256(SK.prf, PK.seed || opt\_rand || m)[0:n]},
+\end{center}
+where \texttt{opt\_rand} is an optional randomness (\texttt{n} bytes), can be \texttt{PK.seed} for deterministic signing.
+
+\subsection{Message Hash Function}
+To generate the digest of the message to be signed we use the following function:
+
+\begin{center}
+    \texttt{H\_msg(ADRS, R, PK.seed, PK.root, m) = H(ADRS || R || PK.seed || PK.root || m)}
+\end{center}

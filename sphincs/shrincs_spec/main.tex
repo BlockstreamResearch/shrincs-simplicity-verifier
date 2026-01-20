@@ -56,12 +56,7 @@
 \maketitle
 
 \begin{abstract}
-  This document specifies \textbf{SHRINCS} (Stateful Hash-based Robust Integrated NIST-Compatible 
-  Signatures), a post-quantum signature scheme optimized for Bitcoin. SHRINCS combines efficient stateful 
-  hash-based signatures (unbalanced XMSS with WOTS+C) for normal operation with a stateless fallback 
-  (SPHINCS+C variant) for scenarios when state management failed. The scheme achieves minimal 324-byte signatures 
-  during normal stateful operation while maintaining the robustness of stateless signatures as a 
-  backup when state is corrupted or lost.
+  This document specifies \textbf{SHRINCS} (Stateful Hash-based Robust Integrated NIST-Compatible Signatures), a post-quantum signature scheme optimized for Bitcoin. SHRINCS combines efficient stateful hash-based signatures (unbalanced XMSS with WOTS+C) for normal operation with a stateless fallback (SPHINCS+C variant) for scenarios when state management failed. The scheme achieves minimal 324-byte signatures during normal stateful operation while maintaining the robustness of stateless signatures as a backup when state is corrupted or lost.
 \end{abstract}
 
 % --- Section 1: Motivation ---
@@ -70,11 +65,14 @@
 % --- Section 2: Notation ---
 \input{content/2-notation.tex}
 
-% --- Section 3: Params ---
-\input{content/3-params.tex}
+% --- Section 3: Overview ---
+\input{content/3-overview.tex}
 
-% --- Section 4: SHRINCS ---
-\input{content/4-shrincs.tex}
+% --- Section 4: Params ---
+\input{content/4-params.tex}
+
+% --- Section 5: SHRINCS ---
+\input{content/5-shrincs.tex}
 
 \printbibliography{}
 
@@ -82,5 +80,4 @@
 
 % --- Appendix A. Layer types ---
 \input{content/appendix-a-layer-types.tex}
-
 \end{document}

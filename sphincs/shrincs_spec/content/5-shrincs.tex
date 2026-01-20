@@ -1,6 +1,62 @@
 \section{SHRINCS-SHA2-128s Specification}
 
-\subsection{Address Structure and Domain Separation}
+\subsection{Tweak Structure and Domain Separation}
+Tweaks are structured as follows to ensure uniqueness across all scheme components:
+
+\begin{center}
+\texttt{ADRS = layer || tree\_address || type || words}
+\end{center}
+where: 
+\begin{itemize}
+    \item[] \texttt{layer}: (4 bytes) layer in hypertree (\texttt{0} = bottom, \texttt{d-1} = max)
+    \item[] \texttt{tree\_address}: (12 bytes) tree address within layer
+    \item[] \texttt{type}: (4 bytes) address type
+    \item[] \texttt{words}: (12 bytes) type-dependent 12 bytes (Appendix~B)
+\end{itemize}
+
+\subsubsection{Address Types}
+\begin{itemize}
+    \item[] \texttt{0x00}: Stateful WOTS+C chains (\texttt{SF\_WOTS\_CHAIN})
+    \item[] \texttt{0x01}: Stateful tree nodes (\texttt{SF\_TREE})
+    \item[] \texttt{0x02}: Stateless WOTS+C chains (\texttt{SL\_WOTS\_CHAIN})
+    \item[] \texttt{0x03}: Stateless tree nodes (\texttt{SL\_TREE})
+    \item[] \texttt{0x04}: FORS (\texttt{SL\_FORS})
+    \item[] \texttt{0x05}: Message hash (\texttt{H\_MSG})
+    \item[] \texttt{0x06}: Pseudorandom function (\texttt{PRF})
+    \item[] \texttt{0x07}: Root public key (\texttt{ROOT})
+\end{itemize}
+
+\subsubsection{Address Manipulation Functions}
+\begin{verbatim}
+setLayerAddress(ADRS, layer):
+    ADRS[0:4] ← toByte(layer, 4)
+
+setTreeAddress(ADRS, tree_addr):
+    ADRS[4:16] ← toByte(tree_addr, 12)
+
+setTypeAndClear(ADRS, type):
+    ADRS[16:20] ← toByte(type, 4)
+    ADRS[20:32] ← toByte(0, 12)
+
+setKeyPairAddress(ADRS, keypair):
+    ADRS[20:24] ← toByte(keypair, 4)
+
+setChainAddress(ADRS, chain):
+    ADRS[24:28] ← toByte(chain, 4)
+
+setHashAddress(ADRS, hash):
+    ADRS[28:32] ← toByte(hash, 4)
+
+setTreeHeight(ADRS, height):
+    ADRS[24:28] ← toByte(height, 4)
+
+setTreeIndex(ADRS, index):
+    ADRS[28:32] ← toByte(index, 4)
+\end{verbatim}
+
+
+\oleks{TODO: type-dependent words}
+
 
 \subsection{WOTS+C. The Stateful Leaf}
 The standard Winternitz One-Time Signature (WOTS+) is the building block of most modern hash-based 
