@@ -11,8 +11,9 @@ where:
     \item[] \texttt{layer}: (4 bytes) layer in hypertree (\texttt{0} = bottom, \texttt{d-1} = max)
     \item[] \texttt{tree\_address}: (12 bytes) tree address within layer
     \item[] \texttt{type}: (4 bytes) address type
-    \item[] \texttt{words}: (12 bytes) type-dependent 12 bytes (Appendix~B)
+    \item[] \texttt{words}: (12 bytes) type-dependent 12 bytes
 \end{itemize}
+A total \texttt{ADRS} size is 32 bytes.
 
 \subsubsection{Address Types}
 \begin{itemize}
@@ -25,6 +26,7 @@ where:
     \item[] \texttt{0x06}: Pseudorandom function (\texttt{PRF})
     \item[] \texttt{0x07}: Root public key (\texttt{ROOT})
 \end{itemize}
+Summarizing, \texttt{(0x00, 0x01)} are stateful only types, \texttt{(0x02, 0x03, 0x04)} are stateless only and \texttt{(0x05, 0x06, 0x07)} are shared types.
 
 \subsubsection{Address Manipulation Functions}
 \begin{verbatim}
@@ -54,11 +56,12 @@ setTreeIndex(ADRS, index):
     ADRS[28:32] ← toByte(index, 4)
 \end{verbatim}
 
+Note that \texttt{setTreeHeight} and \texttt{setChainAddress} both write to bytes \texttt{[24:28]}. These operations are context-dependent so there mustn't be a conflict.
 
 \oleks{TODO: type-dependent words}
 
 
-\subsection{WOTS+C. The Stateful Leaf}
+\subsection{WOTS+C}
 The standard Winternitz One-Time Signature (WOTS+) is the building block of most modern hash-based 
 schemes. It works by encoding the message into a series of small integers and using them to iterate 
 hash chains. A significant portion of a WOTS+ signature size (approx 20\%) is dedicated to a 
@@ -68,7 +71,7 @@ chains forward.
 WOTS+C (Compressed WOTS+) eliminates the transmission of this checksum entirely, achieving a smaller 
 signature size. In WOTS+, the checksum $C$ is calculated from the message digest $D$.
 
-$$C = \sum_{i=1}^{\ell} (w - 1 - d_i)$$
+$$C = \sum_{i=1}^{l} (w - 1 - d_i)$$
 
 This checksum is then signed using additional chains. In WOTS+C, instead of calculating a checksum 
 for a fixed message digest, the signer modifies the message digest until it possesses a specific, 
@@ -77,15 +80,15 @@ salt \texttt{R} to the message before hashing. The signer increments cnt until t
 $D$ satisfies a global target condition.
 
 \subsubsection{The Target Condition}
-For SHRINCS-SHA2-128s, we use the Winternitz parameter $w=256$. This means each chain processes 8 
-bits (1 byte) of the digest. The message digest length is 128 bits (16 bytes), so $\ell = 16$. The 
-values $d_i$ are treated as integers in $w$.
+For SHRINCS-SHA2-128s+C, we use the Winternitz parameter $\color{red}w=256$. This means each chain processes 8 
+bits (1 byte) of the digest. The message digest length is 128 bits (16 bytes), so $\color{red}l = 16$. The 
+values $d_i$ are treated as integers in $0\dots (w-1)$.
 
 We define the expected value of the checksum. If the hash output is uniform, the expected value of a 
 single digit is $(w-1)/2 = 127.5$. For 16 digits, the expected sum is $16 \times 127.5 = 2040$.
 
 The condition for a valid WOTS+C message digest $D$ is:
-$$\sum_{i=0}^{15} (255 - d_i) = 2040$$
+$$\sum_{i=0}^{15}d_i = 2040$$
 
 By enforcing this condition during signing (including grinding), the verifier can simply assume 
 the checksum is 2040 without receiving it. If the reconstructed digest does not sum to 2040, the 
@@ -97,11 +100,11 @@ signature is invalid.
 \begin{tabular}{ c c }
  Parameter & SHRINCS-SHA2-128s \\ 
  \hline
- \texttt{n} & 128 bits \\
- \texttt{w} & 256 \\
- \texttt{l} & 16 chains \\
- \texttt{Swn} & 2040 \\
- \texttt{r} & 4 bytes
+ \texttt{n} & 128 bits (16 bytes) \\
+ \texttt{w} & \color{red} 256 \\
+ \texttt{len} & \color{red} 16 chains \\
+ \texttt{Swn} & \color{red} 2040 \\
+ \texttt{c} & \color{red} 4 bytes
 \end{tabular}
 \end{center}
 

@@ -37,7 +37,7 @@ Seed allows to derive a private key \texttt{SK ← (SK.seed, SK.prf, PK.seed, PK
     PK.sl ← compute_stateless_root(PK.seed, ADRS, SK.seed) // Public stateless key, see Section X
     PK.root ← H(PK.seed, ADRS, PK_sf, PK_sl) // Root public key
 \end{verbatim}
-where \texttt{ADRS} is a context address (see Section 4.1). \\
+where \texttt{ADRS} is a context address (see Section 5.1). \\
 
 The size of the secret key is \texttt{6n} bytes. A public key consists of two values \texttt{PK ← (PK.seed, PK.root)} and has a size of \texttt{2n} bytes.
 
@@ -50,7 +50,7 @@ SHRINCS uses SHA-256 truncated to \texttt{n} bits for all internal hash operatio
 
 \subsection{Tweakable Hash Function}
 
-To prevent multi-target attacks and ensure domain separation between the various components, we employ the tweakable hash function construction defined in FIPS 205:
+To prevent multi-target attacks and ensure domain separation between the various components, we employ the tweakable hash function construction defined in FIPS 205 \cite{fips-205}:
 
 \begin{center}
 \texttt{Tw(PK.seed, ADRS, m) = H(PK.seed || ADRS || m)}
@@ -62,13 +62,13 @@ This usage of tweaked hashing is critical. It ensures that a hash computed at on
 We use PRF for deterministic key derivation:
 
 \begin{center}
-    \texttt{PRF(PK.seed, ADRS, SK.seed) = Tw(PK.seed || ADRS || SK.seed)[0:n]}
+    \texttt{PRF(PK.seed, ADRS, SK.seed) = Tw(PK.seed, ADRS, SK.seed)}
 \end{center}
 
 Additionally we use a pseudorandom function to generate the randomizer \texttt{R} for the randomized hashing of the message to be signed.
 
 \begin{center}
-    \texttt{PRF\_msg(SK.prf, PK.seed, opt\_rand, m) = HMAC-SHA-256(SK.prf, PK.seed || opt\_rand || m)[0:n]},
+    \texttt{PRF\_msg(SK.prf, PK.seed, opt\_rand, m) = HMAC-SHA-256(SK.prf, PK.seed || opt\_rand || m)},
 \end{center}
 where \texttt{opt\_rand} is an optional randomness (\texttt{n} bytes), can be \texttt{PK.seed} for deterministic signing.
 
