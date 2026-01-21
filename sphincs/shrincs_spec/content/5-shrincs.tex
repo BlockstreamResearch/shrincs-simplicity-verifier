@@ -110,11 +110,11 @@ signature is invalid.
 
 \subsubsection{Base-w Representation}
 \begin{verbatim}
-    Algorithm: base_w(m, w, out_len)
+    Algorithm: base_w(m, w, out_len) // this is generic algorithm, for w=256 it's much more simpler
     Input: 
         m: byte string
-        w: Winternitz parameter (256)
-        out_len: output length (16)
+        w: Winternitz parameter
+        out_len: output length
     Output: 
         b_w: array of out_len integers in [0, w-1]
     
@@ -128,136 +128,185 @@ signature is invalid.
             in_idx ← in_idx + 1
             bits ← 8
         b. bits ← bits - log2(w)
-        c. base_w[i] ← (total >> bits) AND (w - 1)
+        c. b_w[i] ← (total >> bits) AND (w - 1)
     6. return b_w
-    // for w = 256, each byte becomes one base-w digit
 \end{verbatim} 
+
+For \texttt{w=256}:
+\begin{verbatim}
+    Algorithm: base_w(m, out_len)
+    Input:
+        m: byte string of length out_len
+        out_len: output length 
+    Output:
+        b_w: array of out_len integers in [0, 255]
+
+    1. b_w ← []
+    2. for i from 0 to out_len - 1:
+        a. b_w[i] ← m[i]
+    3. return b_w
+\end{verbatim}
+
 
 \subsubsection{Chain Function}
 \begin{verbatim}
     Algorithm: chain(m, start, steps, PK.seed, ADRS)
     Input:
-        m: (n/8)-byte input
+        m: n-byte input
         start: starting index in chain
         steps: number of iterations
         PK.seed: public seed
         ADRS: tweak
     Output:
-        (n/8)-byte chain output
+        n-byte chain output
 
-    1. if steps == 0:
-        return m
-    2. tmp ← chain(m, start, steps - 1, PK.seed, ADRS)
-    3. setHashAddress(ADRS, start + steps - 1)
-    4. return Tw(PK.seed, ADRS, tmp)
+    1. tmp ← m
+    2. for i from start to start + steps - 1:
+        a. setHashAddress(ADRS, i)
+        b. tmp ← Tw(PK.seed, ADRS, tmp)
+    3. return tmp
 \end{verbatim}
 
 \subsubsection{Key Generation}
 \begin{verbatim}
-    Algorithm: wots_PKgen(SK.seed, PK.seed, ADRS)
+    Algorithm: wots_PKgen(SK.seed, PK.seed, ADRS, keypair)
     Input:
         SK.seed: secret seed
         PK.seed: public seed
-        ADRS: tweak 
+        ADRS: tweak
+        keypair: keypair index for this WOTS+ instance
     Output:
-        pk: compressed WOTS+C public key ((n/8) bytes)
+        pk: compressed WOTS+C public key (n bytes)
 
-    1. setTypeAndClear(ADRS, WOTS_PRF)
-    2. setKeyPairAddress(ADRS, ADRS.getKeyPairAddress())
-    3. tmp ← []
-    4. for i from 0 to l - 1:
-        a. setChainAddress(ADRS, i)
-        b. sk_i ← PRF(SK.seed, ADRS)
-        c. setTypeAndClear(ADRS, WOTS_HASH)
-        d. setKeyPairAddress(ADRS, ADRS.getKeyPairAddress())
-        e. setChainAddress(ADRS, i)
-        f. tmp[i] ← chain(sk_i, 0, w - 1, PK.seed, ADRS)
-    5. setTypeAndClear(ADRS, WOTS_PK)
-    6. setKeyPairAddress(ADRS, ADRS.getKeyPairAddress())
-    7. pk ← Tw(PK.seed, ADRS, tmp[0] || ... || tmp[l-1])
-    8. return pk
+    1. tmp ← []
+    2. for i from 0 to len - 1:
+        a. setTypeAndClear(ADRS, PRF)
+        b. setKeyPairAddress(ADRS, keypair)
+        c. setChainAddress(ADRS, i)
+        d. sk_i ← PRF(PK.seed, ADRS, SK.seed)
+        e. setTypeAndClear(ADRS, SF_WOTS_CHAIN)
+        f. setKeyPairAddress(ADRS, keypair)
+        g. setChainAddress(ADRS, i)
+        h. tmp[i] ← chain(sk_i, 0, w - 1, PK.seed, ADRS)
+    3. setTypeAndClear(ADRS, SF_TREE)
+    4. setKeyPairAddress(ADRS, keypair)
+    5. pk ← Tw(PK.seed, ADRS, tmp[0] || ... || tmp[len-1])
+    6. return pk
 \end{verbatim}
 
 
 \subsubsection{Messsage Digest Grinding}
+\oleks{Consider if we need to mention counter in Section 4.5}
 \begin{verbatim}
-    Algorithm: wots_grind(m, R, PK.seed, PK.root)
+    Algorithm: wots_grind(m, R, PK.seed, PK.root, ADRS)
     Input:
         m: message to sign
-        R: randomness 
-        counter: counter for grinding
-        PK.seed, PK.root: public key components
+        R: randomness
+        PK.seed: public seed
+        PK.root: public key root
+        ADRS: tweak
     Output:
-        msg: array of l integers
-        counter: final value used for grinding
+        msg: array of len integers
+        c: final counter value used
 
-    1. counter ← 0 
-    2. for counter from 0 to 2^32:    
-        a. digest ← H_msg(R || counter, PK.seed, PK.root, m)[0:n]
-        b. msg ← base_w(digest, w, l)
+    1. setTypeAndClear(ADRS, H_MSG)
+    2. for c from 0 to 2^32 - 1:
+        a. digest ← H_msg(ADRS, R, c, PK.seed, PK.root, m)
+        b. msg ← base_w(digest, len)
         c. sum ← 0
-        d. for i from 0 to l - 1:
+        d. for i from 0 to len - 1:
             sum ← sum + msg[i]
-        e. if (sum == Swn)
+        e. if sum == Swn:
             return (msg, counter)
-        f. counter ← counter + 1
-        g. if counter == 2^32:
-            abort with error // R must be resampled
+    3. abort with error  // R must be resampled
 \end{verbatim}
-Expected iterations value is $\approx 2000\text{-}3000$ for SHRINCS-SHA2-128s with \texttt{Swn = 2040}.
+\oleks{add expected counter value for different approaches}
+
+Additionally we need to define a func which allows to calculate the digest without grinding (by providing the counter value)
+
+\begin{verbatim}
+    Algorithm: wots_digest(m, R, counter, PK.seed, PK.root, ADRS)
+    Input:
+        m: message
+        R: randomness from signature
+        counter: counter from signature
+        PK.seed: public seed
+        PK.root: public key root
+        ADRS: tweak
+    Output:
+        msg: array of len integers
+        valid: boolean indicating if sum == Swn
+
+    1. setTypeAndClear(ADRS, H_MSG)
+    2. digest ← H_msg(ADRS, R, counter, PK.seed, PK.root, m)
+    3. msg ← base_w(digest, len)
+    4. sum ← 0
+    5. for i from 0 to len - 1:
+        sum ← sum + msg[i]
+    6. valid ← (sum == Swn)
+    7. return (msg, valid)
+\end{verbatim}
 
 \subsubsection{Signature Generation}
 \begin{verbatim}
-    Algorithm: wots_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS)
+    Algorithm: wots_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS, keypair)
     Input:
-        m: message 
+        m: message
         SK.seed: secret seed
         SK.prf: PRF key for randomness
         PK.seed: public seed
         PK.root: public key root
-        ADRS: tweak   
+        ADRS: tweak
+        keypair: keypair index for this WOTS+ instance
     Output:
-        sig: WOTS+C signature instance
+        sig: WOTS+C signature (R || counter || chain_values)
 
-    1. R ← PRF_msg(SK.prf, ADRS, m)
-    2. (msg, counter) ← wots_grind(m, R, PK.seed, PK.root)
-    3. sig ← R || counter
-    4. setTypeAndClear(ADRS, WOTS_PRF)
-    5. for i from 0 to l - 1:
-        a. setChainAddress(ADRS, i)
-        b. sk_i ← PRF(SK.seed, ADRS)
-        c. setTypeAndClear(ADRS, WOTS_HASH)
-        d. setChainAddress(ADRS, i)
-        e. sig ← sig || chain(sk_i, 0, msg[i], PK.seed, ADRS)
+    1. opt_rand ← random(n) or PK.seed  // for randomized or deterministic signing
+    2. R ← PRF_msg(SK.prf, PK.seed, opt_rand, m)
+    3. (msg, counter) ← wots_grind(m, R, PK.seed, PK.root, ADRS)
+    4. sig ← R || toByte(counter, c)
+    5. for i from 0 to len - 1:
+        a. setTypeAndClear(ADRS, PRF)
+        b. setKeyPairAddress(ADRS, keypair)
+        c. setChainAddress(ADRS, i)
+        d. sk_i ← PRF(PK.seed, ADRS, SK.seed)
+        e. setTypeAndClear(ADRS, SF_WOTS_CHAIN)
+        f. setKeyPairAddress(ADRS, keypair)
+        g. setChainAddress(ADRS, i)
+        h. sig ← sig || chain(sk_i, 0, msg[i], PK.seed, ADRS)
     6. return sig
 \end{verbatim}
 
 \subsubsection{Signature Verification (Public Key Recovery)}
 \begin{verbatim}
-    Algorithm: wots_pkFromSig(sig, m, PK.seed, PK.root, ADRS)
+    Algorithm: wots_pkFromSig(sig, m, PK.seed, PK.root, ADRS, keypair)
     Input:
         sig: WOTS+C signature
         m: signed message
         PK.seed: public seed
         PK.root: public key root
         ADRS: tweak
+        keypair: keypair index for this WOTS+ instance
     Output:
         pk: recovered public key (n bytes), or $\bot$ if invalid
 
-    1. R ← sig[0:32]
-    2. counter ← sig[32:36]
-    3. (msg, valid) ← wots_digest(m, R, counter, PK.seed, PK.root) // like grinding but with known counter, should be revised
-    4. if not valid:
+    1. R ← sig[0:R_SIZE]                 
+    2. counter ← sig[R_SIZE:R_SIZE + c]      
+    3. chains_start ← R_SIZE + c 
+    4. (msg, valid) ← wots_digest(m, R, counter, PK.seed, PK.root, ADRS)
+    5. if not valid:
         return $\bot$
-    5. tmp ← []
-    6. setTypeAndClear(ADRS, WOTS_HASH)
-    7. for i from 0 to l - 1:
-        a. setChainAddress(ADRS, i)
-        b. sig_i ← sig[36 + i*n : 36 + (i+1)*n]
-        c. tmp[i] ← chain(sig_i, msg[i], w - 1 - msg[i], PK.seed, ADRS)
-    8. setTypeAndClear(ADRS, WOTS_PK)
-    9. pk ← Tw(PK.seed, ADRS, tmp[0] || ... || tmp[l-1])
-    10. return pk
+    6. tmp ← []
+    7. for i from 0 to len - 1:
+        a. setTypeAndClear(ADRS, SF_WOTS_CHAIN)
+        b. setKeyPairAddress(ADRS, keypair)
+        c. setChainAddress(ADRS, i)
+        d. sig_i ← sig[chains_start + i*n : chains_start + (i+1)*n]
+        e. tmp[i] ← chain(sig_i, msg[i], w - 1 - msg[i], PK.seed, ADRS)
+    8. setTypeAndClear(ADRS, SF_TREE)
+    9. setKeyPairAddress(ADRS, keypair)
+    10. pk ← Tw(PK.seed, ADRS, tmp[0] || ... || tmp[len-1])
+    11. return pk
 \end{verbatim}
 
 \subsection{UXMSS. The Stateful Tree}
