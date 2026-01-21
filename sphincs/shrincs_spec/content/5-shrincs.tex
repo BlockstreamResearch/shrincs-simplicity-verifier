@@ -147,7 +147,6 @@ For \texttt{w=256}:
     3. return b_w
 \end{verbatim}
 
-
 \subsubsection{Chain Function}
 \begin{verbatim}
     Algorithm: chain(m, start, steps, PK.seed, ADRS)
@@ -194,9 +193,8 @@ For \texttt{w=256}:
     6. return pk
 \end{verbatim}
 
-
 \subsubsection{Messsage Digest Grinding}
-\oleks{Consider if we need to mention counter in Section 4.5}
+\oleks{To consider if we need to mention counter in Section 4.5}
 \begin{verbatim}
     Algorithm: wots_grind(m, R, PK.seed, PK.root, ADRS)
     Input:
@@ -207,29 +205,29 @@ For \texttt{w=256}:
         ADRS: tweak
     Output:
         msg: array of len integers
-        c: final counter value used
+        ctr: final counter value used
 
     1. setTypeAndClear(ADRS, H_MSG)
-    2. for c from 0 to 2^32 - 1:
-        a. digest ← H_msg(ADRS, R, c, PK.seed, PK.root, m)
+    2. for ctr from 0 to 2^32 - 1:
+        a. digest ← H_msg(ADRS, R, ctr, PK.seed, PK.root, m)
         b. msg ← base_w(digest, len)
         c. sum ← 0
         d. for i from 0 to len - 1:
             sum ← sum + msg[i]
         e. if sum == Swn:
-            return (msg, counter)
+            return (msg, ctr)
     3. abort with error  // R must be resampled
 \end{verbatim}
-\oleks{add expected counter value for different approaches}
+\oleks{to add expected counter value for different approaches}
 
 Additionally we need to define a func which allows to calculate the digest without grinding (by providing the counter value)
 
 \begin{verbatim}
-    Algorithm: wots_digest(m, R, counter, PK.seed, PK.root, ADRS)
+    Algorithm: wots_digest(m, R, ctr, PK.seed, PK.root, ADRS)
     Input:
         m: message
         R: randomness from signature
-        counter: counter from signature
+        ctr: counter from signature
         PK.seed: public seed
         PK.root: public key root
         ADRS: tweak
@@ -238,7 +236,7 @@ Additionally we need to define a func which allows to calculate the digest witho
         valid: boolean indicating if sum == Swn
 
     1. setTypeAndClear(ADRS, H_MSG)
-    2. digest ← H_msg(ADRS, R, counter, PK.seed, PK.root, m)
+    2. digest ← H_msg(ADRS, R, ctr, PK.seed, PK.root, m)
     3. msg ← base_w(digest, len)
     4. sum ← 0
     5. for i from 0 to len - 1:
@@ -259,12 +257,12 @@ Additionally we need to define a func which allows to calculate the digest witho
         ADRS: tweak
         keypair: keypair index for this WOTS+ instance
     Output:
-        sig: WOTS+C signature (R || counter || chain_values)
+        sig: WOTS+C signature (R || ctr || chain_values)
 
     1. opt_rand ← random(n) or PK.seed  // for randomized or deterministic signing
     2. R ← PRF_msg(SK.prf, PK.seed, opt_rand, m)
-    3. (msg, counter) ← wots_grind(m, R, PK.seed, PK.root, ADRS)
-    4. sig ← R || toByte(counter, c)
+    3. (msg, ctr) ← wots_grind(m, R, PK.seed, PK.root, ADRS)
+    4. sig ← R || toByte(ctr, c)
     5. for i from 0 to len - 1:
         a. setTypeAndClear(ADRS, PRF)
         b. setKeyPairAddress(ADRS, keypair)
@@ -310,21 +308,29 @@ Additionally we need to define a func which allows to calculate the digest witho
 \end{verbatim}
 
 \subsection{UXMSS. The Stateful Tree}
-Standard XMSS uses a balanced binary tree, which minimizes the maximum path length but imposes a 
-logarithmic cost on every signature. For \texttt{N} signatures, every signature has size proportional to 
-\texttt{log\_2(N)}. SHRINCS utilizes an Unbalanced Merkle Tree (specifically a "Right-Skewed" tree) to 
-optimize for the typical Bitcoin use case: a wallet that performs very few transactions in its 
-lifecycle (we are targeting \texttt{N<=10}).
+Standard XMSS uses a balanced binary tree, which minimizes the maximum path length but imposes a logarithmic cost on every signature. For \texttt{N} signatures, every signature has size proportional to \texttt{log\_2(N)}. SHRINCS utilizes an Unbalanced Merkle Tree (specifically a "Right-Skewed" tree) to optimize for the typical Bitcoin use case: a wallet that performs very few transactions in its lifecycle (we are targeting \texttt{N<=10}).
 
-In this topology the \texttt{q}-th signature requires a path of length \texttt{q+1}. This linear growth is superior 
-to logarithmic growth for small \texttt{q}. For \texttt{q=0}, the path is just 16 bytes. Even for \texttt{q=10}, the path 
-is $11 \times 16 = 176$ bytes, which is extremely small compared to the fixed $\approx 2.5$KB of a balanced 
-tree or the $\approx 8$KB of SLH-DSA.
+In this topology the \texttt{q}-th signature requires a path of length \texttt{q+1}. This linear growth is superior to logarithmic growth for small \texttt{q}. For \texttt{q=0}, the path is just 16 bytes. Even for \texttt{q=10}, the path is $11 \times 16 = 176$ bytes, which is extremely small compared to the fixed $\approx 2.5$KB of a balanced tree or the $\approx 8$KB of SLH-DSA.
 
 The rightmost leaf at maximum depth contains the hash of the stateless public key, enabling the 
 fallback mechanism.
 
-%Picture of the tree
+\subsubsection{UXMSS Tree Structure}
+\oleks{I hope it's not confusing we have layers numeration different for stateless and statefull instance} \\
+The UXMSS tree is constructed recursively as follows:
+\begin{itemize}
+    \item Level 0 (top): WOTS+C public key for signature \texttt{q=1}
+    \item Level \texttt{i} (internal):
+    \begin{itemize}
+        \item  Left child: WOTS+C public key for signature \texttt{q=i+1}
+        \item  Right child: Root of subtree for signatures \texttt{q>i+1}
+    \end{itemize}
+    \item Level \texttt{hsf-1} (bottom)
+    \begin{itemize}
+        \item Left child: WOTS+C public key for signature \texttt{q=hsf}
+        \item Left child: WOTS+C public key for signature \texttt{q=hsf+1}
+    \end{itemize}
+\end{itemize}
 
 \subsubsection{UXMSS Authentication Path}
 For the \texttt{q}-th signature (\texttt{q} = count after signing), the authentication path contains \texttt{q} nodes:
@@ -337,26 +343,38 @@ Root computation from auth path:
 \begin{verbatim}
     Algorithm: root_from_auth(pk, auth, q, PK.seed, ADRS)
     Input:
-        pk: OTS public key at leaf position (q-1)
-        auth: authentication path (q nodes)
-        q: signature count after signing
+        pk: WOTS+C public key for signature q
+        auth: authentication path (array of q nodes)
+        q: signature number
         PK.seed: public seed
         ADRS: tweak
     Output:
-        root: computed tree root
+        root: computed tree root (PK.sf)
 
     1. node ← pk
-    2. setTypeAndClear(ADRS, TREE)
-    3. for i from 0 to q - 1:
-        a. setTreeHeight(ADRS, i + 1)
+    2. setTypeAndClear(ADRS, SF_TREE)
+    3. if q <= h_sf:
+        for i from 0 to q - 1:
+            a. level ← q - i
+            b. setTreeHeight(ADRS, level)
+            c. setTreeIndex(ADRS, 0)
+            d. if i < q - 1:
+                node ← Tw(PK.seed, ADRS, auth[i] || node)
+            e. else:
+                node ← Tw(PK.seed, ADRS, node || auth[q-1])
+    4. else: 
+        a. setTreeHeight(ADRS, h_sf)
         b. setTreeIndex(ADRS, 0)
-        c. if i < q - 1:
-            // auth[i] is left sibling
-            node ← Tw(PK.seed, ADRS, auth[i] || node)
-        d. else:
-            // node is left child
-            node ← Tw(PK.seed, ADRS, node || auth[i])
-    4. return node
+        c. node ← Tw(PK.seed, ADRS, auth[h_sf-1] || node)
+        d. for i from 0 to h_sf - 2:
+            level ← h_sf - 1 - i
+            setTreeHeight(ADRS, level)
+            setTreeIndex(ADRS, 0)
+            if i < h_sf - 2:
+                node ← Tw(PK.seed, ADRS, auth[i] || node)
+            else:
+                node ← Tw(PK.seed, ADRS, node || auth[h_sf-2])
+    5. return node
 \end{verbatim}
 
 
