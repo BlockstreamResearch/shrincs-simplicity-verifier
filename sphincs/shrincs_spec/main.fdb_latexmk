@@ -1,12 +1,12 @@
 # Fdb version 4
-["biber main"] 0 "main.bcf" "main.bbl" "main" 1769003235.62705 0
+["biber main"] 0 "main.bcf" "main.bbl" "main" 1769018054.79849 0
   "main.bcf" 0 -1 0 "pdflatex"
   "references.bib" 0 -1 0 ""
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1769003234.26759 "/Users/oleksandr.kurbatov/mjthatch/simplicity-pq-signature/sphincs/shrincs_spec/main.tex" "main.pdf" "main" 1769003235.62729 0
+["pdflatex"] 1769018053.11017 "/Users/oleksandr.kurbatov/mjthatch/simplicity-pq-signature/sphincs/shrincs_spec/main.tex" "main.pdf" "main" 1769018054.79874 0
   "/Users/oleksandr.kurbatov/mjthatch/simplicity-pq-signature/sphincs/shrincs_spec/main.tex" 1768933916.48633 2238 d6438808d45e8114b5941070f780be40 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1136849721 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
@@ -257,14 +257,15 @@
   "content/1-motivation.tex" 1768925742.17496 1332 0462942ed0d2b2bca1a57a16053b5062 ""
   "content/2-notation.tex" 1768991163.80779 694 252fe4382552389da58e0af80bc60f5d ""
   "content/3-overview.tex" 1768991607.60442 1746 b57c7c8ace2f6085cadbc828a2f2bb92 ""
-  "content/4-params.tex" 1768992930.2048 3753 4d9256c9bd04e30f48c96fab548f843d ""
-  "content/5-shrincs.tex" 1769003234.04199 16874 327ad12ec9a864243525f1815c1ca382 ""
+  "content/4-params.tex" 1769018052.85587 3752 76cf2552aac83c746f74ca63a3bb1af8 ""
+  "content/5-shrincs.tex" 1769017833.71689 23794 cd6fcf934d42ab51bc909ba73e218d19 ""
   "content/appendix-a-layer-types.tex" 1768935241.29906 0 d41d8cd98f00b204e9800998ecf8427e ""
+  "content/img/fors.png" 1769006887.13578 74108 0ccbcc2a0125e95b39eecbcd8b98b9e1 ""
   "content/img/general.png" 1768991292.9882 186822 35f81f789621d676a7d91821bc87997c ""
-  "main.aux" 1769003235.46658 6107 e650142731addf45ed48e6d19abe1fb6 "pdflatex"
+  "main.aux" 1769018054.62594 7613 19ff96a2b915313b41bb5c9203d1a343 "pdflatex"
   "main.bbl" 0 -1 0 "biber main"
-  "main.out" 1769003235.46712 6939 b7d2f567bed412a5d346373f754425c9 "pdflatex"
-  "main.run.xml" 1769003235.46828 2311 f7f9575452fdf7cd4d07e97486caa775 "pdflatex"
+  "main.out" 1769018054.62689 8346 d8d4857ad2d22af4675a873d7ae0b1a8 "pdflatex"
+  "main.run.xml" 1769018054.62817 2311 f7f9575452fdf7cd4d07e97486caa775 "pdflatex"
   "main.tex" 1768933916.48633 2238 d6438808d45e8114b5941070f780be40 ""
   (generated)
   "main.aux"

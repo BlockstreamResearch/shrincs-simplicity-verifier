@@ -442,6 +442,11 @@ INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm
 INPUT ./content/5-shrincs.tex
 INPUT ./content/5-shrincs.tex
 INPUT content/5-shrincs.tex
+INPUT ./content/img/fors.png
+INPUT ./content/img/fors.png
+INPUT ./content/img/fors.png
+INPUT ./content/img/fors.png
+INPUT ./content/img/fors.png
 INPUT ./content/appendix-a-layer-types.tex
 INPUT ./content/appendix-a-layer-types.tex
 INPUT content/appendix-a-layer-types.tex
