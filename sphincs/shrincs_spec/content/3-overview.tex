@@ -23,20 +23,18 @@ Seed allows to derive a private key \texttt{SK ← (SK.seed, SK.prf, PK.seed, PK
     PK.seed ← seed[2n:3n] // Domain separator for different SHRINCS key pairs
     PK.sf ← compute_stateful_root(PK.seed, ADRS, SK.seed) // Public stateful key, see Section X
     PK.sl ← compute_stateless_root(PK.seed, ADRS, SK.seed) // Public stateless key, see Section X
-    PK.root ← H(PK.seed, ADRS, PK_sf, PK_sl) // Root public key
+    PK.root ← H(PK.seed, ADRS, PK.sf, PK.sl) // Root public key
 \end{verbatim}
-where \texttt{ADRS} is a context address (see Section 5.1). \\
+where \texttt{ADRS} is a context address (see Section 5.5). \\
 
 The size of the secret key is \texttt{6n} bytes. A public key consists of two values \texttt{PK ← (PK.seed, PK.root)} and has a size of \texttt{2n} bytes.
 
 \subsection{Signature Size and Verification Cost}
 \subsubsection{Stateful signature size}
 
-The WOTS+C component is 292 bytes: randomness (32 bytes) + counter (4 bytes) + chain values (256 bytes).
-The authentication path for signature \texttt{q} (count after signing) is \texttt{q * (n/8) = q * 16} 
-bytes. The stateless public key \texttt{PK\_sl} adds \texttt{(n/8) = 16} bytes.
+The WOTS+C component is 292 bytes: randomness (32 bytes) + counter (4 bytes) + chain values (256 bytes). The authentication path for signature \texttt{q} (count after signing) is \texttt{q * (n/8) = q * 16} bytes. The stateless public key \texttt{PK.sl} adds 16 bytes.
 \begin{center}
-    \texttt{sig\_sl = 292 + q * 16 + 16 = 308 + q * 16} bytes,
+    \texttt{sig.sf = 292 + q * 16 + 16 = 308 + q * 16} bytes,
 \end{center}
 where \texttt{q} is the signature count after signing:
 \begin{center}

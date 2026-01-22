@@ -91,7 +91,7 @@ For \texttt{w=256}:
         pk: compressed WOTS+C public key (n bytes)
 
     1. tmp ← []
-    2. for i from 0 to len - 1:
+    2. for i from 0 to l - 1:
         a. setTypeAndClear(ADRS, PRF)
         b. setKeyPairAddress(ADRS, keypair)
         c. setChainAddress(ADRS, i)
@@ -102,7 +102,7 @@ For \texttt{w=256}:
         h. tmp[i] ← chain(sk_i, 0, w - 1, PK.seed, ADRS)
     3. setTypeAndClear(ADRS, SF_TREE)
     4. setKeyPairAddress(ADRS, keypair)
-    5. pk ← Tw(PK.seed, ADRS, tmp[0] || ... || tmp[len-1])
+    5. pk ← Tw(PK.seed, ADRS, tmp[0] || ... || tmp[l-1])
     6. return pk
 \end{verbatim}
 
@@ -117,15 +117,15 @@ For \texttt{w=256}:
         PK.root: public key root
         ADRS: tweak
     Output:
-        msg: array of len integers
+        msg: array of l integers
         ctr: final counter value used
 
     1. setTypeAndClear(ADRS, H_MSG)
     2. for ctr from 0 to 2^32 - 1:
         a. digest ← H_msg(ADRS, R, ctr, PK.seed, PK.root, m)
-        b. msg ← base_w(digest, len)
+        b. msg ← base_w(digest, l)
         c. sum ← 0
-        d. for i from 0 to len - 1:
+        d. for i from 0 to l - 1:
             sum ← sum + msg[i]
         e. if sum == Swn:
             return (msg, ctr)
@@ -145,14 +145,14 @@ Additionally we need to define a func which allows to calculate the digest witho
         PK.root: public key root
         ADRS: tweak
     Output:
-        msg: array of len integers
+        msg: array of l integers
         valid: boolean indicating if sum == Swn
 
     1. setTypeAndClear(ADRS, H_MSG)
     2. digest ← H_msg(ADRS, R, ctr, PK.seed, PK.root, m)
-    3. msg ← base_w(digest, len)
+    3. msg ← base_w(digest, l)
     4. sum ← 0
-    5. for i from 0 to len - 1:
+    5. for i from 0 to l - 1:
         sum ← sum + msg[i]
     6. valid ← (sum == Swn)
     7. return (msg, valid)
@@ -176,7 +176,7 @@ Additionally we need to define a func which allows to calculate the digest witho
     2. R ← PRF_msg(SK.prf, PK.seed, opt_rand, m)
     3. (msg, ctr) ← wots_grind(m, R, PK.seed, PK.root, ADRS)
     4. sig ← R || toByte(ctr, c)
-    5. for i from 0 to len - 1:
+    5. for i from 0 to l - 1:
         a. setTypeAndClear(ADRS, PRF)
         b. setKeyPairAddress(ADRS, keypair)
         c. setChainAddress(ADRS, i)
@@ -208,7 +208,7 @@ Additionally we need to define a func which allows to calculate the digest witho
     5. if not valid:
         return $\bot$
     6. tmp ← []
-    7. for i from 0 to len - 1:
+    7. for i from 0 to l - 1:
         a. setTypeAndClear(ADRS, SF_WOTS_CHAIN)
         b. setKeyPairAddress(ADRS, keypair)
         c. setChainAddress(ADRS, i)
@@ -216,6 +216,6 @@ Additionally we need to define a func which allows to calculate the digest witho
         e. tmp[i] ← chain(sig_i, msg[i], w - 1 - msg[i], PK.seed, ADRS)
     8. setTypeAndClear(ADRS, SF_TREE)
     9. setKeyPairAddress(ADRS, keypair)
-    10. pk ← Tw(PK.seed, ADRS, tmp[0] || ... || tmp[len-1])
+    10. pk ← Tw(PK.seed, ADRS, tmp[0] || ... || tmp[l-1])
     11. return pk
 \end{verbatim}
