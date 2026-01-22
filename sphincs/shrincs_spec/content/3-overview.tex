@@ -32,7 +32,7 @@ The size of the secret key is \texttt{6n} bytes. A public key consists of two va
 \subsection{Signature Size and Verification Cost}
 \subsubsection{Stateful signature size}
 
-The WOTS+C component is 292 bytes: randomness (32 bytes) + counter (4 bytes) + chain values (256 bytes). The authentication path for signature \texttt{q} (count after signing) is \texttt{q * (n/8) = q * 16} bytes. The stateless public key \texttt{PK.sl} adds 16 bytes.
+The WOTS+C component is 292 bytes: randomness (32 bytes) + counter (4 bytes) + chain values (256 bytes). The authentication path for signature \texttt{q} (count after signing) is \texttt{q * n = q * 16} bytes. The stateless public key \texttt{PK.sl} adds 16 bytes.
 \begin{center}
     \texttt{sig.sf = 292 + q * 16 + 16 = 308 + q * 16} bytes,
 \end{center}

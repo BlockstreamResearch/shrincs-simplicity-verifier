@@ -11,9 +11,9 @@ pre-determined checksum property. This is done by appending a counter \texttt{ct
 salt \texttt{R} to the message before hashing. The signer increments \texttt{ctr} until the resulting hash digest $D$ satisfies a global target condition.
 
 \subsection{The Target Condition}
-WOTS utilize a parameter \texttt{w} to define the number of hashchains and correspondingly their length. The message digest length is 128 bits so \texttt{l = 128/(log2(w))}. The values $d_{i\in[l]}$ are treated as integers in $0\dots (w-1)$. 
+WOTS utilize a parameter \texttt{w} to define the number of hashchains and correspondingly their length. The message digest length is \texttt{n} bits so \texttt{l = 8n/(log2(w))}. The values $d_{i\in[l]}$ are treated as integers in \texttt{0...(w-1)}. 
 
-We define the expected value of the checksum. If the hash output is uniform, the expected value of a single digit is \texttt{d\_i = (w-1)/2}. For \texttt{l} digits, the expected sum \texttt{Swn} is: 
+Let \texttt{Swn} be a protocol parameter (often near the expected value, but may be chosen larger to trade signing/grinding cost for verification cost). If the hash output is uniform, the expected value of a single digit is \texttt{d\_i = (w-1)/2}. For \texttt{l} digits, the expected \texttt{Swn} is: 
 
 $$S_{wn} = \sum_{i=0}^{l-1}d_i$$
 
@@ -21,10 +21,11 @@ By enforcing this condition during signing (including grinding), the verifier ca
 
 Additionally we can manipulate a target condition to decrease the cost of signature verification. The signature generation and verification operations together consist of \texttt{St = (w-1)*l} hashing operations. So we can increase \texttt{Swn} (grinding complexity) and receive the reduced verification complexity of \texttt{(St - Swn)} hashes. Concrete parameters are presented in Section~4.
 
+The general algorithm for base-w representation is following:
 \subsection{Base-w Representation}
+WOTS represents a message digest in base \texttt{w} so that each digit is an integer in \texttt{[0...w-1]}. These digits directly determine the number of hashes to apply to each WOTS chain element during signing and verification. The \texttt{base\_w()} function converts a byte string into an array of \texttt{out\_len} base-w digits (this requires \texttt{w} to be a power of two.).
 \begin{verbatim}
-    Algorithm: base_w(m, w, out_len) // this is generic algorithm, for w=256 it's much more simpler
-    Input: 
+    Algorithm: base_w(m, w, out_len) 
         m: byte string
         w: Winternitz parameter
         out_len: output length
@@ -45,11 +46,11 @@ Additionally we can manipulate a target condition to decrease the cost of signat
     6. return b_w
 \end{verbatim} 
 
-For \texttt{w=256}:
+But we provide optimized versions for \texttt{w = 256, 4} proposed by this specification. For \texttt{w=256}:
 \begin{verbatim}
-    Algorithm: base_w(m, out_len)
+    Algorithm: base_w256(m, out_len)
     Input:
-        m: byte string of length out_len
+        m: byte string
         out_len: output length 
     Output:
         b_w: array of out_len integers in [0, 255]
@@ -60,11 +61,31 @@ For \texttt{w=256}:
     3. return b_w
 \end{verbatim}
 
-\subsubsection{Chain Function}
+And for \texttt{w=4}:
+\begin{verbatim}
+    Algorithm: base_w4(m, out_len)
+    Input:
+        m: byte string
+        out_len: number of base-4 digits
+    Output:
+        b_w: array of out_len integers in [0,3]
+
+    1. b_w ← []
+    2. for j from 0 to (out_len/4) - 1:
+        a. x ← m[j]
+        b. b_w[4*j + 0] ← (x >> 6) AND 3
+        c. b_w[4*j + 1] ← (x >> 4) AND 3
+        d. b_w[4*j + 2] ← (x >> 2) AND 3
+        e. b_w[4*j + 3] ← x AND 3
+    3. return b_w
+\end{verbatim}
+
+\subsection{Chain Function}
+WOTS derives signature components and public key material by iteratively applying the tweakable hash function along a Winternitz chain. The function \texttt{chain(m, start, steps, PK.seed, ADRS)} takes an n-byte input value \texttt{m} and applies \texttt{Tw(PK.seed, ADRS, ·)} exactly \texttt{steps} times, beginning at chain position \texttt{start}. For each iteration, the address field hash inside \texttt{ADRS} is set to the current chain position \texttt{i} (from \texttt{start} to \texttt{start+steps-1}) to ensure domain separation between different chain steps. The output is the resulting n-byte value after advancing the chain by \texttt{steps}, which is used both for producing signature chain values (advancing from 0 to \texttt{msg[i]}) and for reconstructing end-of-chain values during verification (advancing from \texttt{msg[i]} to \texttt{w-1}).
 \begin{verbatim}
     Algorithm: chain(m, start, steps, PK.seed, ADRS)
     Input:
-        m: n-byte input
+        m: input
         start: starting index in chain
         steps: number of iterations
         PK.seed: public seed
@@ -79,7 +100,8 @@ For \texttt{w=256}:
     3. return tmp
 \end{verbatim}
 
-\subsubsection{Key Generation}
+\subsection{Key Generation}
+To create a WOTS public key for a given \texttt{keypair} index, we derive one secret starting value per chain using \texttt{PRF}, then advance each value to the end of its chain with \texttt{chain(..., w-1)}. The resulting array of end-of-chain values is compressed to a fixed-size WOTS public key for that \texttt{keypair}.
 \begin{verbatim}
     Algorithm: wots_PKgen(SK.seed, PK.seed, ADRS, keypair)
     Input:
@@ -106,7 +128,9 @@ For \texttt{w=256}:
     6. return pk
 \end{verbatim}
 
-\subsubsection{Messsage Digest Grinding}
+\subsection{Messsage Digest Grinding}
+WOTS+C enforces the checksum/target condition by searching over the counter \texttt{ctr}. The value \texttt{R} (a randomness/nonce input to message hashing) may be fixed and need not be resampled during grinding. The function \texttt{wots\_grind(ADRS, R, PK.seed, PK.root, m)} increments \texttt{ctr} and recomputes the message digest until the derived base-w digits satisfy the target condition. It outputs the found \texttt{ctr} and the corresponding digest (and \texttt{R} is carried in the signature only if verification requires it to recompute the same digest).
+
 \oleks{To consider if we need to mention counter in Section 4.5}
 \begin{verbatim}
     Algorithm: wots_grind(m, R, PK.seed, PK.root, ADRS)
@@ -133,14 +157,14 @@ For \texttt{w=256}:
 \end{verbatim}
 \oleks{to add expected counter value for different approaches}
 
-Additionally we need to define a func which allows to calculate the digest without grinding (by providing the counter value)
+Additionally we need to define a func which allows to calculate the digest without grinding (by providing the \texttt{ctr} value directly).
 
 \begin{verbatim}
     Algorithm: wots_digest(m, R, ctr, PK.seed, PK.root, ADRS)
     Input:
         m: message
         R: randomness from signature
-        ctr: counter from signature
+        ctr: counter
         PK.seed: public seed
         PK.root: public key root
         ADRS: tweak
@@ -158,7 +182,9 @@ Additionally we need to define a func which allows to calculate the digest witho
     7. return (msg, valid)
 \end{verbatim}
 
-\subsubsection{Signature Generation}
+\subsection{Signature Generation}
+To sign, WOTS+C instance computes the message digits and then reveals, for each chain, the chain value after exactly \texttt{msg[i]} steps (starting from the secret-derived chain \texttt{start}). These revealed values form the WOTS signature vector. The signature also carries the randomness 
+\texttt{R} and grinding counter \texttt{ctr} needed for the verifier to reproduce the same message digits.
 \begin{verbatim}
     Algorithm: wots_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS, keypair)
     Input:
@@ -188,11 +214,12 @@ Additionally we need to define a func which allows to calculate the digest witho
     6. return sig
 \end{verbatim}
 
-\subsubsection{Signature Verification (Public Key Recovery)}
+\subsection{Signature Verification (Public Key Recovery)}
+Verification reconstructs the WOTS+C public key implied by the signature. For each chain element, the verifier continues hashing forward from the signature’s provided intermediate value for \texttt{w-1-msg[i]} steps to reach the end-of-chain value. Compressing all end-of-chain values yields the recovered WOTS+C public key, which can then be checked against the expected value in the surrounding scheme.
 \begin{verbatim}
     Algorithm: wots_pkFromSig(sig, m, PK.seed, PK.root, ADRS, keypair)
     Input:
-        sig: WOTS+C signature
+        sig: WOTS+C signature vector
         m: signed message
         PK.seed: public seed
         PK.root: public key root

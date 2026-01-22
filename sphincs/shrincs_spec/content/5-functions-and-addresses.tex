@@ -1,7 +1,7 @@
 \section{Underlying Functions and Addresses}
 \subsection{Hash Function}
 
-SHRINCS uses SHA-256 truncated to \texttt{n} bits for all internal hash operations. 
+SHRINCS uses SHA-256 truncated to \texttt{n} bytes for all internal hash operations. 
 \begin{center}
 \texttt{H(m) = SHA-256(m)[0:n]}
 \end{center}
@@ -94,4 +94,24 @@ setTreeIndex(ADRS, index):
 
 Note that \texttt{setTreeHeight} and \texttt{setChainAddress} both write to bytes \texttt{[24:28]}. These operations are context-dependent so there mustn't be a conflict.
 
-\oleks{TODO: type-dependent words}
+\subsubsection{Type-Dependent Words}
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{c c c c c}
+\hline
+\textbf{Type} & \textbf{Meaning} & \textbf{word1 [20:24]} & \textbf{word2 [24:28]} & \textbf{word3 [28:32]} \\
+\hline
+0x00 & \texttt{SF\_WOTS\_CHAIN} & keypair & chain & hash \\
+0x01 & \texttt{SF\_TREE}        & keypair & height & index \\
+0x02 & \texttt{SL\_WOTS\_CHAIN} & keypair & chain & hash \\
+0x03 & \texttt{SL\_TREE}        & keypair & height & index \\
+0x04 & \texttt{SL\_FORS}        & tree\_idx & height & index \\
+0x05 & \texttt{H\_MSG}          & 0 & 0 & 0 \\
+0x06 & \texttt{PRF}             & W: keypair / F: tree\_idx & W: chain / F: 0 & W: 0 / F: leaf\_idx \\
+0x07 & \texttt{ROOT}            & 0 & 0 & 0 \\
+\hline
+\end{tabular}
+\caption{Type-dependent interpretation of ADRS words (bytes [20:32]). W is a WOTS an F is a FORS}
+\end{table}
+
