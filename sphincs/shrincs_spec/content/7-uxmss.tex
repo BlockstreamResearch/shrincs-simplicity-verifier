@@ -1,0 +1,63 @@
+\section{UXMSS. The Stateful Tree}
+Standard XMSS uses a balanced binary tree, which minimizes the maximum path length but imposes a logarithmic cost on every signature. For \texttt{N} signatures, every signature has size proportional to \texttt{log\_2(N)}. SHRINCS utilizes an Unbalanced Merkle Tree (specifically a "Right-Skewed" tree) to optimize for the typical Bitcoin use case: a wallet that performs very few transactions in its lifecycle (we are targeting \texttt{N<=10}).
+
+In this topology the \texttt{q}-th signature requires a path of length \texttt{q}. This linear growth is superior to logarithmic growth for small \texttt{q}. For \texttt{q=1}, the path is just 16 bytes. Even for \texttt{q=10}, the path is $10 \times 16 = 160$ bytes, which is extremely small compared to the fixed $\approx 2.5$KB of a balanced tree or the $\approx 8$KB of SLH-DSA.
+
+\subsection{UXMSS Tree Structure}
+\oleks{I hope it's not confusing we have layers numeration different for stateless and statefull instance} \\
+The UXMSS tree is constructed recursively as follows:
+\begin{itemize}
+    \item Level 0 is the root public key \texttt{PK.sf}.
+    \item Level \texttt{i} (internal):
+    \begin{itemize}
+        \item  Left child: WOTS+C public key for signature \texttt{q=i}
+        \item  Right child: Root of subtree for signatures \texttt{q>i}
+    \end{itemize}
+    \item Level \texttt{hsf} (bottom)
+    \begin{itemize}
+        \item Left child: WOTS+C public key for signature \texttt{q=hsf}
+        \item Right child: WOTS+C public key for signature \texttt{q=hsf+1}
+    \end{itemize}
+\end{itemize}
+
+\subsection{UXMSS Authentication Path}
+For the \texttt{q}-th signature (\texttt{q} = count after signing), the authentication path contains \texttt{q} nodes:
+\begin{center}
+    \texttt{auth\_path = [node\_0, node\_1, ..., node\_{q-1}]}
+\end{center}
+
+Root computation from auth path:
+
+\begin{verbatim}
+    Algorithm: root_from_auth(pk, auth, q, PK.seed, ADRS)
+    Input:
+        pk: WOTS+C public key for signature q
+        auth: authentication path [auth[0], ..., auth[q-1]] from bottom to top
+        q: signature number 
+        PK.seed: public seed
+        ADRS: tweak
+    Output:
+        root: computed tree root (PK.sf)
+
+    1. node ← pk
+    2. setTypeAndClear(ADRS, SF_TREE)
+    3. if q <= hsf:
+        for i from 0 to q - 1:
+            a. level ← q - i
+            b. setTreeHeight(ADRS, level)
+            c. setTreeIndex(ADRS, 0)
+            d. if i == 0:
+                node ← Tw(PK.seed, ADRS, node || auth[i])
+            e. else:
+                node ← Tw(PK.seed, ADRS, auth[i] || node)
+    4. else:  // q = hsf + 1
+        for i from 0 to hsf - 1:
+            a. level ← hsf - i
+            b. setTreeHeight(ADRS, level)
+            c. setTreeIndex(ADRS, 0)
+            d. if i == 0:
+                node ← Tw(PK.seed, ADRS, auth[i] || node)
+            e. else:
+                node ← Tw(PK.seed, ADRS, auth[i] || node)
+    5. return node
+\end{verbatim}

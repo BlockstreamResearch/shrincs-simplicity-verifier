@@ -1,0 +1,74 @@
+\section{SHRINCS}
+
+\subsubsection{Key Generation}
+
+\begin{verbatim}
+    Algorithm: SHRINCS.KeyGen()
+    Output:
+        SK: secret key
+        PK: public key  
+        state: initial state
+
+    1. seed ←$ {0,1}^384
+    2. SK.seed ← seed[0:16]
+    3. SK.prf ← seed[16:32]
+    4. PK.seed ← seed[32:48]
+    5. ADRS ← new_ADRS()
+
+    // Generate stateful public key (UXMSS root)
+    6. setLayerAddress(ADRS, 0)
+    7. setTreeAddress(ADRS, 0)
+    8. PK_sf ← compute_initial_stateful_root(SK.seed, PK.seed, ADRS)
+
+    // Generate stateless public key (SPHINCS+C root)
+    9. PK_sl ← sphincs_root(SK.seed, PK.seed, ADRS)
+
+    // Combined params
+    10. PK.root ← H(0x08 || PK.seed || PK_sf || PK_sl)
+    11. SK ← (SK.seed, SK.prf, PK.seed, PK.root, PK_sf, PK_sl)
+    12. PK ← (PK.seed, PK.root)
+    13. state ← { q: 0, valid: true }
+    14. return (SK, PK, state)
+\end{verbatim}
+
+\subsubsection{Recovery from Seed}
+
+\begin{verbatim}
+    Algorithm: SHRINCS.Restore(seed)
+    Input:
+        seed: master seed
+    Output:
+        SK: secret key
+        PK: public key
+        state: state "LOST"
+
+    1. SK.seed ← seed[0:16]
+    2. SK.prf ← seed[16:32]
+    3. PK.seed ← seed[32:48]
+    4. ADRS ← new_ADRS()
+    5. PK_sf ← compute_max_stateful_root(SK.seed, PK.seed, ADRS)
+    6. PK_sl ← sphincs_root(SK.seed, PK.seed, ADRS)
+    7. PK.root ← H_n(0x08 || PK.seed || PK_sf || PK_sl)
+    8. SK ← (SK.seed, SK.prf, PK.seed, PK.root, PK_sf, PK_sl)
+    9. PK ← (PK.seed, PK.root)
+    10. state ← { q: $\bot$, valid: false } 
+    11. return (SK, PK, state)
+\end{verbatim}
+
+\subsection{Statefull signing}
+
+\subsection{Stateless signing}
+
+\subsection{Statefull verification}
+
+\subsection{Stateless verification}
+
+\section{Data structures}
+
+\subsection{Secret Key Format}
+
+\subsection{Public Key Format}
+
+\subsection{Stateful Signature Format}
+
+\subsection{Stateless Signature Format}

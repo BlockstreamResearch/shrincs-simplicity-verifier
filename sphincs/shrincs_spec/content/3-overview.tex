@@ -1,7 +1,7 @@
 \section{Overview}
-SHRINCS is designed in the way it can operate in two modes: \textbf{stateful} and \textbf{stateless}. Stateful mode is represented by the instance of Unbalanced XMSS (UXMSS) with a root public key \texttt{PK.sf}. An optimized variant of SLH-DSA is used to support the stateless operating mode (which is represented by the public key \texttt{PK.sl}). The root public key is a hashed concatenation of (\texttt{PK.sf}, \texttt{PK.sl}), which is being converted to the Bitcoin address. 
+SHRINCS is designed in the way it can operate in two modes: \textbf{stateful} and \textbf{stateless}. Stateful mode is represented by the instance of Unbalanced XMSS (UXMSS) with a root public key \texttt{PK.sf}. An optimized variant of SPHINCS+ is used to support the stateless operating mode (which is represented by the public key \texttt{PK.sl}). The root public key is a hashed concatenation of (\texttt{PK.sf}, \texttt{PK.sl}), which is being converted to the Bitcoin address. 
 
-During normal operation with intact state, the user generates signatures according to efficient stateful path. Each leaf of the UXMSS is represented by WOTS+C one time signature instance. UXMSS is right-skewed, which makes the first stateful signature (\texttt{q=1}) the cheapest from the verification and size perspective (324 bytes) and adds the constant size (16 bytes) and one additional hashing operation for each next stateful signature. A right-skewed UXMSS is a UXMSS construction in which every internal node has a one-time signature leaf as its left child and a UXMSS subtree as its right child, yielding a recursively right-branching authentication tree (as shown on the Figure~1).
+During normal operation with intact state, the user generates signatures according to efficient stateful path. Each leaf of the UXMSS is represented by WOTS+C one time signature instance. UXMSS is right-skewed, which makes the first stateful signature (\texttt{q=1}) the cheapest from the verification and size perspective (\textcolor{red}{324} bytes) and adds the constant size (16 bytes) and one additional hashing operation for each next stateful signature. A right-skewed UXMSS is a tree construction in which every internal node has a one-time signature leaf as its left child and a UXMSS subtree as its right child, yielding a recursively right-branching authentication tree (as shown on the Figure~1).
 
 If the state is corrupted (or the limit for stateful operations is met), the signature can continue operating with stateless mode. Stateless mode utilizes an optimized SLH-DSA variant with WOTS+ signatures in regular XMSS trees on each layer in the hypertree and FORS+C for few-time signature scheme. The general construction of SHRINCS signature is presented on the Figure~1.
 \begin{figure}[h!]
@@ -10,3 +10,23 @@ If the state is corrupted (or the limit for stateful operations is met), the sig
     \caption{SHRINCS architecture}
     \label{fig:shrincs}
 \end{figure}
+
+\subsection{Key Pair Derivation and Size}
+SHRINCS keys are derived from a single random seed (\oleks{add assumptions about BIP-39 usage}):
+\begin{verbatim}
+    seed ←$ {0,1}^(3n)
+\end{verbatim}
+Seed allows to derive a private key \texttt{SK ← (SK.seed, SK.prf, PK.seed, PK.sf, PK.sl, PK.root)}:
+\begin{verbatim}
+    SK.seed ← seed[0:n]  // Seed for key derivation
+    SK.prf ← seed[n:2n]  // Secret needed for PRF_msg
+    PK.seed ← seed[2n:3n] // Domain separator for different SHRINCS key pairs
+    PK.sf ← compute_stateful_root(PK.seed, ADRS, SK.seed) // Public stateful key, see Section X
+    PK.sl ← compute_stateless_root(PK.seed, ADRS, SK.seed) // Public stateless key, see Section X
+    PK.root ← H(PK.seed, ADRS, PK_sf, PK_sl) // Root public key
+\end{verbatim}
+where \texttt{ADRS} is a context address (see Section 5.1). \\
+
+The size of the secret key is \texttt{6n} bytes. A public key consists of two values \texttt{PK ← (PK.seed, PK.root)} and has a size of \texttt{2n} bytes.
+
+\subsection{Signature Size and Verification Cost}
