@@ -46,8 +46,8 @@
 \contentsline {subsection}{\numberline {9.7}FORS Authentication path}{20}{subsection.9.7}%
 \contentsline {subsection}{\numberline {9.8}Signature generation}{20}{subsection.9.8}%
 \contentsline {subsection}{\numberline {9.9}Public Key Recovery}{21}{subsection.9.9}%
-\contentsline {section}{\numberline {10}SHRINCS}{21}{section.10}%
-\contentsline {subsubsection}{\numberline {10.0.1}Key Generation}{21}{subsubsection.10.0.1}%
+\contentsline {section}{\numberline {10}SHRINCS}{22}{section.10}%
+\contentsline {subsubsection}{\numberline {10.0.1}Key Generation}{22}{subsubsection.10.0.1}%
 \contentsline {subsubsection}{\numberline {10.0.2}Recovery from Seed}{22}{subsubsection.10.0.2}%
 \contentsline {subsection}{\numberline {10.1}Statefull signing}{23}{subsection.10.1}%
 \contentsline {subsection}{\numberline {10.2}Stateless signing}{23}{subsection.10.2}%
