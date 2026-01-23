@@ -20,44 +20,130 @@ The UXMSS tree is constructed recursively as follows:
     \end{itemize}
 \end{itemize}
 
-\subsection{UXMSS Authentication Path}
-For the \texttt{q}-th signature (\texttt{q} = count after signing), the authentication path contains \texttt{q} nodes:
-\begin{center}
-    \texttt{auth\_path = [node\_0, node\_1, ..., node\_{q-1}]}
-\end{center}
+\subsection{UXMSS TreeHash}
+Unlike balanced XMSS where \texttt{treehash} recursively computes both subtrees symmetrically, UXMSS \texttt{treehash} follows the right-skewed structure.
+\begin{verbatim}
+    Algorithm: uxmss_treehash(SK.seed, PK.seed, ADRS, level)
+    Input:
+        SK.seed: secret seed
+        PK.seed: public seed
+        ADRS: address (layer=0, tree_address=0)
+        level: level in tree (0 = root, hsf-1 = bottom internal node)
+    Output:
+        node: hash value (n bytes)
 
-Root computation from auth path:
+    1. left ← wots_PKgen(SK.seed, PK.seed, ADRS, level + 1)
+
+    2. if level == hsf - 1:
+            right ← wots_PKgen(SK.seed, PK.seed, ADRS, hsf + 1)
+       else:
+            right ← uxmss_treehash(SK.seed, PK.seed, ADRS, level + 1)
+    3. setTypeAndClear(ADRS, SF_TREE)
+    4. setTreeHeight(ADRS, hsf - level)
+    5. setTreeIndex(ADRS, 0)
+    6. return Tw(PK.seed, ADRS, left || right)
+\end{verbatim}
+
+\subsection{UXMSS Root Computation}
+\begin{verbatim}
+    Algorithm: uxmss_root(SK.seed, PK.seed, ADRS)
+    Input:
+        SK.seed: secret seed
+        PK.seed: public seed
+        ADRS: address
+    Output:
+        PK.sf: stateful public key (n bytes)
+
+    1. setLayerAddress(ADRS, 0)
+    2. setTreeAddress(ADRS, 0)
+    3. return uxmss_treehash(SK.seed, PK.seed, ADRS, 0)
+\end{verbatim}
+
+\subsection{UXMSS Authentication Path Generation}
+For signature number \texttt{(1 <= q <= hsf + 1)}, the authentication path contains \texttt{q} sibling nodes.
 
 \begin{verbatim}
-    Algorithm: root_from_auth(pk, auth, q, PK.seed, ADRS)
+    Algorithm: uxmss_auth_path(SK.seed, PK.seed, ADRS, q)
     Input:
-        pk: WOTS+C public key for signature q
-        auth: authentication path [auth[0], ..., auth[q-1]] from bottom to top
-        q: signature number 
-        PK.seed: public seed
-        ADRS: tweak
+        SK.seed, PK.seed: seeds
+        ADRS: address
+        q: signature number (1 to hsf + 1)
     Output:
-        root: computed tree root (PK.sf)
+        auth: authentication path (q × n bytes)
 
-    1. node ← pk
-    2. setTypeAndClear(ADRS, SF_TREE)
-    3. if q <= hsf:
+    1. auth ← []
+    2. setLayerAddress(ADRS, 0)
+    3. setTreeAddress(ADRS, 0)
+    4. if q <= hsf:
+            if q == hsf:
+                auth ← auth || wots_PKgen(SK.seed, PK.seed, ADRS, hsf + 1)
+            else:
+                auth ← auth || uxmss_treehash(SK.seed, PK.seed, ADRS, q)  
+            for i from 1 to q - 1:
+                auth ← auth || wots_PKgen(SK.seed, PK.seed, ADRS, q - i)
+    5. else:  
+            for i from 0 to hsf - 1:
+                auth ← auth || wots_PKgen(SK.seed, PK.seed, ADRS, hsf - i)
+6. return auth
+\end{verbatim}
+
+\subsection{UXMSS Public Key Recovery from Signature}
+Given a WOTS+C signature and authentication path, reconstruct \texttt{PK.sf}.
+
+\begin{verbatim}
+    Algorithm: uxmss_pkFromSig(wots_sig, auth, m, PK.seed, PK.root, ADRS, q)
+    Input:
+        wots_sig: WOTS+C signature
+        auth: authentication path (q × n bytes)
+        m: signed message
+        PK.seed: public seed
+        PK.root: root public key
+        ADRS: address
+        q: signature number (1 to hsf + 1)
+    Output:
+        root: computed PK.sf (n bytes), or $\bot$ if invalid
+
+    1. setLayerAddress(ADRS, 0)
+    2. setTreeAddress(ADRS, 0)
+    3. pk ← wots_pkFromSig(wots_sig, m, PK.seed, PK.root, ADRS, q)
+    4. if pk == $\bot$:
+       return $\bot$
+    5. node ← pk
+    6. setTypeAndClear(ADRS, SF_TREE)
+    7. if q <= hsf:
         for i from 0 to q - 1:
-            a. level ← q - i
-            b. setTreeHeight(ADRS, level)
-            c. setTreeIndex(ADRS, 0)
-            d. if i == 0:
-                node ← Tw(PK.seed, ADRS, node || auth[i])
-            e. else:
-                node ← Tw(PK.seed, ADRS, auth[i] || node)
-    4. else:  // q = hsf + 1
-        for i from 0 to hsf - 1:
-            a. level ← hsf - i
-            b. setTreeHeight(ADRS, level)
-            c. setTreeIndex(ADRS, 0)
-            d. if i == 0:
-                node ← Tw(PK.seed, ADRS, auth[i] || node)
-            e. else:
-                node ← Tw(PK.seed, ADRS, auth[i] || node)
-    5. return node
+           a. setTreeHeight(ADRS, hsf - (q - 1 - i))
+           b. setTreeIndex(ADRS, 0)
+           c. if i == 0:
+                  node ← Tw(PK.seed, ADRS, node || auth[i])
+              else:
+                  node ← Tw(PK.seed, ADRS, auth[i] || node)
+8. else: 
+       for i from 0 to hsf - 1:
+           a. setTreeHeight(ADRS, i + 1)
+           b. setTreeIndex(ADRS, 0)
+           c. // auth[i] is always left (WOTS), node is right
+              node ← Tw(PK.seed, ADRS, auth[i] || node)
+9. return node
+\end{verbatim}
+
+\subsection{UXMSS Signature Generation}
+\begin{verbatim}
+    Algorithm: uxmss_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS, q)
+    Input:
+        m: message to sign
+        SK.seed: secret seed
+        SK.prf: PRF key
+        PK.seed: public seed
+        PK.root: root public key
+        ADRS: address
+        q: signature number to use (1 to hsf + 1)
+    Output:
+        sig: UXMSS signature
+
+    1. setLayerAddress(ADRS, 0)
+    2. setTreeAddress(ADRS, 0)
+    3. wots_sig ← wots_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS, q)
+    4. auth ← uxmss_auth_path(SK.seed, PK.seed, ADRS, q)
+    5. return wots_sig || auth
 \end{verbatim}
