@@ -3,16 +3,16 @@ SHRINCS is designed in the way it can operate in two modes: \textbf{stateful} an
 
 During normal operation with intact state, the user generates signatures according to efficient stateful path. Each leaf of the UXMSS is represented by WOTS+C one time signature instance. UXMSS is right-skewed, which makes the first stateful signature (\texttt{q=1}) the cheapest from the verification and size perspective (\textcolor{red}{324} bytes) and adds the constant size (16 bytes) and one additional hashing operation for each next stateful signature. A right-skewed UXMSS is a tree construction in which every internal node has a one-time signature leaf as its left child and a UXMSS subtree as its right child, yielding a recursively right-branching authentication tree (as shown on the Figure~1).
 
-If the state is corrupted (or the limit for stateful operations is met), the signature can continue operating with stateless mode. Stateless mode utilizes an optimized SLH-DSA variant with WOTS+ signatures in regular XMSS trees on each layer in the hypertree and FORS+C for few-time signature scheme. The general construction of SHRINCS signature is presented on the Figure~1.
+If the state is corrupted (or the limit for stateful operations is met), the signature can continue operating with stateless mode. Stateless mode utilizes an optimized SPHINCS+ variant with WOTS+C signatures in regular XMSS trees on each layer in the hypertree and FORS+C for few-time signature scheme. The general construction of SHRINCS signature is presented on the Figure~1.
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.9\linewidth]{content/img/general.png}
+    \includegraphics[width=1\linewidth]{content/img/general.png}
     \caption{SHRINCS architecture}
     \label{fig:shrincs}
 \end{figure}
 
 \subsection{Key Pair Derivation and Size}
-SHRINCS keys are derived from a single random seed (\oleks{add assumptions about BIP-39 usage}):
+SHRINCS keys are derived from a single random seed (\oleks{to add notes about BIP-39 usage and hd wallets if needed, maybe in appendix}):
 \begin{verbatim}
     seed ←$ {0,1}^(3n)
 \end{verbatim}
@@ -25,7 +25,7 @@ Seed allows to derive a private key \texttt{SK ← (SK.seed, SK.prf, PK.seed, PK
     PK.sl ← compute_stateless_root(PK.seed, ADRS, SK.seed) // Public stateless key, see Section X
     PK.root ← H(PK.seed, ADRS, PK.sf, PK.sl) // Root public key
 \end{verbatim}
-where \texttt{ADRS} is a context address (see Section 5.5). \\
+where \texttt{ADRS} is a tweak also known as a context address (see Section 5.5). \\
 
 The size of the secret key is \texttt{6n} bytes. A public key consists of two values \texttt{PK ← (PK.seed, PK.root)} and has a size of \texttt{2n} bytes.
 
@@ -43,4 +43,14 @@ SHRINCS-L:
 \end{itemize}
 
 \subsubsection{Stateless}
-\oleks{TODO}
+\oleks{in progress} \\
+SHRINCS-B: 
+\begin{itemize}
+    \item Size: 
+    \item Verification cost:
+\end{itemize}
+SHRINCS-L: 
+\begin{itemize}
+    \item Size: 
+    \item Verification cost: 
+\end{itemize}

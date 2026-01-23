@@ -5,10 +5,7 @@ In WOTS+, the checksum $C$ is calculated from the message digest $D$.
 
 $$C = \sum_{i=1}^{l} (w - 1 - d_i)$$
 
-This checksum is then signed using additional chains. In WOTS+C, instead of calculating a checksum 
-for a fixed message digest, the signer modifies the message digest until it possesses a specific, 
-pre-determined checksum property. This is done by appending a counter \texttt{ctr} and a random 
-salt \texttt{R} to the message before hashing. The signer increments \texttt{ctr} until the resulting hash digest $D$ satisfies a global target condition.
+This checksum is then signed using additional chains. In WOTS+C\cite{wots+c}, instead of calculating a checksum  for a fixed message digest, the signer modifies the message digest until it possesses a specific,  pre-determined checksum property. This is done by appending a counter \texttt{ctr} and a random salt \texttt{R} to the message before hashing. The signer increments \texttt{ctr} until the resulting hash digest $D$ satisfies a global target condition.
 
 \subsection{The Target Condition}
 WOTS utilize a parameter \texttt{w} to define the number of hashchains and correspondingly their length. The message digest length is \texttt{n} bits so \texttt{l = 8n/(log2(w))}. The values $d_{i\in[l]}$ are treated as integers in \texttt{0...(w-1)}. 
@@ -153,7 +150,7 @@ WOTS+C enforces the checksum/target condition by searching over the counter \tex
             return (msg, ctr)
     3. abort with error  // R must be resampled
 \end{verbatim}
-\oleks{to add expected counter value for different approaches}
+\oleks{to add expected grinding complexity for different approaches}
 
 Additionally we need to define a func which allows to calculate the digest without grinding (by providing the \texttt{ctr} value directly).
 

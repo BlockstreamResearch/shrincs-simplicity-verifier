@@ -1,5 +1,5 @@
 \section{Motivation}
-Current Bitcoin signature schemes (ECDSA and Schnorr over secp256k1) are vulnerable to quantum attacks via Shor's algorithm. Hash-based signature schemes offer post-quantum security relying only on the security of cryptographic hash functions, which are believed to resist quantum attacks apart from Grover's quadratic speedup.
+Current Bitcoin signature schemes (ECDSA\cite{ecdsa} and Schnorr\cite{bip341} over secp256k1) are vulnerable to quantum attacks via Shor's algorithm\cite{shor}. Hash-based signature schemes offer post-quantum security relying only on the security of cryptographic hash functions, which are believed to resist quantum attacks apart from Grover's quadratic speedup.
 
 The key challenges for deploying hash-based signatures in Bitcoin are:
 \begin{enumerate}
@@ -10,8 +10,8 @@ The key challenges for deploying hash-based signatures in Bitcoin are:
 
 SHRINCS addresses these challenges by:
 \begin{itemize}
-    \item Using size-efficient stateful signatures ($\approx 300$ bytes for $q=1$) during normal operation (SHRINCS-B).
-    \item Using verification-efficient stateful signatures ($\approx 50$ hashes for $q=1$) during normal operation (SHRINCS-L).
+    \item Using size-efficient stateful signatures (\textcolor{red}{$\approx 300$}\footnote{Jonas mentions 292 + 16q + 16 here: https://delvingbitcoin.org/t/shrincs-324-byte-stateful-post-quantum-signatures-with-static-backups/2158. But actually that's if we have a 32-byte randomness. If we can have 16-byte randomness (it shouldn't affect security), the statefull signature size to be \texttt{ots\_sig(16*16) + R(16) + ctr(4) + q*16 + slPK(16)} = 292 + 16q bytes} bytes for \texttt{q=1}) during normal operation (SHRINCS-B).
+    \item Using verification-efficient stateful signatures ($\approx 50$ hashes for \texttt{q=1}) during normal operation (SHRINCS-L).
     \item Falling back to stateless signatures ($\approx 3\text{-}4$ KB) when state is lost or corrupted.
     \item Allowing static seed backup while maintaining security guarantees.
 \end{itemize}
