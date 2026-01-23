@@ -28,7 +28,7 @@ Generates a fresh SHRINCS key pair and initializes the signing state.
     15. return (SK, PK, state)
 \end{verbatim}
 
-\subsubsection{Recovery from Seed}
+\subsection{Recovery from Seed}
 Restores keys from a backed-up seed. Since the signing state is unknown, stateful signing is disabled and only stateless signing is available.
 \begin{verbatim}
     Algorithm: SHRINCS.Restore(seed)

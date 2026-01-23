@@ -433,12 +433,12 @@ INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/jknappen/ec/tctt1000.tfm
 INPUT ./content/3-overview.tex
 INPUT ./content/3-overview.tex
 INPUT content/3-overview.tex
-INPUT ./content/img/general.png
-INPUT ./content/img/general.png
-INPUT ./content/img/general.png
-INPUT ./content/img/general.png
-INPUT ./content/img/general.png
 INPUT /usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc
+INPUT ./content/img/general.png
+INPUT ./content/img/general.png
+INPUT ./content/img/general.png
+INPUT ./content/img/general.png
+INPUT ./content/img/general.png
 INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm
 INPUT ./content/4-params.tex
 INPUT ./content/4-params.tex

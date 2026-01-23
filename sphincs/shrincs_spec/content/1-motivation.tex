@@ -10,7 +10,8 @@ The key challenges for deploying hash-based signatures in Bitcoin are:
 
 SHRINCS addresses these challenges by:
 \begin{itemize}
-    \item Using efficient stateful signatures ($\approx 324$ bytes for $q=1$) during normal operation.
+    \item Using size-efficient stateful signatures ($\approx 300$ bytes for $q=1$) during normal operation (SHRINCS-B).
+    \item Using verification-efficient stateful signatures ($\approx 50$ hashes for $q=1$) during normal operation (SHRINCS-L).
     \item Falling back to stateless signatures ($\approx 3\text{-}4$ KB) when state is lost or corrupted.
     \item Allowing static seed backup while maintaining security guarantees.
 \end{itemize}

@@ -30,20 +30,17 @@ where \texttt{ADRS} is a context address (see Section 5.5). \\
 The size of the secret key is \texttt{6n} bytes. A public key consists of two values \texttt{PK ← (PK.seed, PK.root)} and has a size of \texttt{2n} bytes.
 
 \subsection{Signature Size and Verification Cost}
-\subsubsection{Stateful signature size}
+\subsubsection{Stateful}
+SHRINCS-B: 
+\begin{itemize}
+    \item Size: 256 + 16 + 4 + q * 16 = 276 + 16q bytes
+    \item Verification cost: 2042 hashes
+\end{itemize}
+SHRINCS-L: 
+\begin{itemize}
+    \item Size: 1024 + 16 + 4 + q * 16 = 1044 + 16q bytes
+    \item Verification cost: 54 hashes
+\end{itemize}
 
-The WOTS+C component is 292 bytes: randomness (32 bytes) + counter (4 bytes) + chain values (256 bytes). The authentication path for signature \texttt{q} (count after signing) is \texttt{q * n = q * 16} bytes. The stateless public key \texttt{PK.sl} adds 16 bytes.
-\begin{center}
-    \texttt{sig.sf = 292 + q * 16 + 16 = 308 + q * 16} bytes,
-\end{center}
-where \texttt{q} is the signature count after signing:
-\begin{center}
-\begin{tabular}{ c c c}
-    q & Auth path & Total \\
-    \hline
-    1 & 16 bytes & 324 bytes \\
-    2 & 32 bytes & 340 bytes \\
-    3 & 48 bytes & 356 bytes \\
-    10 & 160 bytes & 468 bytes
-\end{tabular}
-\end{center}
+\subsubsection{Stateless}
+\oleks{TODO}

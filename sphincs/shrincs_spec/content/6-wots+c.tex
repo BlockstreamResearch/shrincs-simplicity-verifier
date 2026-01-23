@@ -1,5 +1,5 @@
 \section{WOTS+C}
-The standard Winternitz One-Time Signature (WOTS+) is the building block of most modern hash-based schemes. It works by encoding the message into a series of small integers and using them to iterate hash chains. A significant portion of a WOTS+ signature size (approx 20\%) is dedicated to "Checksum," which is necessary to prevent a forgery attack where an adversary extends the hash chains forward. WOTS+C (compressed WOTS+) eliminates the transmission of this checksum entirely, achieving a smaller signature size. 
+The standard Winternitz One-Time Signature (WOTS+) is the building block of most modern hash-based schemes. It works by encoding the message into a series of small integers and using them to iterate hash chains \cite{wots+}. A significant portion of a WOTS+ signature size (approx 20\%) is dedicated to "Checksum," which is necessary to prevent a forgery attack where an adversary extends the hash chains forward. WOTS+C (compressed WOTS+) eliminates the transmission of this checksum entirely, achieving a smaller signature size. 
 
 In WOTS+, the checksum $C$ is calculated from the message digest $D$.
 
@@ -21,7 +21,6 @@ By enforcing this condition during signing (including grinding), the verifier ca
 
 Additionally we can manipulate a target condition to decrease the cost of signature verification. The signature generation and verification operations together consist of \texttt{St = (w-1)*l} hashing operations. So we can increase \texttt{Swn} (grinding complexity) and receive the reduced verification complexity of \texttt{(St - Swn)} hashes. Concrete parameters are presented in Section~4.
 
-The general algorithm for base-w representation is following:
 \subsection{Base-w Representation}
 WOTS represents a message digest in base \texttt{w} so that each digit is an integer in \texttt{[0...w-1]}. These digits directly determine the number of hashes to apply to each WOTS chain element during signing and verification. The \texttt{base\_w()} function converts a byte string into an array of \texttt{out\_len} base-w digits (this requires \texttt{w} to be a power of two.).
 \begin{verbatim}
@@ -36,7 +35,7 @@ WOTS represents a message digest in base \texttt{w} so that each digit is an int
     2. bits ← 0
     3. total ← 0
     4. b_w ← []
-    5. for i from 0 to out_len - 1:
+    5. for i from 0 to (out_len - 1):
         a. if bits == 0:
             total ← m[in_idx]
             in_idx ← in_idx + 1
@@ -46,7 +45,7 @@ WOTS represents a message digest in base \texttt{w} so that each digit is an int
     6. return b_w
 \end{verbatim} 
 
-But we provide optimized versions for \texttt{w = 256, 4} proposed by this specification. For \texttt{w=256}:
+We provide optimized versions for \texttt{w = 256} and \texttt{w = 4} proposed by different SHRINCS instances. For \texttt{w=256}:
 \begin{verbatim}
     Algorithm: base_w256(m, out_len)
     Input:
@@ -56,22 +55,21 @@ But we provide optimized versions for \texttt{w = 256, 4} proposed by this speci
         b_w: array of out_len integers in [0, 255]
 
     1. b_w ← []
-    2. for i from 0 to out_len - 1:
+    2. for i from 0 to (out_len - 1):
         a. b_w[i] ← m[i]
     3. return b_w
 \end{verbatim}
-
-And for \texttt{w=4}:
+For \texttt{w=4}:
 \begin{verbatim}
     Algorithm: base_w4(m, out_len)
     Input:
         m: byte string
-        out_len: number of base-4 digits
+        out_len: output length
     Output:
         b_w: array of out_len integers in [0,3]
 
     1. b_w ← []
-    2. for j from 0 to (out_len/4) - 1:
+    2. for j from 0 to (out_len/4 - 1):
         a. x ← m[j]
         b. b_w[4*j + 0] ← (x >> 6) AND 3
         c. b_w[4*j + 1] ← (x >> 4) AND 3
@@ -81,12 +79,12 @@ And for \texttt{w=4}:
 \end{verbatim}
 
 \subsection{Chain Function}
-WOTS derives signature components and public key material by iteratively applying the tweakable hash function along a Winternitz chain. The function \texttt{chain(m, start, steps, PK.seed, ADRS)} takes an n-byte input value \texttt{m} and applies \texttt{Tw(PK.seed, ADRS, ·)} exactly \texttt{steps} times, beginning at chain position \texttt{start}. For each iteration, the address field hash inside \texttt{ADRS} is set to the current chain position \texttt{i} (from \texttt{start} to \texttt{start+steps-1}) to ensure domain separation between different chain steps. The output is the resulting n-byte value after advancing the chain by \texttt{steps}, which is used both for producing signature chain values (advancing from 0 to \texttt{msg[i]}) and for reconstructing end-of-chain values during verification (advancing from \texttt{msg[i]} to \texttt{w-1}).
+WOTS derives signature components and public key material by iteratively applying the tweakable hash function along a Winternitz chain. The function \texttt{chain()} takes an n-byte input value \texttt{m} and applies \texttt{Tw(PK.seed, ADRS, ·)} exactly \texttt{steps} times, beginning at chain position \texttt{start}. For each iteration, the address field hash inside \texttt{ADRS} is set to the current chain position \texttt{i} (from \texttt{start} to \texttt{start+steps-1}) to ensure domain separation between different chain steps. The output is the resulting n-byte value after advancing the chain by \texttt{steps}, which is used both for producing signature chain values (advancing from 0 to \texttt{msg[i]}) and for reconstructing end-of-chain values during verification (advancing from \texttt{msg[i]} to \texttt{w-1}).
 \begin{verbatim}
     Algorithm: chain(m, start, steps, PK.seed, ADRS)
     Input:
         m: input
-        start: starting index in chain
+        start: starting index
         steps: number of iterations
         PK.seed: public seed
         ADRS: tweak
@@ -94,23 +92,23 @@ WOTS derives signature components and public key material by iteratively applyin
         n-byte chain output
 
     1. tmp ← m
-    2. for i from start to start + steps - 1:
+    2. for i from start to (start + steps - 1):
         a. setHashAddress(ADRS, i)
         b. tmp ← Tw(PK.seed, ADRS, tmp)
     3. return tmp
 \end{verbatim}
 
 \subsection{Key Generation}
-To create a WOTS public key for a given \texttt{keypair} index, we derive one secret starting value per chain using \texttt{PRF}, then advance each value to the end of its chain with \texttt{chain(..., w-1)}. The resulting array of end-of-chain values is compressed to a fixed-size WOTS public key for that \texttt{keypair}.
+To create a WOTS public key for a given \texttt{keypair} index, we derive one secret starting value per chain using \texttt{PRF}, then advance each value to the end of its chain. The resulting array of end-of-chain values is compressed to a fixed-size WOTS public key for that \texttt{keypair}.
 \begin{verbatim}
     Algorithm: wots_PKgen(SK.seed, PK.seed, ADRS, keypair)
     Input:
         SK.seed: secret seed
         PK.seed: public seed
         ADRS: tweak
-        keypair: keypair index for this WOTS+ instance
+        keypair: keypair index
     Output:
-        pk: compressed WOTS+C public key (n bytes)
+        pk: compressed WOTS+C public key
 
     1. tmp ← []
     2. for i from 0 to l - 1:
@@ -129,13 +127,13 @@ To create a WOTS public key for a given \texttt{keypair} index, we derive one se
 \end{verbatim}
 
 \subsection{Messsage Digest Grinding}
-WOTS+C enforces the checksum/target condition by searching over the counter \texttt{ctr}. The value \texttt{R} (a randomness/nonce input to message hashing) may be fixed and need not be resampled during grinding. The function \texttt{wots\_grind(ADRS, R, PK.seed, PK.root, m)} increments \texttt{ctr} and recomputes the message digest until the derived base-w digits satisfy the target condition. It outputs the found \texttt{ctr} and the corresponding digest (and \texttt{R} is carried in the signature only if verification requires it to recompute the same digest).
+WOTS+C enforces the checksum/target condition by searching over the counter \texttt{ctr}. The value \texttt{R} (a randomness/nonce input to message hashing) may be fixed (deterministic) and need not be resampled during grinding. The function \texttt{wots\_grind()} increments \texttt{ctr} and recomputes the message digest until the derived base-w digits satisfy the target condition. It outputs the found \texttt{ctr} and the corresponding digest (and \texttt{R} is carried in the signature only if verification requires it to recompute the same digest).
 
-\oleks{To consider if we need to mention counter in Section 4.5}
+\oleks{To consider if we need to mention counter in Section 5.4}
 \begin{verbatim}
     Algorithm: wots_grind(m, R, PK.seed, PK.root, ADRS)
     Input:
-        m: message to sign
+        m: message
         R: randomness
         PK.seed: public seed
         PK.root: public key root
@@ -146,10 +144,10 @@ WOTS+C enforces the checksum/target condition by searching over the counter \tex
 
     1. setTypeAndClear(ADRS, H_MSG)
     2. for ctr from 0 to 2^32 - 1:
-        a. digest ← H_msg(ADRS, R, ctr, PK.seed, PK.root, m)
+        a. digest ← H_msg(ADRS, R || ctr, PK.seed, PK.root, m)
         b. msg ← base_w(digest, l)
         c. sum ← 0
-        d. for i from 0 to l - 1:
+        d. for i from 0 to (l - 1):
             sum ← sum + msg[i]
         e. if sum == Swn:
             return (msg, ctr)
@@ -163,7 +161,7 @@ Additionally we need to define a func which allows to calculate the digest witho
     Algorithm: wots_digest(m, R, ctr, PK.seed, PK.root, ADRS)
     Input:
         m: message
-        R: randomness from signature
+        R: randomness
         ctr: counter
         PK.seed: public seed
         PK.root: public key root
@@ -173,7 +171,7 @@ Additionally we need to define a func which allows to calculate the digest witho
         valid: boolean indicating if sum == Swn
 
     1. setTypeAndClear(ADRS, H_MSG)
-    2. digest ← H_msg(ADRS, R, ctr, PK.seed, PK.root, m)
+    2. digest ← H_msg(ADRS, R || ctr, PK.seed, PK.root, m)
     3. msg ← base_w(digest, l)
     4. sum ← 0
     5. for i from 0 to l - 1:
@@ -194,7 +192,7 @@ To sign, WOTS+C instance computes the message digits and then reveals, for each 
         PK.seed: public seed
         PK.root: public key root
         ADRS: tweak
-        keypair: keypair index for this WOTS+ instance
+        keypair: keypair index
     Output:
         sig: WOTS+C signature (R || ctr || chain_values)
 
@@ -202,7 +200,7 @@ To sign, WOTS+C instance computes the message digits and then reveals, for each 
     2. R ← PRF_msg(SK.prf, PK.seed, opt_rand, m)
     3. (msg, ctr) ← wots_grind(m, R, PK.seed, PK.root, ADRS)
     4. sig ← R || toByte(ctr, c)
-    5. for i from 0 to l - 1:
+    5. for i from 0 to (l - 1):
         a. setTypeAndClear(ADRS, PRF)
         b. setKeyPairAddress(ADRS, keypair)
         c. setChainAddress(ADRS, i)
@@ -219,27 +217,27 @@ Verification reconstructs the WOTS+C public key implied by the signature. For ea
 \begin{verbatim}
     Algorithm: wots_pkFromSig(sig, m, PK.seed, PK.root, ADRS, keypair)
     Input:
-        sig: WOTS+C signature vector
+        sig: signature
         m: signed message
         PK.seed: public seed
         PK.root: public key root
         ADRS: tweak
-        keypair: keypair index for this WOTS+ instance
+        keypair: keypair index
     Output:
-        pk: recovered public key (n bytes), or $\bot$ if invalid
+        pk: recovered public key or $\bot$ if invalid
 
-    1. R ← sig[0:R_SIZE]                 
+    1. R ← sig[0:R_SIZE]                 // maybe it makes sense to define sig_parse op
     2. ctr ← sig[R_SIZE:R_SIZE + c]      
     3. chains_start ← R_SIZE + c 
     4. (msg, valid) ← wots_digest(m, R, ctr, PK.seed, PK.root, ADRS)
     5. if not valid:
         return $\bot$
     6. tmp ← []
-    7. for i from 0 to l - 1:
+    7. for i from 0 to (l - 1):
         a. setTypeAndClear(ADRS, SF_WOTS_CHAIN)
         b. setKeyPairAddress(ADRS, keypair)
         c. setChainAddress(ADRS, i)
-        d. sig_i ← sig[chains_start + i*n : chains_start + (i+1)*n]
+        d. sig_i ← sig[chains_start + i * n : chains_start + (i+1)*n]
         e. tmp[i] ← chain(sig_i, msg[i], w - 1 - msg[i], PK.seed, ADRS)
     8. setTypeAndClear(ADRS, SF_TREE)
     9. setKeyPairAddress(ADRS, keypair)
