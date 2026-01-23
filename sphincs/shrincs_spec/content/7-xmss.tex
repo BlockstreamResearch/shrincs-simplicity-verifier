@@ -66,7 +66,7 @@ For a leaf at index \texttt{idx}, the authentication path consists of sibling no
         h_prime: tree height
         idx: leaf index being authenticated
     Output:
-        auth: authentication path (h_prime × n bytes)
+        auth: authentication path (h_prime * n bytes)
 
     1. auth ← []
     2. for h from 0 to h_prime - 1:
@@ -82,7 +82,7 @@ Given a WOTS+C signature and authentication path, this algorithm recovers the XM
     Algorithm: xmss_pkFromSig(wots_sig, auth, m, PK.seed, PK.root, ADRS, h_prime, idx)
     Input:
         wots_sig: WOTS+C signature
-        auth: authentication path (h_prime × n bytes)
+        auth: authentication path (h_prime * n bytes)
         m: signed message 
         PK.seed: public seed
         PK.root: root public key
@@ -101,7 +101,7 @@ Given a WOTS+C signature and authentication path, this algorithm recovers the XM
         b. setKeyPairAddress(ADRS, idx >> (h + 1))
         c. setTreeHeight(ADRS, h + 1)
         d. setTreeIndex(ADRS, idx >> (h + 1))
-        e. auth_node ← auth[h × n : (h + 1) × n]
+        e. auth_node ← auth[h * n : (h + 1) * n]
         f. if (idx >> h) AND 1 == 0:
             node ← Tw(PK.seed, ADRS, node || auth_node)
         g. else:

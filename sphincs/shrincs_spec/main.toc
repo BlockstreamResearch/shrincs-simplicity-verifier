@@ -47,14 +47,16 @@
 \contentsline {subsection}{\numberline {9.8}Signature generation}{20}{subsection.9.8}%
 \contentsline {subsection}{\numberline {9.9}Public Key Recovery}{21}{subsection.9.9}%
 \contentsline {section}{\numberline {10}SHRINCS}{22}{section.10}%
-\contentsline {subsubsection}{\numberline {10.0.1}Key Generation}{22}{subsubsection.10.0.1}%
-\contentsline {subsubsection}{\numberline {10.0.2}Recovery from Seed}{22}{subsubsection.10.0.2}%
-\contentsline {subsection}{\numberline {10.1}Statefull signing}{23}{subsection.10.1}%
-\contentsline {subsection}{\numberline {10.2}Stateless signing}{23}{subsection.10.2}%
-\contentsline {subsection}{\numberline {10.3}Statefull verification}{23}{subsection.10.3}%
-\contentsline {subsection}{\numberline {10.4}Stateless verification}{23}{subsection.10.4}%
-\contentsline {section}{\numberline {11}Data structures}{23}{section.11}%
-\contentsline {subsection}{\numberline {11.1}Secret Key Format}{23}{subsection.11.1}%
-\contentsline {subsection}{\numberline {11.2}Public Key Format}{23}{subsection.11.2}%
-\contentsline {subsection}{\numberline {11.3}Stateful Signature Format}{23}{subsection.11.3}%
-\contentsline {subsection}{\numberline {11.4}Stateless Signature Format}{23}{subsection.11.4}%
+\contentsline {subsection}{\numberline {10.1}Key Generation}{22}{subsection.10.1}%
+\contentsline {subsubsection}{\numberline {10.1.1}Recovery from Seed}{22}{subsubsection.10.1.1}%
+\contentsline {subsection}{\numberline {10.2}Statefull signing}{23}{subsection.10.2}%
+\contentsline {subsection}{\numberline {10.3}Stateless signing}{23}{subsection.10.3}%
+\contentsline {subsection}{\numberline {10.4}Index Parsing}{24}{subsection.10.4}%
+\contentsline {subsection}{\numberline {10.5}Statefull verification}{24}{subsection.10.5}%
+\contentsline {subsection}{\numberline {10.6}Stateless verification}{24}{subsection.10.6}%
+\contentsline {subsection}{\numberline {10.7}Unified Verification}{25}{subsection.10.7}%
+\contentsline {section}{\numberline {11}Data structures}{26}{section.11}%
+\contentsline {subsection}{\numberline {11.1}Secret Key Format}{26}{subsection.11.1}%
+\contentsline {subsection}{\numberline {11.2}Public Key Format}{26}{subsection.11.2}%
+\contentsline {subsection}{\numberline {11.3}Stateful Signature Format}{26}{subsection.11.3}%
+\contentsline {subsection}{\numberline {11.4}Stateless Signature Format}{26}{subsection.11.4}%

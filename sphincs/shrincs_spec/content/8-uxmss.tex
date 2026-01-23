@@ -69,7 +69,7 @@ For signature number \texttt{(1 <= q <= hsf + 1)}, the authentication path conta
         ADRS: address
         q: signature number (1 to hsf + 1)
     Output:
-        auth: authentication path (q × n bytes)
+        auth: authentication path (q * n bytes)
 
     1. auth ← []
     2. setLayerAddress(ADRS, 0)
@@ -94,7 +94,7 @@ Given a WOTS+C signature and authentication path, reconstruct \texttt{PK.sf}.
     Algorithm: uxmss_pkFromSig(wots_sig, auth, m, PK.seed, PK.root, ADRS, q)
     Input:
         wots_sig: WOTS+C signature
-        auth: authentication path (q × n bytes)
+        auth: authentication path (q * n bytes)
         m: signed message
         PK.seed: public seed
         PK.root: root public key
