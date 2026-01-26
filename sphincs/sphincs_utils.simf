@@ -1,9 +1,8 @@
 #ifndef SPHINCS_UTILS
 #define SPHINCS_UTILS
 
-fn add_compressed_adrs_to_ctx8(ctx: Ctx8, adrs: u256) -> Ctx8 {
-    let ((((_, _, _, layer_adrs), _), tree_adrs), (((_, _, _, adrs_type), other1), other2)): 
-    ((((u8, u8, u8, u8), u32), u64), (((u8, u8, u8, u8), u32), u64)) = <u256>::into(adrs);
+fn add_compressed_adrs_to_ctx8(ctx: Ctx8, layer_adrs: u32, tree_adrs: u64, adrs_type: u8, other1: u32, other2: u64) -> Ctx8 {
+    let (_, (_, layer_adrs)): (u16, (u8, u8)) = <u32>::into(layer_adrs);
 
     let ctx: Ctx8 = jet::sha_256_ctx_8_add_1(ctx, layer_adrs);
     let ctx: Ctx8 = jet::sha_256_ctx_8_add_8(ctx, tree_adrs);

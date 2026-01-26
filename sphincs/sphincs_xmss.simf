@@ -4,7 +4,7 @@
 #include "sphincs_wots_tw.simf"
 #include "../templates/merkle_root_template.simf"
 
-type SPHINCSMerklePath = [u128; 9];
+type SPHINCSMerklePath = [u128; 12];
 // (WOTSSign, MerklePath)
 type XMSSSignature = (SPHINCSWOTSTWSignature, SPHINCSMerklePath);
 
@@ -20,14 +20,12 @@ fn sphincs_hash_u128_array_iter(el: u128, ctx: Ctx8) -> Ctx8 {
 }
 
 fn sphincs_hash_leaf_xmss(public_key: SPHINCSWOTSTWKey, ctx: (u32, Ctx8, u32, u32, u64)) -> (u128, (u32, Ctx8, u32, u32, u64)) {
-    let (message_key, checksum_key): SPHINCSWOTSTWKey = public_key;
+    let message_key: SPHINCSWOTSTWKey = public_key;
     let (key_index, hash_ctx, layer_adrs, tree_adrs_1, tree_adrs_2): (u32, Ctx8, u32, u32, u64) = ctx;
-    let address: u256 = <(((u32, u32), u64), ((u32, u32), u64))>::into((((layer_adrs, tree_adrs_1), tree_adrs_2), ((1, key_index), 0)));
 
     let hash: Ctx8 = hash_ctx;
-    let hash: Ctx8 = add_compressed_adrs_to_ctx8(hash, address);
-    let hash: Ctx8 = array_fold::<sphincs_hash_u128_array_iter, 32>(message_key, hash);
-    let hash: Ctx8 = array_fold::<sphincs_hash_u128_array_iter, 3>(checksum_key, hash);
+    let hash: Ctx8 = add_compressed_adrs_to_ctx8(hash, layer_adrs, tree_adrs_2, 1, key_index, 0);
+    let hash: Ctx8 = array_fold::<sphincs_hash_u128_array_iter, 64>(message_key, hash);
     let (leaf, _): (u128, u128) = <u256>::into(jet::sha_256_ctx_8_finalize(hash));
 
     let (_, new_key_idx): (bool, u32) = jet::add_32(key_index, 1);
@@ -36,10 +34,9 @@ fn sphincs_hash_leaf_xmss(public_key: SPHINCSWOTSTWKey, ctx: (u32, Ctx8, u32, u3
 
 fn sphincs_hash_node_xmss(left: u128, right: u128, ctx: (u32, u32, Ctx8, u32, u32, u64)) -> ([u128; 1], (u32, u32, Ctx8, u32, u32, u64)) {
     let (height, node_idx, hash_ctx, layer_adrs, tree_adrs_1, tree_adrs_2): (u32, u32, Ctx8, u32, u32, u64) = ctx;
-    let address: u256 = <(((u32, u32), u64), (u32, u32, u32, u32))>::into((((layer_adrs, tree_adrs_1), tree_adrs_2), (2, 0, height, node_idx)));
 
     let hash: Ctx8 = hash_ctx;
-    let hash: Ctx8 = add_compressed_adrs_to_ctx8(hash, address);
+    let hash: Ctx8 = add_compressed_adrs_to_ctx8(hash, layer_adrs, tree_adrs_2, 2, 0, <(u32, u32)>::into((height, node_idx)));
     let hash: Ctx8 = jet::sha_256_ctx_8_add_16(hash, left);
     let hash: Ctx8 = jet::sha_256_ctx_8_add_16(hash, right);
     let (node, _): (u128, u128) = <u256>::into(jet::sha_256_ctx_8_finalize(hash));
@@ -51,25 +48,31 @@ fn sphincs_hash_node_xmss(left: u128, right: u128, ctx: (u32, u32, Ctx8, u32, u3
 fn sphincs_xmss_root_from_path_iter(el: u128, ctx: (u128, u32, u32, Ctx8, u32, u32, u64)) -> (u128, u32, u32, Ctx8, u32, u32, u64) {
     let (current_hash, height, key_idx, hash_ctx, layer_adrs, tree_adrs_1, tree_adrs_2): (u128, u32, u32, Ctx8, u32, u32, u64) = ctx;
 
-    let is_even: bool = jet::eq_32(jet::modulo_32(key_idx, 2), 0);
-    let (left, right): (u128, u128) = match is_even {
+    let (new_key_idx, rem): (u32, u32) = jet::div_mod_32(key_idx, 2);
+    let (left, right): (u128, u128) = match jet::eq_32(rem, 0) {
         true => (current_hash, el),
         false => (el, current_hash),
     };
 
-    let new_key_idx: u32 = jet::divide_32(key_idx, 2);
     let ([current_hash], _): ([u128; 1], (u32, u32, Ctx8, u32, u32, u64)) = sphincs_hash_node_xmss(left, right, (height, new_key_idx, hash_ctx, layer_adrs, tree_adrs_1, tree_adrs_2));
     let (_, new_height): (bool, u32) = jet::add_32(height, 1);
     (current_hash, new_height, new_key_idx, hash_ctx, layer_adrs, tree_adrs_1, tree_adrs_2)
 }
 
 fn sphincs_get_xmss_pub_key(signature: XMSSSignature, message: u128, key_index: u32, hash_ctx: Ctx8, layer_adrs: u32, tree_adrs_1: u32, tree_adrs_2: u64) -> u128 {
-    let ((message_signature, checksum_signature), merkle_path): XMSSSignature = signature;
-    let (pk, (_, _, checksum, _, _, _, _, _)): ([u128; 32], (u128, u32, u16, u32, Ctx8, u32, u32, u64)) = sphincs_restore_wots_tw_signature_map_arr_32(message_signature, (message, 0, 0, key_index, hash_ctx, layer_adrs, tree_adrs_1, tree_adrs_2));
-    let checksum: [u128; 3] = sphincs_restore_wots_tw_checksum(checksum_signature, checksum, key_index, hash_ctx, layer_adrs, tree_adrs_1, tree_adrs_2);
-    let public_key: SPHINCSWOTSTWKey = (pk, checksum);
-    let (leaf_hash, _): (u128, (u32, Ctx8, u32, u32, u64)) = sphincs_hash_leaf_xmss(public_key, (key_index, hash_ctx, layer_adrs, tree_adrs_1, tree_adrs_2));
-    let (merkle_root, _, _, _, _, _, _): (u128, u32, u32, Ctx8, u32, u32, u64) = array_fold::<sphincs_xmss_root_from_path_iter, 9>(merkle_path, (leaf_hash, 1, key_index, hash_ctx, layer_adrs, tree_adrs_1, tree_adrs_2));
+    let (signature, merkle_path): XMSSSignature = signature;
+    let (counter, message_signature): SPHINCSWOTSTWSignature = signature;
+
+    let hash: Ctx8 = jet::sha_256_ctx_8_init();
+    let hash: Ctx8 = jet::sha_256_ctx_8_add_4(hash, counter);
+    let hash: Ctx8 = jet::sha_256_ctx_8_add_16(hash, message);
+    let (message, _): (u128, u128) = <u256>::into(jet::sha_256_ctx_8_finalize(hash));
+
+    let (pk, (_, _, checksum, _, _, _, _, _)): ([u128; 64], (u128, u32, u8, u32, Ctx8, u32, u32, u64)) = sphincs_restore_wots_tw_signature_map_arr_64(message_signature, (message, 0, 0, key_index, hash_ctx, layer_adrs, tree_adrs_1, tree_adrs_2));
+    // assert!(jet::eq_16(checksum, 96));
+
+    let (leaf_hash, _): (u128, (u32, Ctx8, u32, u32, u64)) = sphincs_hash_leaf_xmss(pk, (key_index, hash_ctx, layer_adrs, tree_adrs_1, tree_adrs_2));
+    let (merkle_root, _, _, _, _, _, _): (u128, u32, u32, Ctx8, u32, u32, u64) = array_fold::<sphincs_xmss_root_from_path_iter, 12>(merkle_path, (leaf_hash, 1, key_index, hash_ctx, layer_adrs, tree_adrs_1, tree_adrs_2));
 
     merkle_root
 }

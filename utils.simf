@@ -34,6 +34,35 @@ fn right_shift_256(value: u256, shift: u8) -> u256 {
     <(u64, u64, u64, u64)>::into((new_a, new_b, new_c, new_d))
 }
 
+fn right_shift_128(value: u128, shift: u8) -> u128 {
+    let (a, b, c, d): (u32, u32, u32, u32) = <u128>::into(value);
+    
+    let (a, b, c, d): (u32, u32, u32, u32) = match jet::lt_8(shift, 32) {
+        true => (a, b, c, d),
+        false => {
+            match jet::lt_8(shift, 64) {
+                true => (0, a, b, c),
+                false => {
+                    match jet::lt_8(shift, 96) {
+                        true => (0, 0, a, b),
+                        false => (0, 0, 0, a),
+                    }
+                }
+            }
+        }
+    };
+
+    let shift: u8 = jet::modulo_8(shift, 32);
+    let (_, left_shift): (bool, u8) = jet::subtract_8(32, shift);
+
+    let new_d: u32 = jet::or_32(jet::left_shift_32(left_shift, c), jet::right_shift_32(shift, d));
+    let new_c: u32 = jet::or_32(jet::left_shift_32(left_shift, b), jet::right_shift_32(shift, c));
+    let new_b: u32 = jet::or_32(jet::left_shift_32(left_shift, a), jet::right_shift_32(shift, b));
+    let new_a: u32 = jet::right_shift_32(shift, a);
+
+    <(u32, u32, u32, u32)>::into((new_a, new_b, new_c, new_d))
+}
+
 fn get_bit_at(value: u256, possition: u8) -> u1 {
     let (a, b, c, d): (u64, u64, u64, u64) = <u256>::into(value);
 
@@ -107,14 +136,14 @@ fn get_byte_at_128(value: u128, possition: u8) -> u8 {
     let (a, b, c, d): (u32, u32, u32, u32) = <u128>::into(value);
 
     let part: u32 = match jet::lt_8(possition, 4) {
-        true => d,
+        true => a,
         false => {
             match jet::lt_8(possition, 8) {
-                true => c,
+                true => b,
                 false => {
                     match jet::lt_8(possition, 12) {
-                        true => b,
-                        false => a,
+                        true => c,
+                        false => d,
                     }
                 },
             }
@@ -125,14 +154,14 @@ fn get_byte_at_128(value: u128, possition: u8) -> u8 {
     let (a, b, c, d): (u8, u8, u8, u8) = <u32>::into(part);
 
     match jet::eq_8(possition, 0) {
-        true => d,
+        true => a,
         false => {
             match jet::eq_8(possition, 1) {
-                true => c,
+                true => b,
                 false => {
                     match jet::eq_8(possition, 2) {
-                        true => b,
-                        false => a,
+                        true => c,
+                        false => d,
                     }
                 },
             }

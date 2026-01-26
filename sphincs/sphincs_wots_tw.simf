@@ -1,4 +1,4 @@
-// Winternitz parameter w = 16
+// Winternitz parameter w = 4
 #ifndef SPHINCS_WOTS_TW_SIGNATURE
 #define SPHINCS_WOTS_TW_SIGNATURE
 
@@ -7,64 +7,64 @@
 #include "../utils.simf"
 #include "sphincs_utils.simf"
 
-type SPHINCSWOTSTWKey = ([u128; 32], [u128; 3]);
-type SPHINCSWOTSTWSignature = ([u128; 32], [u128; 3]);
+type SPHINCSWOTSTWKey = [u128; 64];
+type SPHINCSWOTSTWSignature = (u32, [u128; 64]);
 // Represent signature proof as (message_hash, signature, public_key, key_index, public_parameter)
 type SPHINCSWOTSTWSignProof = (u128, SPHINCSWOTSTWSignature, SPHINCSWOTSTWKey, u32, u128);
 
 fn sphincs_wots_tw_hash_n_times_iter(key_hash: u128, ctx: (u8, u32, u32, Ctx8, u8, u32, u32, u64), counter: u8) -> Either<u128, u128> {
     let (n, chain_idx, key_index, hash_ctx, from_idx, layer_adrs, tree_adrs_1, tree_adrs_2): (u8, u32, u32, Ctx8, u8, u32, u32, u64) = ctx;
     let (_, hashed_times): (bool, u8) = jet::add_8(counter, from_idx);
-    let hashed_times: u32 = <(u16, (u8, u8))>::into((0, (0, hashed_times)));
-    let adrs: u256 = <(((u32, u32), u64), (u32, u32, u32, u32))>::into((((layer_adrs, tree_adrs_1), tree_adrs_2), (0, key_index, chain_idx, hashed_times)));
+
     match jet::eq_8(counter, n) {
         true => Left(key_hash),
         false => {
             let hash: Ctx8 = hash_ctx;
-            let hash: Ctx8 = add_compressed_adrs_to_ctx8(hash, adrs);
+            let hash: Ctx8 = add_compressed_adrs_to_ctx8(hash, layer_adrs, tree_adrs_2, 0, key_index, <(u32, u32)>::into((chain_idx, <(u16, (u8, u8))>::into((0, (0, hashed_times))))));
             let hash: Ctx8 = jet::sha_256_ctx_8_add_16(hash, key_hash);
-            let hash: u256 = jet::sha_256_ctx_8_finalize(hash);
 
-            let (hash, _): (u128, u128) = <u256>::into(hash);
+            let (hash, _): (u128, u128) = <u256>::into(jet::sha_256_ctx_8_finalize(hash));
             Right(hash)
         }
     }
 }
 
-fn sphincs_restore_wots_tw_checksum(checksum_signature: [u128; 3], checksum: u16, key_idx: u32, hash_ctx: Ctx8, layer_adrs: u32, tree_adrs_1: u32, tree_adrs_2: u64) -> [u128; 3] {
-    let (_, cn1, cn2, cn3): (u4, u4, u4, u4) = <u16>::into(checksum);
-    let [sig1, sig2, sig3]: [u128; 3] = checksum_signature;
-
-    let (_, n1): (bool, u8) = jet::subtract_8(15, <(u4, u4)>::into((0, cn1)));
-    let (_, n2): (bool, u8) = jet::subtract_8(15, <(u4, u4)>::into((0, cn2)));
-    let (_, n3): (bool, u8) = jet::subtract_8(15, <(u4, u4)>::into((0, cn3)));
-
-    let verify_part1: Either<u128, u128> = for_while::<sphincs_wots_tw_hash_n_times_iter>(sig1, (n1, 32, key_idx, hash_ctx, <(u4, u4)>::into((0, cn1)), layer_adrs, tree_adrs_1, tree_adrs_2));
-    let verify_part2: Either<u128, u128> = for_while::<sphincs_wots_tw_hash_n_times_iter>(sig2, (n2, 33, key_idx, hash_ctx, <(u4, u4)>::into((0, cn2)), layer_adrs, tree_adrs_1, tree_adrs_2));
-    let verify_part3: Either<u128, u128> = for_while::<sphincs_wots_tw_hash_n_times_iter>(sig3, (n3, 34, key_idx, hash_ctx, <(u4, u4)>::into((0, cn3)), layer_adrs, tree_adrs_1, tree_adrs_2));
-
-    [unwrap_left::<u128>(verify_part1), unwrap_left::<u128>(verify_part2), unwrap_left::<u128>(verify_part3)]
-}
-
 fn sphincs_get_wots_tw_pub_key(el: u128, ctx: (u32, u32, Ctx8, u32, u32, u64)) -> (u128, (u32, u32, Ctx8, u32, u32, u64)) {
     let (chain_idx, key_idx, hash_ctx, layer_adrs, tree_adrs_1, tree_adrs_2): (u32, u32, Ctx8, u32, u32, u64) = ctx;
-    let pk: Either<u128, u128> = for_while::<sphincs_wots_tw_hash_n_times_iter>(el, (15, chain_idx, key_idx, hash_ctx, 0, layer_adrs, tree_adrs_1, tree_adrs_2));
+    let pk: Either<u128, u128> = for_while::<sphincs_wots_tw_hash_n_times_iter>(el, (3, chain_idx, key_idx, hash_ctx, 0, layer_adrs, tree_adrs_1, tree_adrs_2));
 
     let (_, new_chain_idx): (bool, u32) = jet::add_32(chain_idx, 1);
     (unwrap_left::<u128>(pk), (new_chain_idx, key_idx, hash_ctx, layer_adrs, tree_adrs_1, tree_adrs_2))
 }
 
-fn sphincs_restore_wots_tw_signature(el: u128, ctx: (u128, u32, u16, u32, Ctx8, u32, u32, u64)) -> (u128, (u128, u32, u16, u32, Ctx8, u32, u32, u64)) {
-    let (message_hash, idx, checksum, key_idx, hash_ctx, layer_adrs, tree_adrs_1, tree_adrs_2): (u128, u32, u16, u32, Ctx8, u32, u32, u64) = ctx;
+fn sphincs_restore_wots_tw_signature(el: u128, ctx: (u128, u32, u8, u32, Ctx8, u32, u32, u64)) -> (u128, (u128, u32, u8, u32, Ctx8, u32, u32, u64)) {
+    let (message_hash, idx, checksum, key_idx, hash_ctx, layer_adrs, tree_adrs_1, tree_adrs_2): (u128, u32, u8, u32, Ctx8, u32, u32, u64) = ctx;
     let (_, (_, idx_)): (u16, (u8, u8)) = <u32>::into(idx);
-    let (_, byte_idx): (bool, u8) = jet::subtract_8(15, jet::divide_8(idx_, 2));
+    let byte_idx: u8 = jet::divide_8(idx_, 4);
     let n: u8 = get_byte_at_128(message_hash, byte_idx);
-    let n: u8 = match jet::eq_8(jet::modulo_8(idx_, 2), 0) {
-        true => jet::right_shift_8(4, n),
-        false => jet::and_8(n, 0x0F),
+
+    let (n1, n2, n3, n4): (u2, u2, u2, u2) = <u8>::into(n);
+    let idx_mod: u8 = jet::modulo_8(idx_, 4);
+
+    let n: u2 = match jet::eq_8(idx_mod, 0) {
+        true => n1,
+        false => {
+            match jet::eq_8(idx_mod, 1) {
+                true => n2,
+                false => {
+                    match jet::eq_8(idx_mod, 2) {
+                        true => n3,
+                        false => n4,
+                    }
+                }
+            }
+        }
     };
-    let (_, s_n): (bool, u8) = jet::subtract_8(15, n);
-    let (_, checksum): (bool, u16) = jet::add_16(checksum, <(u8, u8)>::into((0, s_n)));
+
+    let n: u8 = <(u4, (u2, u2))>::into((0, (0, n)));
+
+    let (_, s_n): (bool, u8) = jet::subtract_8(3, n);
+    let (_, checksum): (bool, u8) = jet::add_8(checksum, s_n);
 
     let verify_part: Either<u128, u128> = for_while::<sphincs_wots_tw_hash_n_times_iter>(el, (s_n, idx, key_idx, hash_ctx, n, layer_adrs, tree_adrs_1, tree_adrs_2));
 
@@ -79,13 +79,16 @@ DEFINE_MAP_ARR(u128, u128, (u32, u32, Ctx8, u32, u32, u64), sphincs_get_wots_tw_
 DEFINE_MAP_ARR(u128, u128, (u32, u32, Ctx8, u32, u32, u64), sphincs_get_wots_tw_pub_key, 8, 4)
 DEFINE_MAP_ARR(u128, u128, (u32, u32, Ctx8, u32, u32, u64), sphincs_get_wots_tw_pub_key, 16, 8)
 DEFINE_MAP_ARR(u128, u128, (u32, u32, Ctx8, u32, u32, u64), sphincs_get_wots_tw_pub_key, 32, 16)
+DEFINE_MAP_ARR(u128, u128, (u32, u32, Ctx8, u32, u32, u64), sphincs_get_wots_tw_pub_key, 64, 32)
 
-DEFINE_MAP_ARR_1(u128, u128, (u128, u32, u16, u32, Ctx8, u32, u32, u64), sphincs_restore_wots_tw_signature)
-DEFINE_MAP_ARR(u128, u128, (u128, u32, u16, u32, Ctx8, u32, u32, u64), sphincs_restore_wots_tw_signature, 2, 1)
-DEFINE_MAP_ARR(u128, u128, (u128, u32, u16, u32, Ctx8, u32, u32, u64), sphincs_restore_wots_tw_signature, 4, 2)
-DEFINE_MAP_ARR(u128, u128, (u128, u32, u16, u32, Ctx8, u32, u32, u64), sphincs_restore_wots_tw_signature, 8, 4)
-DEFINE_MAP_ARR(u128, u128, (u128, u32, u16, u32, Ctx8, u32, u32, u64), sphincs_restore_wots_tw_signature, 16, 8)
-DEFINE_MAP_ARR(u128, u128, (u128, u32, u16, u32, Ctx8, u32, u32, u64), sphincs_restore_wots_tw_signature, 32, 16)
+DEFINE_MAP_ARR_1(u128, u128, (u128, u32, u8, u32, Ctx8, u32, u32, u64), sphincs_restore_wots_tw_signature)
+DEFINE_MAP_ARR(u128, u128, (u128, u32, u8, u32, Ctx8, u32, u32, u64), sphincs_restore_wots_tw_signature, 2, 1)
+DEFINE_MAP_ARR(u128, u128, (u128, u32, u8, u32, Ctx8, u32, u32, u64), sphincs_restore_wots_tw_signature, 4, 2)
+DEFINE_MAP_ARR(u128, u128, (u128, u32, u8, u32, Ctx8, u32, u32, u64), sphincs_restore_wots_tw_signature, 8, 4)
+DEFINE_MAP_ARR(u128, u128, (u128, u32, u8, u32, Ctx8, u32, u32, u64), sphincs_restore_wots_tw_signature, 16, 8)
+DEFINE_MAP_ARR(u128, u128, (u128, u32, u8, u32, Ctx8, u32, u32, u64), sphincs_restore_wots_tw_signature, 32, 16)
+DEFINE_MAP_ARR(u128, u128, (u128, u32, u8, u32, Ctx8, u32, u32, u64), sphincs_restore_wots_tw_signature, 64, 32)
+
 
 DEFINE_ASSERT_EQ_ARR_1(u128, u128, eq_128, sphincs_wots_tw)
 DEFINE_ASSERT_EQ_ARR(u128, u128, eq_128, 2, 1, sphincs_wots_tw)
@@ -93,18 +96,13 @@ DEFINE_ASSERT_EQ_ARR(u128, u128, eq_128, 4, 2, sphincs_wots_tw)
 DEFINE_ASSERT_EQ_ARR(u128, u128, eq_128, 8, 4, sphincs_wots_tw)
 DEFINE_ASSERT_EQ_ARR(u128, u128, eq_128, 16, 8, sphincs_wots_tw)
 DEFINE_ASSERT_EQ_ARR(u128, u128, eq_128, 32, 16, sphincs_wots_tw)
+DEFINE_ASSERT_EQ_ARR(u128, u128, eq_128, 64, 32, sphincs_wots_tw)
 
 fn sphincs_get_wots_tw_public_key(private_key: SPHINCSWOTSTWKey, key_idx: u32, hash_ctx: Ctx8, layer_adrs: u32, tree_adrs_1: u32, tree_adrs_2: u64) -> SPHINCSWOTSTWKey {
-    let (private_key, checksum_key): SPHINCSWOTSTWKey = private_key;
-    let (pk, _): ([u128; 32], (u32, u32, Ctx8, u32, u32, u64)) = sphincs_get_wots_tw_pub_key_map_arr_32(private_key, (0, key_idx, hash_ctx, layer_adrs, tree_adrs_1, tree_adrs_2));
+    let private_key: SPHINCSWOTSTWKey = private_key;
+    let (pk, _): ([u128; 64], (u32, u32, Ctx8, u32, u32, u64)) = sphincs_get_wots_tw_pub_key_map_arr_64(private_key, (0, key_idx, hash_ctx, layer_adrs, tree_adrs_1, tree_adrs_2));
 
-    let [chk1, chk2, chk3]: [u128; 3] = checksum_key;
-
-    let checksum_pk_1: Either<u128, u128> = for_while::<sphincs_wots_tw_hash_n_times_iter>(chk1, (15, 32, key_idx, hash_ctx, 0, layer_adrs, tree_adrs_1, tree_adrs_2));
-    let checksum_pk_2: Either<u128, u128> = for_while::<sphincs_wots_tw_hash_n_times_iter>(chk2, (15, 33, key_idx, hash_ctx, 0, layer_adrs, tree_adrs_1, tree_adrs_2));
-    let checksum_pk_3: Either<u128, u128> = for_while::<sphincs_wots_tw_hash_n_times_iter>(chk3, (15, 34, key_idx, hash_ctx, 0, layer_adrs, tree_adrs_1, tree_adrs_2));
-
-    (pk, [unwrap_left::<u128>(checksum_pk_1), unwrap_left::<u128>(checksum_pk_2), unwrap_left::<u128>(checksum_pk_3)])
+    pk
 }
 
 // fn sphincs_wots_tw_verify(proof: SPHINCSWOTSTWSignProof, layer_adrs: u32, tree_adrs_1: u32, tree_adrs_2: u64) {
