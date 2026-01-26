@@ -1,0 +1,100 @@
+\documentclass[10pt, a4paper]{article}
+
+\usepackage{fullpage}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{hyperref}
+\usepackage{amsmath,amsfonts,amsthm}
+\usepackage{mathtools}
+\usepackage{mdframed}
+\usepackage{appendix}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usepackage{circuitikz}
+    \usetikzlibrary{positioning,arrows.meta,calc}
+
+\usepackage[
+    backend=biber,
+    style=alphabetic,
+    sorting=nyt
+]{biblatex}
+
+\addbibresource{references.bib}
+
+\usepackage[most]{tcolorbox}
+\tcbset{
+  myframe/.style={
+    enhanced,
+    breakable,
+    colback={gray!2},   
+    colframe=black,     
+    arc=2pt,
+    fonttitle=\small\bfseries, % smaller title
+    fontupper=\normalsize,      % normal text
+    boxrule=0.4pt, 
+    coltitle=black,       
+    colbacktitle={gray},   
+    colframe=black,       
+  }
+}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}{Definition}[section]
+
+% Select your own color for comments
+\definecolor{darkgreen}{RGB}{0,100,0}
+\newcommand{\oleks}[1]{{\color{darkgreen} \textbf{Oleks:} {#1}}}
+
+\title{SHRINCS specification}
+\author{Blockstream Research}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+  This document specifies \textbf{SHRINCS} (Stateful Hash-based Robust Integrated NIST-Compatible Signatures), a post-quantum signature scheme optimized for Bitcoin. SHRINCS combines efficient stateful hash-based signatures (unbalanced XMSS with WOTS+C) for normal operation with a stateless fallback (SPHINCS+ variant) for scenarios when state management failed. The scheme achieves minimal \textcolor{red}{324}-byte signatures during normal stateful operation while maintaining the robustness of stateless signatures as a backup when state is corrupted or lost.
+\end{abstract}
+
+\tableofcontents
+
+\newpage
+
+% --- Section 1: Motivation ---
+\input{content/1-motivation.tex}
+
+% --- Section 2: Notation ---
+\input{content/2-notation.tex}
+
+% --- Section 3: Overview ---
+\input{content/3-overview.tex}
+
+% --- Section 4: Params ---
+\input{content/4-params.tex}
+
+% --- Section 5: Functions and Addresses ---
+\input{content/5-functions-and-addresses.tex}
+
+% --- Section 6: WOTS+C ---
+\input{content/6-wots+c.tex}
+
+% --- Section 7: XMSS ---
+\input{content/7-xmss.tex}
+
+% --- Section 8: UXMSS ---
+\input{content/8-uxmss.tex}
+
+% --- Section 9: FORS+C ---
+\input{content/9-fors.tex}
+
+% --- Section 10: SHRINCS ---
+\input{content/10-shrincs.tex}
+
+\printbibliography{}
+
+\appendix
+
+\end{document}

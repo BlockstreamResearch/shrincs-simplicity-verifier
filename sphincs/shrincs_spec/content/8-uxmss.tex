@@ -1,0 +1,151 @@
+\section{UXMSS. The Stateful Tree}
+Standard XMSS uses a balanced binary tree, which minimizes the maximum path length but imposes a logarithmic cost on every signature. For \texttt{N} signatures, every signature has size proportional to \texttt{log\_2(N)}. SHRINCS utilizes an Unbalanced Merkle Tree (specifically a "Right-Skewed" tree) to optimize for the typical Bitcoin use case: a wallet that performs very few transactions in its lifecycle (we are targeting \texttt{N<=10}).
+
+In this topology the \texttt{q}-th signature requires a path of length \texttt{q}. This linear growth is superior to logarithmic growth for small \texttt{q}. For \texttt{q=1}, the path is just 16 bytes. Even for \texttt{q=10}, the path is $10 \times 16 = 160$ bytes, which is extremely small compared to the fixed $\approx 2.5$KB of a balanced tree or the $\approx 8$KB of SLH-DSA.
+
+\subsection{UXMSS Tree Structure}
+\oleks{I hope it's not confusing we have layers numeration different for stateless and statefull instance} \\
+The UXMSS tree is constructed recursively as follows:
+\begin{itemize}
+    \item Level 0 is the root public key \texttt{PK.sf}.
+    \item Level \texttt{i} (internal):
+    \begin{itemize}
+        \item  Left child: WOTS+C public key for signature \texttt{q=i}
+        \item  Right child: Root of subtree for signatures \texttt{q>i}
+    \end{itemize}
+    \item Level \texttt{hsf} (bottom)
+    \begin{itemize}
+        \item Left child: WOTS+C public key for signature \texttt{q=hsf}
+        \item Right child: WOTS+C public key for signature \texttt{q=hsf+1}
+    \end{itemize}
+\end{itemize}
+
+\subsection{UXMSS TreeHash}
+The \texttt{uxmss\_treehash} function computes subtree roots within the right-skewed UXMSS tree. Unlike balanced XMSS where treehash recursively computes both subtrees symmetrically, UXMSS treehash follows the right-skewed structure: the left child is always a WOTS+C public key (a leaf), while the right child is either another UXMSS subtree (for internal levels) or a second WOTS+C public key (at the bottom level). The level parameter indicates depth from the root, with level 0 being the root and level \texttt{hsf-1} being the bottom internal node.
+\begin{verbatim}
+    Algorithm: uxmss_treehash(SK.seed, PK.seed, ADRS, level)
+    Input:
+        SK.seed: secret seed
+        PK.seed: public seed
+        ADRS: address (layer=0, tree_address=0)
+        level: level in tree (0 = root, hsf-1 = bottom internal node)
+    Output:
+        node: hash value (n bytes)
+
+    1. left ← wots_PKgen(SK.seed, PK.seed, ADRS, level + 1)
+
+    2. if level == hsf - 1:
+            right ← wots_PKgen(SK.seed, PK.seed, ADRS, hsf + 1)
+       else:
+            right ← uxmss_treehash(SK.seed, PK.seed, ADRS, level + 1)
+    3. setTypeAndClear(ADRS, SF_TREE)
+    4. setTreeHeight(ADRS, hsf - level)
+    5. setTreeIndex(ADRS, 0)
+    6. return Tw(PK.seed, ADRS, left || right)
+\end{verbatim}
+
+\subsection{UXMSS Root Computation}
+The \texttt{uxmss\_root} function computes \texttt{PK.sf}, the root of the stateful UXMSS tree. It initializes the address structure with layer 0 and tree address 0 (since there is only one stateful tree), then invokes \texttt{uxmss\_treehash} starting from level 0. The resulting root, combined with \texttt{PK.sl} from the stateless tree, forms the basis for \texttt{PK.root}.
+\begin{verbatim}
+    Algorithm: uxmss_root(SK.seed, PK.seed, ADRS)
+    Input:
+        SK.seed: secret seed
+        PK.seed: public seed
+        ADRS: address
+    Output:
+        PK.sf: stateful public key (n bytes)
+
+    1. setLayerAddress(ADRS, 0)
+    2. setTreeAddress(ADRS, 0)
+    3. return uxmss_treehash(SK.seed, PK.seed, ADRS, 0)
+\end{verbatim}
+
+\subsection{UXMSS Authentication Path Generation}
+For signature number \texttt{1 <= q <= hsf + 1}, the authentication path contains exactly \texttt{q} sibling nodes needed to reconstruct \texttt{PK.sf} from the WOTS+C public key at position \texttt{q}. The structure of the path differs based on whether \texttt{q <= hsf} or \texttt{q = hsf + 1}. For \texttt{q <= hsf}, the first sibling is either a subtree root (if \texttt{q < hsf}) or the rightmost WOTS+C key (if \texttt{q = hsf}), followed by q-1 WOTS+C public keys ascending toward the root. For \texttt{q = hsf + 1} (the rightmost leaf), all hsf siblings are WOTS+C public keys. This asymmetric structure reflects the right-skewed nature of UXMSS.
+
+\begin{verbatim}
+    Algorithm: uxmss_auth_path(SK.seed, PK.seed, ADRS, q)
+    Input:
+        SK.seed, PK.seed: seeds
+        ADRS: address
+        q: signature number (1 to hsf + 1)
+    Output:
+        auth: authentication path (q * n bytes)
+
+    1. auth ← []
+    2. setLayerAddress(ADRS, 0)
+    3. setTreeAddress(ADRS, 0)
+    4. if q <= hsf:
+            if q == hsf:
+                auth ← auth || wots_PKgen(SK.seed, PK.seed, ADRS, hsf + 1)
+            else:
+                auth ← auth || uxmss_treehash(SK.seed, PK.seed, ADRS, q)  
+            for i from 1 to q - 1:
+                auth ← auth || wots_PKgen(SK.seed, PK.seed, ADRS, q - i)
+    5. else:  
+            for i from 0 to hsf - 1:
+                auth ← auth || wots_PKgen(SK.seed, PK.seed, ADRS, hsf - i)
+6. return auth
+\end{verbatim}
+
+\subsection{UXMSS Public Key Recovery from Signature}
+Given a WOTS+C signature and authentication path, this algorithm reconstructs \texttt{PK.sf}. First, it recovers the WOTS+C public key from the signature. Then, starting from this leaf, it iteratively combines the current node with authentication path nodes to compute parent nodes until reaching the root. The combination order depends on the position q: for \texttt{q <= hsf}, the first combination has the recovered key on the left and the subtree/sibling on the right, while subsequent combinations have the sibling (a WOTS+C key from a lower q value) on the left. For \texttt{q = hsf + 1}, all siblings are on the left since this is the rightmost path through the tree.
+
+\begin{verbatim}
+    Algorithm: uxmss_pkFromSig(wots_sig, auth, m, PK.seed, PK.root, ADRS, q)
+    Input:
+        wots_sig: WOTS+C signature
+        auth: authentication path (q * n bytes)
+        m: signed message
+        PK.seed: public seed
+        PK.root: root public key
+        ADRS: address
+        q: signature number (1 to hsf + 1)
+    Output:
+        root: computed PK.sf (n bytes), or $\bot$ if invalid
+
+    1. setLayerAddress(ADRS, 0)
+    2. setTreeAddress(ADRS, 0)
+    3. pk ← wots_pkFromSig(wots_sig, m, PK.seed, PK.root, ADRS, q)
+    4. if pk == $\bot$:
+       return $\bot$
+    5. node ← pk
+    6. setTypeAndClear(ADRS, SF_TREE)
+    7. if q <= hsf:
+        for i from 0 to q - 1:
+           a. setTreeHeight(ADRS, hsf - (q - 1 - i))
+           b. setTreeIndex(ADRS, 0)
+           c. if i == 0:
+                  node ← Tw(PK.seed, ADRS, node || auth[i])
+              else:
+                  node ← Tw(PK.seed, ADRS, auth[i] || node)
+8. else: 
+       for i from 0 to hsf - 1:
+           a. setTreeHeight(ADRS, i + 1)
+           b. setTreeIndex(ADRS, 0)
+           c. // auth[i] is always left (WOTS), node is right
+              node ← Tw(PK.seed, ADRS, auth[i] || node)
+9. return node
+\end{verbatim}
+
+\subsection{UXMSS Signature Generation}
+To sign a message using the stateful path, UXMSS signature generation produces a WOTS+C signature followed by the authentication path for position q. The signature number q must be tracked as state and incremented after each use to ensure one-time signature security. The resulting signature size is \texttt{|wots\_sig| + q * n} bytes, which grows linearly with q. For the first signature (q=1), this yields the minimal \textcolor{red}{324}-byte signature that makes SHRINCS attractive for Bitcoin applications.
+\begin{verbatim}
+    Algorithm: uxmss_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS, q)
+    Input:
+        m: message to sign
+        SK.seed: secret seed
+        SK.prf: PRF key
+        PK.seed: public seed
+        PK.root: root public key
+        ADRS: address
+        q: signature number to use (1 to hsf + 1)
+    Output:
+        sig: UXMSS signature
+
+    1. setLayerAddress(ADRS, 0)
+    2. setTreeAddress(ADRS, 0)
+    3. wots_sig ← wots_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS, q)
+    4. auth ← uxmss_auth_path(SK.seed, PK.seed, ADRS, q)
+    5. return wots_sig || auth
+\end{verbatim}

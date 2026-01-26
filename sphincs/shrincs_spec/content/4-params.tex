@@ -1,0 +1,26 @@
+\section{Parameters}
+This specification provides with the list of parameters for different SHRINCS instances, depending on verifier requirements:
+\begin{enumerate}
+    \item SHRINCS-B: size matters (instance preferable for Bitcoin).
+    \item SHRINCS-L: verification complexity matters (the number of hashes to verify the signature).
+\end{enumerate}
+
+\begin{center}
+\begin{tabular}{ c c c c c}
+ Parameter & SHRINCS-B & SHRINCS-L & Description \\ 
+ \hline
+ \texttt{H} & \texttt{SHA-256} & \texttt{SHA-256} & Hash function \\ 
+ \texttt{OTS} & \texttt{WOTS+C} & \texttt{WOTS+C} & One-time signature \\ 
+ \texttt{FTS} & \texttt{FORS+C} & \texttt{FORS+C} & Few-time signature \\ 
+ \texttt{n} & $16$ & $16$ & Security parameter (bytes) \\  
+ \texttt{w} & $256$ & $4$ & Winternitz parameter \\
+ \texttt{l}  & $16$ & $64$ & The number of WOTS+C chains \\
+ \texttt{Swn} & $2040$ & $140$ & Target sum for WOTS+C \\
+ \texttt{hsf} & $\color{red}15\color{black}$ & $\color{red}15\color{black}$ & Maximum stateful tree height \\
+ \texttt{hsl} & $\color{red}40\color{black}$ & $\color{red}40\color{black}$ & Maximum stateless hypertree height \\
+ \texttt{d} & $\color{red}5\color{black}$ & $\color{red}5\color{black}$ & Stateless hypertree layers \\
+ \texttt{a} & $22$ & $22$ & FORS tree height \\
+ \texttt{k} & $6$ & $6$ & Number of FORS+C trees \\
+ \texttt{c} & $4$ & $4$ & Counter size for WOTS+C grinding (bytes) \\
+\end{tabular}
+\end{center}
