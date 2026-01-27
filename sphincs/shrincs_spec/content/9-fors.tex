@@ -4,7 +4,7 @@ FORS (Forest of Random Subsets) is a few-time signature scheme used at the botto
 \subsection{FORS Structure}
 FORS consists of \texttt{k} binary trees, each of height \texttt{a}:
 \begin{itemize}
-    \item Each tree has \texttt{2\^a} leaves
+    \item Each tree has \texttt{pow(2,a)} leaves
     \item Each leaf is derived from \texttt{SK.seed} using PRF
     \item The message digest is split into \texttt{k} chunks of \texttt{a} bits each
     \item Each chunk selects one leaf index from the corresponding tree

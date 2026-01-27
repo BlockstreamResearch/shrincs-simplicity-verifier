@@ -119,13 +119,13 @@ Given a WOTS+C signature and authentication path, this algorithm reconstructs \t
                   node ← Tw(PK.seed, ADRS, node || auth[i])
               else:
                   node ← Tw(PK.seed, ADRS, auth[i] || node)
-8. else: 
+    8. else: 
        for i from 0 to hsf - 1:
            a. setTreeHeight(ADRS, i + 1)
            b. setTreeIndex(ADRS, 0)
            c. // auth[i] is always left (WOTS), node is right
               node ← Tw(PK.seed, ADRS, auth[i] || node)
-9. return node
+    9. return node
 \end{verbatim}
 
 \subsection{UXMSS Signature Generation}

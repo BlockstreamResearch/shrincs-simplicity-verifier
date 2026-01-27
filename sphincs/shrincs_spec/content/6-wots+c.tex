@@ -8,7 +8,7 @@ $$C = \sum_{i=1}^{l} (w - 1 - d_i)$$
 This checksum is then signed using additional chains. In WOTS+C\cite{wots+c}, instead of calculating a checksum  for a fixed message digest, the signer modifies the message digest until it possesses a specific,  pre-determined checksum property. This is done by appending a counter \texttt{ctr} and a random salt \texttt{R} to the message before hashing. The signer increments \texttt{ctr} until the resulting hash digest $D$ satisfies a global target condition.
 
 \subsection{The Target Condition}
-WOTS utilize a parameter \texttt{w} to define the number of hashchains and correspondingly their length. The message digest length is \texttt{n} bits so \texttt{l = 8n/(log2(w))}. The values $d_{i\in[l]}$ are treated as integers in \texttt{0...(w-1)}. 
+WOTS utilize a parameter \texttt{w} to define the number of hashchains and correspondingly their length. The message digest length is \texttt{n} bytes so \texttt{l = 8n/(log2(w))}. The values $d_{i\in[l]}$ are treated as integers in \texttt{0...(w-1)}. 
 
 Let \texttt{Swn} be a protocol parameter (often near the expected value, but may be chosen larger to trade signing/grinding cost for verification cost). If the hash output is uniform, the expected value of a single digit is \texttt{d\_i = (w-1)/2}. For \texttt{l} digits, the expected \texttt{Swn} is: 
 
