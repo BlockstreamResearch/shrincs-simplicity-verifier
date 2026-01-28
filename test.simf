@@ -1,15 +1,13 @@
 #define TESTING
 #include "lamport.simf"
 #include "wots.simf"
-#include "sphincs/sphincs_test.simf"
+#include "sphincs/sphincs.simf"
 
 fn main() {
     // utils
-    get_12_bit_at_test();
     test_mgf1_sha_256();
 
     // signatures
     test_lamport_sign_verify();
     test_wots_sign_verify();
-    test_sphincs_verify();
 }

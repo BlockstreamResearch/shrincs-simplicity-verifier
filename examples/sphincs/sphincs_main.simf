@@ -10,5 +10,5 @@ fn main() {
 
     let proof: SPHINCSSignProof = (message, pk, witness::SIG);
 
-    sphincs_verify(proof);
+    let _: u128 = sphincs_verify(proof);
 }
