@@ -1,0 +1,66 @@
+#ifndef UNBALANCED_XMSS
+#define UNBALANCED_XMSS
+
+// #include "wots_c.simf"
+#include "../sphincs/sphincs.simf"
+
+// (R ??? u128/u256, wots+c signature, merkle path up to 511 elements)
+type UXMSSSignature = (u128, SPHINCSWOTSTWSignature, List<u128, 512>);
+// (Message, PK.seed, Root (PK), Signature, signature index)
+type UXMSSSignProof = (u256, u128, u128, UXMSSSignature, u32);
+
+fn shrincs_get_root_from_path_iter(el: u128, ctx: (u128, bool, Ctx8, u32)) -> (u128, bool, Ctx8, u32) {
+    let (node, is_right_child, hash_ctx, tree_height): (u128, bool, Ctx8, u32) = ctx;
+
+    let (left, right): (u128, u128) = match is_right_child {
+        true => (node, el),
+        false => (el, node),
+    };
+
+    let hash: Ctx8 = add_adrs_to_ctx8(hash_ctx, 0, 0, 0, 1, 0, <(u32, u32)>::into((tree_height, 0)));
+    let hash: Ctx8 = jet::sha_256_ctx_8_add_16(hash, left);
+    let hash: Ctx8 = jet::sha_256_ctx_8_add_16(hash, right);
+
+    let hash: u256 = jet::sha_256_ctx_8_finalize(hash);
+    let (hash, _): (u128, u128) = <u256>::into(hash);
+
+    let (_, tree_height): (bool, u32) = jet::add_32(tree_height, 1);
+
+    (hash, false, hash_ctx, tree_height)
+}
+
+fn restore_uxmss_signature(proof: UXMSSSignProof) -> u128 {
+    let (message, public_parameter, root, signature, key_idx): UXMSSSignProof = proof;
+    let (r, wots_signature, merkle_path): UXMSSSignature = signature;
+    let (counter, message_signature): SPHINCSWOTSTWSignature = wots_signature;
+
+    let hash_ctx: Ctx8 = jet::sha_256_ctx_8_init();
+    let hash_ctx: Ctx8 = jet::sha_256_ctx_8_add_16(hash_ctx, public_parameter);
+    let hash_ctx: Ctx8 = jet::sha_256_ctx_8_add_32(hash_ctx, 0);
+    let hash_ctx: Ctx8 = jet::sha_256_ctx_8_add_16(hash_ctx, 0);
+
+    let hash: Ctx8 = jet::sha_256_ctx_8_init();
+    let hash: Ctx8 = add_adrs_to_ctx8(hash, 0, 0, 0, 5, 0, 0);
+    let hash: Ctx8 = jet::sha_256_ctx_8_add_16(hash, r);
+    let hash: Ctx8 = jet::sha_256_ctx_8_add_4(hash, counter);
+    let hash: Ctx8 = jet::sha_256_ctx_8_add_16(hash, public_parameter);
+    let hash: Ctx8 = jet::sha_256_ctx_8_add_16(hash, root);
+    let hash: Ctx8 = jet::sha_256_ctx_8_add_32(hash, message);
+    let (message, _): (u128, u128) = <u256>::into(jet::sha_256_ctx_8_finalize(hash));
+
+    let (pk, (_, _, checksum, _, _, _, _, _, _)): ([u128; 64], (u128, u32, u8, u32, Ctx8, u32, u32, u64, u32)) = sphincs_restore_wots_tw_signature_map_arr_64(message_signature, (message, 0, 0, key_idx, hash_ctx, 0, 0, 0, 0));
+    assert!(jet::eq_8(checksum, 96));
+
+    let (leaf, _): (u128, (u32, Ctx8, u32, u32, u64)) = sphincs_hash_leaf_xmss(pk, (key_idx, hash_ctx, 0, 0, 0));
+
+    // what tree height we will have? 0 -> hsf + 1
+    let hsf: u32 = 0;
+    let is_right_child: bool = jet::eq_32(key_idx, hsf);
+    let (_, tree_height): (bool, u32) = jet::subtract_32(hsf, 1);
+    let (_, tree_height): (bool, u32) = jet::subtract_32(hsf, key_idx);
+
+    let (root, _, _, _): (u128, bool, Ctx8, u32) = fold::<shrincs_get_root_from_path_iter, 512>(merkle_path, (leaf, is_right_child, hash_ctx, tree_height));
+    root
+}
+
+#endif

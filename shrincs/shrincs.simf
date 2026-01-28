@@ -1,0 +1,20 @@
+#ifndef SHRINCS
+#define SHRINCS
+
+#include "unbalanced_xmss.simf"
+#include "../sphincs/sphincs.simf"
+
+type SHRINCSSignProof = Either<UXMSSSignProof, SPHINCSSignProof>;
+
+fn shrincs_verify(proof: SHRINCSSignProof) {
+    let roots: u128 = match proof {
+        Left(uxmss: UXMSSSignProof) => {
+            restore_uxmss_signature(uxmss)
+        },
+        Right(sphincs: SPHINCSSignProof) => {
+            sphincs_verify(sphincs)
+        },
+    };
+}
+
+#endif

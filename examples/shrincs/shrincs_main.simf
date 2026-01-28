@@ -1,0 +1,5 @@
+#include "../../shrincs/shrincs.simf"
+
+fn main() {
+    shrincs_verify(witness::PROOF);
+}
