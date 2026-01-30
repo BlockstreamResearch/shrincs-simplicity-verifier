@@ -206,9 +206,10 @@ The \texttt{SHRINCS.VerifyStateless} function verifies a stateless signature. It
         h. if msg == $\bot$:
                return false
     19. PK.sl ← msg
-    20. setTypeAndClear(ADRS, ROOT)
-    21. expected_root ← Tw(PK.seed, ADRS, PK.sf || PK.sl)
-    22. return (expected_root == PK.root)
+    20. setLayerAddress(ADRS, 0)       
+    21. setTypeAndClear(ADRS, ROOT)
+    22. expected_root ← Tw(PK.seed, ADRS, PK.sf || PK.sl)
+    23. return (expected_root == PK.root)
 \end{verbatim}
 
 \subsection{Unified Verification}
@@ -236,7 +237,7 @@ The \texttt{SHRINCS.Verify} function provides a single entry point for verifying
 
 \subsection{Stateful Signature Format}
 \begin{verbatim}
-SHRINCS-B.sf:
+SHRINCS-B:
     PK.sl : 16 bytes    //public key of stateless instance
     c : 4 bytes. // 
     chain_values : l * 16 = 16 * 16 = 256 bytes
@@ -246,7 +247,7 @@ SHRINCS-B.sf:
 Total size: 292 + q * 16 bytes
 
 \begin{verbatim}
-SHRINCS-L.sf:
+SHRINCS-L:
     PK.sl : 16 bytes    //public key of stateless instance
     c : 4 bytes. // 
     chain_values : l * 16 = 64 * 16 = 1024 bytes
