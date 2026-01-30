@@ -20,7 +20,7 @@ The \texttt{SHRINCS.KeyGen} function generates a fresh key pair and initializes 
     7. setLayerAddress(ADRS, d - 1)
     8. setTreeAddress(ADRS, 0)
     9. PK.sl ← xmss_root(SK.seed, PK.seed, ADRS, h_prime)
-    10. setTypeAndClear(ADRS, ROOT) 
+    10. setTypeAndClear(ADRS, ROOT)
     11. PK.root ← Tw(PK.seed, ADRS, PK.sf || PK.sl)
     12. SK ← (SK.seed, SK.prf, PK.seed, PK.sf, PK.sl, PK.root)
     13. PK ← (PK.seed, PK.root)
@@ -64,7 +64,7 @@ The \texttt{SHRINCS.SignStateful} function signs a message using the efficient s
         SK: secret key (SK.seed, SK.prf, PK.seed, PK.sf, PK.sl, PK.root)
         state: current signing state { q, valid }
     Output:
-        sig: stateful signature, or $\bot$ if state exhausted
+        sig: stateful signature, or $\bot$ if state is corrupted
         state': updated state
 
     1. if not state.valid:
@@ -74,7 +74,7 @@ The \texttt{SHRINCS.SignStateful} function signs a message using the efficient s
         return ($\bot$, state)
     4. ADRS ← new_ADRS()
     5. uxmss_sig ← uxmss_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS, q)
-    6. sig ←  PK.sl || uxmss_sig 
+    6. sig ← PK.sl || uxmss_sig
     7. state' ← { q: q, valid: true }
     8. return (sig, state')
 \end{verbatim}
@@ -107,7 +107,7 @@ The \texttt{SHRINCS.SignStateless} function signs a message using the stateless 
         c. xmss_sig ← xmss_sign(msg, SK.seed, SK.prf, PK.seed, PK.root, ADRS, h', leaf_idx[layer])
         d. ht_sig ← ht_sig || xmss_sig
         e. if layer < d - 1:
-               msg ← xmss_root(SK.seed, PK.seed, ADRS, h')
+            msg ← xmss_root(SK.seed, PK.seed, ADRS, h')
     14. sig ← PK.sf || fors_sig || ht_sig
     15. return sig
 \end{verbatim}
@@ -125,14 +125,14 @@ The \texttt{parse\_idx} function extracts tree and leaf indices for each hypertr
         tree_idx: array of d tree indices
         leaf_idx: array of d leaf indices
 
-    1. h_prime ← hsl / d 
+    1. h_prime ← hsl / d
     2. tree_idx ← []
     3. leaf_idx ← []
     4. idx ← bytes_to_int(digest[0 : (hsl + 7) / 8])
     5. for layer from 0 to d - 1:
-       a. leaf_idx[layer] ← idx AND (2^h_prime - 1)
-       b. idx ← idx >> h_prime
-       c. tree_idx[layer] ← idx AND (2^(hsl - (layer + 1) * h_prime) - 1)
+        a. leaf_idx[layer] ← idx AND (2^h_prime - 1)
+        b. idx ← idx >> h_prime
+        c. tree_idx[layer] ← idx AND (2^(hsl - (layer + 1) * h_prime) - 1)
     6. return (tree_idx, leaf_idx)
 \end{verbatim}
 
@@ -146,24 +146,25 @@ The \texttt{SHRINCS.VerifyStateful} function verifies a stateful signature. It e
         PK: public key (PK.seed, PK.root)
     Output:
         valid: boolean
-    
+
     1. ADRS ← new_ADRS()
     2. sig_len ← len(sig)
-    3. PK.sl ← sig[sig_len - n : sig_len]
-    4. uxmss_sig ← sig[0 : sig_len - n]
+    3. PK.sl ← sig[0 : n]
+    4. uxmss_sig ← sig[n : sig_len]
     5. wots_sig_size ← R_SIZE + c + l * n
     6. auth_len ← len(uxmss_sig) - wots_sig_size
     7. q ← auth_len / n
     8. if q < 1 or q > hsf + 1:
-       return false
+        return false
     9. wots_sig ← uxmss_sig[0 : wots_sig_size]
     10. auth ← uxmss_sig[wots_sig_size : wots_sig_size + q * n]
     11. PK.sf ← uxmss_pkFromSig(wots_sig, auth, m, PK.seed, PK.root, ADRS, q)
     12. if PK.sf == $\bot$:
         return false
-    13. setTypeAndClear(ADRS, ROOT)
-    14. expected_root ← Tw(PK.seed, ADRS, PK.sf || PK.sl)
-    15. return (expected_root == PK.root)
+    13. setLayerAddress(ADRS, d - 1)
+    14. setTypeAndClear(ADRS, ROOT)
+    15. expected_root ← Tw(PK.seed, ADRS, PK.sf || PK.sl)
+    16. return (expected_root == PK.root)
 \end{verbatim}
 
 \subsection{Stateless verification}
@@ -180,7 +181,7 @@ The \texttt{SHRINCS.VerifyStateless} function verifies a stateless signature. It
     1. ADRS ← new_ADRS()
     2. PK.sf ← sig[0 : n]
     3. offset ← n
-    4. fors_sig_size ← R_SIZE + c + (k - 1) * (n + a * n) + n
+    4. fors_sig_size ← R_SIZE + c + (k - 1) * (n + a * n)
     5. fors_sig ← sig[offset : offset + fors_sig_size]
     6. offset ← offset + fors_sig_size
     7. R ← fors_sig[0 : R_SIZE]
@@ -192,7 +193,7 @@ The \texttt{SHRINCS.VerifyStateless} function verifies a stateless signature. It
     13. setTreeAddress(ADRS, tree_idx[0])
     14. fors_pk ← fors_pkFromSig(fors_sig, m, PK.seed, PK.root, ADRS)
     15. if fors_pk == $\bot$:
-            return false
+        return false
     16. msg ← fors_pk
     17. xmss_sig_size ← R_SIZE + c + l * n + h' * n
     18. for layer from 0 to d - 1:
@@ -204,12 +205,11 @@ The \texttt{SHRINCS.VerifyStateless} function verifies a stateless signature. It
         f. setTreeAddress(ADRS, tree_idx[layer])
         g. msg ← xmss_pkFromSig(wots_sig, auth, msg, PK.seed, PK.root, ADRS, h', leaf_idx[layer])
         h. if msg == $\bot$:
-               return false
+            return false
     19. PK.sl ← msg
-    20. setLayerAddress(ADRS, 0)       
-    21. setTypeAndClear(ADRS, ROOT)
-    22. expected_root ← Tw(PK.seed, ADRS, PK.sf || PK.sl)
-    23. return (expected_root == PK.root)
+    20. setTypeAndClear(ADRS, ROOT)
+    21. expected_root ← Tw(PK.seed, ADRS, PK.sf || PK.sl)
+    22. return (expected_root == PK.root)
 \end{verbatim}
 
 \subsection{Unified Verification}
@@ -223,10 +223,10 @@ The \texttt{SHRINCS.Verify} function provides a single entry point for verifying
     Output:
         valid: boolean
 
-    1.  if len(sig) <= max_sf_size:
-            return SHRINCS.VerifyStateful(m, sig, PK)
-        else:
-            return SHRINCS.VerifyStateless(m, sig, PK)
+    if len(sig) <= max_sf_size:
+        return SHRINCS.VerifyStateful(m, sig, PK)
+    else:
+        return SHRINCS.VerifyStateless(m, sig, PK)
 \end{verbatim}
 
 \section{Data structures}
