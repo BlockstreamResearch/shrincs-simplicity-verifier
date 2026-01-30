@@ -212,7 +212,7 @@ To sign, WOTS+C instance computes the message digits and then reveals, for each 
 \subsection{Signature Verification (Public Key Recovery)}
 Verification reconstructs the WOTS+C public key implied by the signature. For each chain element, the verifier continues hashing forward from the signature’s provided intermediate value for \texttt{w-1-msg[i]} steps to reach the end-of-chain value. Compressing all end-of-chain values yields the recovered WOTS+C public key, which can then be checked against the expected value in the surrounding scheme.
 \begin{verbatim}
-    Algorithm: wots_pkFromSig(sig, m, PK.seed, PK.root, ADRS, keypair)
+    Algorithm: wots_pkFromSig(sig, m, PK.seed, PK.root, ADRS, keypair, mode)
     Input:
         sig: signature
         m: signed message
@@ -241,3 +241,9 @@ Verification reconstructs the WOTS+C public key implied by the signature. For ea
     10. pk ← Tw(PK.seed, ADRS, tmp[0] || ... || tmp[l-1])
     11. return pk
 \end{verbatim}
+
+\subsection{Contribution to the Signature Size and Verification Complexity}
+
+
+\subsection{Implementation notes}
+In this section we have defined basic WOTS+C operations for stateful tree instance. But actually the same one time signature is used in stateless instance too. So we recommend to have a \texttt{mode} parameter that defines the \texttt{ADRS} with \texttt{SF\_WOTS\_CHAIN / SL\_WOTS\_CHAIN} and \texttt{SF\_TREE / SL\_TREE} correspondingly.

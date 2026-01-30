@@ -23,6 +23,8 @@
 \contentsline {subsection}{\numberline {6.5}Messsage Digest Grinding}{11}{subsection.6.5}%
 \contentsline {subsection}{\numberline {6.6}Signature Generation}{12}{subsection.6.6}%
 \contentsline {subsection}{\numberline {6.7}Signature Verification (Public Key Recovery)}{12}{subsection.6.7}%
+\contentsline {subsection}{\numberline {6.8}Contribution to the Signature Size and Verification Complexity}{13}{subsection.6.8}%
+\contentsline {subsection}{\numberline {6.9}Implementation notes}{13}{subsection.6.9}%
 \contentsline {section}{\numberline {7}XMSS}{13}{section.7}%
 \contentsline {subsection}{\numberline {7.1}XMSS Tree Structure}{13}{subsection.7.1}%
 \contentsline {subsection}{\numberline {7.2}XMSS TreeHash}{13}{subsection.7.2}%
@@ -36,19 +38,19 @@
 \contentsline {subsection}{\numberline {8.3}UXMSS Root Computation}{17}{subsection.8.3}%
 \contentsline {subsection}{\numberline {8.4}UXMSS Authentication Path Generation}{17}{subsection.8.4}%
 \contentsline {subsection}{\numberline {8.5}UXMSS Public Key Recovery from Signature}{18}{subsection.8.5}%
-\contentsline {subsection}{\numberline {8.6}UXMSS Signature Generation}{18}{subsection.8.6}%
+\contentsline {subsection}{\numberline {8.6}UXMSS Signature Generation}{19}{subsection.8.6}%
 \contentsline {section}{\numberline {9}FORS+C}{19}{section.9}%
 \contentsline {subsection}{\numberline {9.1}FORS Structure}{19}{subsection.9.1}%
-\contentsline {subsection}{\numberline {9.2}Grinding Condition}{20}{subsection.9.2}%
+\contentsline {subsection}{\numberline {9.2}Grinding Condition}{19}{subsection.9.2}%
 \contentsline {subsection}{\numberline {9.3}Message to Indices}{20}{subsection.9.3}%
 \contentsline {subsection}{\numberline {9.4}Grinding}{20}{subsection.9.4}%
-\contentsline {subsection}{\numberline {9.5}Secret Key Generation}{20}{subsection.9.5}%
+\contentsline {subsection}{\numberline {9.5}Secret Key Generation}{21}{subsection.9.5}%
 \contentsline {subsection}{\numberline {9.6}TreeHash}{21}{subsection.9.6}%
-\contentsline {subsection}{\numberline {9.7}FORS Authentication path}{21}{subsection.9.7}%
+\contentsline {subsection}{\numberline {9.7}FORS Authentication path}{22}{subsection.9.7}%
 \contentsline {subsection}{\numberline {9.8}Signature generation}{22}{subsection.9.8}%
-\contentsline {subsection}{\numberline {9.9}Public Key Recovery}{22}{subsection.9.9}%
-\contentsline {section}{\numberline {10}SHRINCS}{23}{section.10}%
-\contentsline {subsection}{\numberline {10.1}Key Generation}{23}{subsection.10.1}%
+\contentsline {subsection}{\numberline {9.9}Public Key Recovery}{23}{subsection.9.9}%
+\contentsline {section}{\numberline {10}SHRINCS}{24}{section.10}%
+\contentsline {subsection}{\numberline {10.1}Key Generation}{24}{subsection.10.1}%
 \contentsline {subsection}{\numberline {10.2}Recovery from Seed}{24}{subsection.10.2}%
 \contentsline {subsection}{\numberline {10.3}Statefull signing}{25}{subsection.10.3}%
 \contentsline {subsection}{\numberline {10.4}Stateless signing}{25}{subsection.10.4}%
@@ -60,4 +62,4 @@
 \contentsline {subsection}{\numberline {11.1}Secret Key Format}{28}{subsection.11.1}%
 \contentsline {subsection}{\numberline {11.2}Public Key Format}{28}{subsection.11.2}%
 \contentsline {subsection}{\numberline {11.3}Stateful Signature Format}{28}{subsection.11.3}%
-\contentsline {subsection}{\numberline {11.4}Stateless Signature Format}{28}{subsection.11.4}%
+\contentsline {subsection}{\numberline {11.4}Stateless Signature Format}{29}{subsection.11.4}%
