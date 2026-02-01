@@ -1,13 +1,13 @@
 \section{Underlying Functions and Addresses}
 \subsection{Hash Function}
 
-SHRINCS uses SHA-256 truncated to \texttt{n} bytes for all internal hash operations. 
+SHRINCS uses SHA-256 truncated to \texttt{n} bytes \mknote{Sometimes n appears to be bytes, but sometimes it is used for bits. Should unify.} for all internal hash operations. 
 \begin{center}
 \texttt{H(m) = SHA-256(m)[0:n]}
 \end{center}
 
 \subsection{Tweakable Hash Function}
-To prevent multi-target attacks and ensure domain separation between the various components, we employ the tweakable hash function construction defined in FIPS 205 \cite{fips-205}:
+To prevent multi-target attacks and ensure domain separation between the various components, we employ the tweakable hash function construction defined in FIPS 205 \cite{fips-205}\mknote{It was introduced in https://sphincs.org/data/sphincs+-paper.pdf}:
 
 \begin{center}
 \texttt{Tw(PK.seed, ADRS, m) = H(PK.seed || ADRS || m)}
@@ -27,6 +27,7 @@ Additionally we use a pseudorandom function to generate the randomizer \texttt{R
 \begin{center}
     \texttt{PRF\_msg(SK.prf, PK.seed, opt\_rand, m) = HMAC-SHA-256(SK.prf, PK.seed || opt\_rand || m)},
 \end{center}
+\mknote{We will need to plug a counter into PRF msg to be able to grind for FORS+C}
 where \texttt{opt\_rand} is an optional randomness (\texttt{n} bytes), can be \texttt{PK.seed} for deterministic signing.
 
 \subsection{Message Hash Function}
@@ -62,7 +63,7 @@ A total \texttt{ADRS} size is 32 bytes.
     \item[] \texttt{0x06}: Pseudorandom function (\texttt{PRF})
     \item[] \texttt{0x07}: Root public key (\texttt{ROOT})
 \end{itemize}
-Summarizing, \texttt{(0x00, 0x01)} are stateful only types, \texttt{(0x02, 0x03, 0x04)} are stateless only and \texttt{(0x05, 0x06, 0x07)} are shared types.
+Summarizing, \texttt{(0x00, 0x01)} are stateful only types, \texttt{(0x02, 0x03, 0x04)} are stateless only and \texttt{(0x05, 0x06, 0x07)} are shared types. \mknote{I think SLH-DSA has more ADRS types, such as public-key compression address, FORS tree roots compression address, and we also need need two types for grinding WOTS and for grinding FORS}
 
 \subsubsection{Address Manipulation Functions}
 \begin{verbatim}

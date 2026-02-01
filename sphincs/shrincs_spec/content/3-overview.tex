@@ -1,4 +1,6 @@
 \section{Overview}
+\mknote{I wonder if we should include guidlince for state management here. Maybe this: https://datatracker.ietf.org/doc/draft-ietf-pquip-hbs-state/02/ can be useful. But maybe it is not for this document. Maybe it is better to update our HB paper with these discussions.}
+
 SHRINCS is designed in the way it can operate in two modes: \textbf{stateful} and \textbf{stateless}. Stateful mode is represented by the instance of Unbalanced XMSS (UXMSS) with a root public key \texttt{PK.sf}. An optimized variant of SPHINCS+ is used to support the stateless operating mode (which is represented by the public key \texttt{PK.sl}). The root public key is a hashed concatenation of (\texttt{PK.sf}, \texttt{PK.sl}), which is being converted to the Bitcoin address. 
 
 During normal operation with intact state, the user generates signatures according to efficient stateful path. Each leaf of the UXMSS is represented by WOTS+C one time signature instance. UXMSS is right-skewed, which makes the first stateful signature (\texttt{q=1}) the cheapest from the verification and size perspective (\textcolor{red}{324} bytes) and adds the constant size (16 bytes) and one additional hashing operation for each next stateful signature. A right-skewed UXMSS is a tree construction in which every internal node has a one-time signature leaf as its left child and a UXMSS subtree as its right child, yielding a recursively right-branching authentication tree (as shown on the Figure~1).
@@ -27,19 +29,19 @@ Seed allows to derive a private key \texttt{SK ← (SK.seed, SK.prf, PK.seed, PK
 \end{verbatim}
 where \texttt{ADRS} is a tweak also known as a context address (see Section 5.5). \\
 
-The size of the secret key is \texttt{6n} bytes. A public key consists of two values \texttt{PK ← (PK.seed, PK.root)} and has a size of \texttt{2n} bytes.
+The size of the secret key is \texttt{6n} bytes. A public key consists of two values \texttt{PK ← (PK.seed, PK.root)} and has a size of \texttt{2n} bytes.\mknote{bits, bot bytes}
 
 \subsection{Signature Size and Verification Cost}
 \subsubsection{Stateful}
 SHRINCS-B: 
 \begin{itemize}
-    \item Size: 256 + 16 + 4 + q * 16 = 276 + 16q bytes
-    \item Verification cost: 2042 hashes
+    \item Size: 256 + 16 + 4 + q * 16 = 276 + 16q bytes \mknote{I think we need to put formulas like w*l + r + ctr + q*hash. Randomness should be 32. Maybe we should add indices that point to which leaf we are using. It is redundant, but i think it is better for the implementation.}
+    \item Verification cost: 2042 hashes \mknote{Verification hashes should depend on q. Also we need to define q in Notation}
 \end{itemize}
-SHRINCS-L: 
+SHRINCS-L: \mknote{I am not sure what is the difference between SHRINCS-B and SHRINCS-L. Are these two modes of opertaions? With different parameter sets. If so - I think we should add some more explanation to the text.}
 \begin{itemize}
-    \item Size: 1024 + 16 + 4 + q * 16 = 1044 + 16q bytes
-    \item Verification cost: 54 hashes
+    \item Size: 1024 + 16 + 4 + q * 16 = 1044 + 16q bytes \mknote{Same as above, I would add the formula for computing.}
+    \item Verification cost: 54 hashes \mknote{Same as above - verification depends on q.}
 \end{itemize}
 
 \subsubsection{Stateless}

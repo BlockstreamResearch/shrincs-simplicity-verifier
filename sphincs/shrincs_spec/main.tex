@@ -19,6 +19,11 @@
     sorting=nyt
 ]{biblatex}
 
+\usepackage{todonotes}  % Adds the nice todos
+\newcommand{\mknote}[1]{\todo[inline, color=red!40,caption={}]{Mike: #1}}
+\newcommand{\mike}[1]{\todo[color=red!40]{Mike: #1}}
+
+
 \addbibresource{references.bib}
 
 \usepackage[most]{tcolorbox}

@@ -57,6 +57,7 @@ The \texttt{SHRINCS.Restore} function recovers a key pair from a backed-up seed.
 
 \subsection{Statefull signing}
 The \texttt{SHRINCS.SignStateful} function signs a message using the efficient stateful (UXMSS) path. It first checks that state is valid and that signature slots remain (\texttt{q <= hsf + 1}). It then increments q, generates a UXMSS signature at position q, and appends PK.sl to enable unified verification. The updated state is returned alongside the signature. This produces minimal signatures (\textcolor{red}{324} bytes for \texttt{q=1}) that grow linearly with q. If state is invalid or exhausted, the function returns $\bot$ and the caller should use stateless signing instead.
+\mknote{We need to first update the state then run signing. Otherwise if the program is iterupted we get a signature, but not the updated state.}
 \begin{verbatim}
     Algorithm: SHRINCS.SignStateful(m, SK, state)
     Input:
@@ -81,6 +82,7 @@ The \texttt{SHRINCS.SignStateful} function signs a message using the efficient s
 
 \subsection{Stateless signing}
 The \texttt{SHRINCS.SignStateless} function signs a message using the stateless (SPHINCS+C) path. This is used when state is lost, corrupted, or exhausted. It generates a randomized message digest, extracts tree and leaf indices for each hypertree layer, then constructs a signature bottom-up: first a FORS+C signature on the message, then XMSS signatures on each layer's root ascending through the hypertree. The signature includes \texttt{PK.sf} to enable unified verification. Stateless signatures are larger but can be generated without any state management.
+\mknote{It looks like we first compute the digest to determine the index, and then we compute the digest again to determine the revealed leaves in the FORS. I think we should not split that. We should use the same digest computation to determine both the instance of FORS and its leaves. Check here: https://github.com/eyalr0/sphincsplusc. }
 \begin{verbatim}
     Algorithm: SHRINCS.SignStateless(m, SK)
     Input:
@@ -114,7 +116,7 @@ The \texttt{SHRINCS.SignStateless} function signs a message using the stateless 
 
 \subsection{Index Parsing}
 The \texttt{parse\_idx} function extracts tree and leaf indices for each hypertree layer from the message digest. The digest is interpreted as a large integer, then partitioned into d pairs of (\texttt{leaf\_idx, tree\_idx}). Each leaf index selects which WOTS+C key pair to use within a tree, while each tree index identifies which tree within the layer. The indices are extracted from least significant (layer 0) to most significant (layer \texttt{d-1}), with h' bits per leaf index and decreasing bits for tree indices at higher layers.
-
+\mknote{This is a bit confusin, that we extract the indices of the OTS/FTS schemes used, but not the indices of the revealed leaves in FORS. With the Hashing changes, it needs a double-check that everything is computed correctly and the same data is not used for two purposes. }
 \begin{verbatim}
     Algorithm: parse_idx(digest, hsl, d)
     Input:
@@ -137,6 +139,7 @@ The \texttt{parse\_idx} function extracts tree and leaf indices for each hypertr
 \end{verbatim}
 
 \subsection{Statefull verification}
+\mknote{Needs updates that correspond to updates in message hashing}
 The \texttt{SHRINCS.VerifyStateful} function verifies a stateful signature. It extracts \texttt{PK.sl} from the signature tail, parses the UXMSS signature, and infers q from the authentication path length. It then recovers PK.sf using \texttt{uxmss\_pkFromSig} and verifies that \texttt{H(PK.sf || PK.sl)} equals the expected \texttt{PK.root}. The signature is valid if and only if the WOTS+C verification succeeds and the reconstructed root matches.
 \begin{verbatim}
     Algorithm: SHRINCS.VerifyStateful(m, sig, PK)
@@ -168,6 +171,7 @@ The \texttt{SHRINCS.VerifyStateful} function verifies a stateful signature. It e
 
 \subsection{Stateless verification}
 The \texttt{SHRINCS.VerifyStateless} function verifies a stateless signature. It extracts \texttt{PK.sf} from the signature head, parses the FORS+C signature, recomputes the message digest and indices, then verifies bottom-up through the hypertree. Starting with the FORS+C public key recovery, it iteratively verifies each XMSS layer by recovering the tree root and using it as the message for the next layer. The final recovered root becomes \texttt{PK.sl}, which is combined with \texttt{PK.sf} to verify against \texttt{PK.root}.
+\mknote{Here the Hmsg compuations do not match the signing prcedure.}
 \begin{verbatim}
     Algorithm: SHRINCS.VerifyStateless(m, sig, PK)
     Input:
