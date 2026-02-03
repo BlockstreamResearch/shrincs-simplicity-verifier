@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.12.17)  30 JAN 2026 14:32
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.12.17)  3 FEB 2026 10:15
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -863,12 +863,25 @@ Package biblatex Info: ... and expl3
 (biblatex)             setting 'casechanger=expl3'.
  (/usr/local/texlive/2025/texmf-dist/tex/latex/biblatex/blx-case-expl3.sty
 Package: blx-case-expl3 2024/03/21 v3.20 expl3 case changing code for biblatex
-)) (/usr/local/texlive/2025/texmf-dist/tex/latex/tcolorbox/tcolorbox.sty
+)) (/usr/local/texlive/2025/texmf-dist/tex/latex/todonotes/todonotes.sty
+Package: todonotes 2024/01/05 v1.1.7 Todonotes source and documentation.
+Package: todonotes 2024/01/05
+ (/usr/local/texlive/2025/texmf-dist/tex/latex/xkeyval/xkeyval.sty
+Package: xkeyval 2022/06/16 v2.9 package option processing (HA)
+ (/usr/local/texlive/2025/texmf-dist/tex/generic/xkeyval/xkeyval.tex (/usr/local/texlive/2025/texmf-dist/tex/generic/xkeyval/xkvutils.tex
+\XKV@toks=\toks41
+\XKV@tempa@toks=\toks42
+)
+\XKV@depth=\count461
+File: xkeyval.tex 2014/12/03 v2.7a key=value parser (HA)
+))
+\c@@todonotes@numberoftodonotes=\count462
+) (/usr/local/texlive/2025/texmf-dist/tex/latex/tcolorbox/tcolorbox.sty
 Package: tcolorbox 2024/10/22 version 6.4.1 text color boxes
  (/usr/local/texlive/2025/texmf-dist/tex/latex/tools/verbatim.sty
 Package: verbatim 2024-01-22 v1.5x LaTeX2e package for verbatim enhancements
-\every@verbatim=\toks41
-\verbatim@line=\toks42
+\every@verbatim=\toks43
+\verbatim@line=\toks44
 \verbatim@in@stream=\read4
 ) (/usr/local/texlive/2025/texmf-dist/tex/latex/environ/environ.sty
 Package: environ 2014/05/04 v0.3 A new way to define environments
@@ -879,9 +892,9 @@ Package: trimspaces 2009/09/17 v1.1 Trim spaces around a token list
 \tcb@upperbox=\box74
 \tcb@lowerbox=\box75
 \tcb@phantombox=\box76
-\c@tcbbreakpart=\count461
-\c@tcblayer=\count462
-\c@tcolorbox@number=\count463
+\c@tcbbreakpart=\count463
+\c@tcblayer=\count464
+\c@tcolorbox@number=\count465
 \l__tcobox_tmpa_box=\box77
 \l__tcobox_tmpa_dim=\dimen298
 \tcb@temp=\box78
@@ -890,10 +903,10 @@ Package: trimspaces 2009/09/17 v1.1 Trim spaces around a token list
 \tcb@temp=\box81
  (/usr/local/texlive/2025/texmf-dist/tex/latex/tcolorbox/tcbraster.code.tex
 Library (tcolorbox): 'tcbraster.code.tex' version '6.4.1'
-\c@tcbrastercolumn=\count464
-\c@tcbrasterrow=\count465
-\c@tcbrasternum=\count466
-\c@tcbraster=\count467
+\c@tcbrastercolumn=\count466
+\c@tcbrasterrow=\count467
+\c@tcbrasternum=\count468
+\c@tcbraster=\count469
 ) (/usr/local/texlive/2025/texmf-dist/tex/latex/tcolorbox/tcbskins.code.tex
 Library (tcolorbox): 'tcbskins.code.tex' version '6.4.1'
 (/usr/local/texlive/2025/texmf-dist/tex/latex/tikzfill/tikzfill.image.sty
@@ -923,30 +936,30 @@ Library (tcolorbox): 'tcbfitting.code.tex' version '6.4.1'
 \tcbfitdim=\dimen299
 \tcb@lowerfitdim=\dimen300
 \tcb@upperfitdim=\dimen301
-\tcb@cur@hbadness=\count468
+\tcb@cur@hbadness=\count470
 ) (/usr/local/texlive/2025/texmf-dist/tex/latex/tcolorbox/tcblistingsutf8.code.tex
 Library (tcolorbox): 'tcblistingsutf8.code.tex' version '6.4.1'
 (/usr/local/texlive/2025/texmf-dist/tex/latex/tcolorbox/tcblistings.code.tex
 Library (tcolorbox): 'tcblistings.code.tex' version '6.4.1'
 (/usr/local/texlive/2025/texmf-dist/tex/latex/listings/listings.sty
-\lst@mode=\count469
+\lst@mode=\count471
 \lst@gtempboxa=\box86
-\lst@token=\toks43
-\lst@length=\count470
+\lst@token=\toks45
+\lst@length=\count472
 \lst@currlwidth=\dimen302
-\lst@column=\count471
-\lst@pos=\count472
+\lst@column=\count473
+\lst@pos=\count474
 \lst@lostspace=\dimen303
 \lst@width=\dimen304
-\lst@newlines=\count473
-\lst@lineno=\count474
+\lst@newlines=\count475
+\lst@lineno=\count476
 \lst@maxwidth=\dimen305
  (/usr/local/texlive/2025/texmf-dist/tex/latex/listings/lstpatch.sty
 File: lstpatch.sty 2024/09/23 1.10c (Carsten Heinz)
 ) (/usr/local/texlive/2025/texmf-dist/tex/latex/listings/lstmisc.sty
 File: lstmisc.sty 2024/09/23 1.10c (Carsten Heinz)
-\c@lstnumber=\count475
-\lst@skipnumbers=\count476
+\c@lstnumber=\count477
+\lst@skipnumbers=\count478
 \lst@framebox=\box87
 ) (/usr/local/texlive/2025/texmf-dist/tex/latex/listings/listings.cfg
 File: listings.cfg 2024/09/23 1.10c listings configuration
@@ -957,7 +970,7 @@ Library (tcolorbox): 'tcblistingscore.code.tex' version '6.4.1'
 (/usr/local/texlive/2025/texmf-dist/tex/latex/tcolorbox/tcbprocessing.code.tex
 Library (tcolorbox): 'tcbprocessing.code.tex' version '6.4.1'
 )
-\c@tcblisting=\count477
+\c@tcblisting=\count479
 )) (/usr/local/texlive/2025/texmf-dist/tex/latex/listingsutf8/listingsutf8.sty
 Package: listingsutf8 2019-12-10 v1.5 Allow UTF-8 in listings input (HO)
 )) (/usr/local/texlive/2025/texmf-dist/tex/latex/tcolorbox/tcbexternal.code.tex
@@ -973,11 +986,11 @@ File: pgflibraryfadings.code.tex 2023-01-15 v3.1.10 (3.1.10)
 ))) (/usr/local/texlive/2025/texmf-dist/tex/latex/tcolorbox/tcbposter.code.tex
 Library (tcolorbox): 'tcbposter.code.tex' version '6.4.1'
 ))
-\c@theorem=\count478
-\c@corollary=\count479
-\c@definition=\count480
-\@quotelevel=\count481
-\@quotereset=\count482
+\c@theorem=\count480
+\c@corollary=\count481
+\c@definition=\count482
+\@quotelevel=\count483
+\@quotereset=\count484
  (./main.aux
 
 LaTeX Warning: Label `fig:shrincs' multiply defined.
@@ -985,44 +998,44 @@ LaTeX Warning: Label `fig:shrincs' multiply defined.
 )
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 59.
+LaTeX Font Info:    ... okay on input line 59.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 59.
+LaTeX Font Info:    ... okay on input line 59.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 59.
+LaTeX Font Info:    ... okay on input line 59.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 59.
+LaTeX Font Info:    ... okay on input line 59.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 59.
+LaTeX Font Info:    ... okay on input line 59.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 59.
+LaTeX Font Info:    ... okay on input line 59.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 59.
+LaTeX Font Info:    ... okay on input line 59.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 59.
+LaTeX Font Info:    ... okay on input line 59.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 59.
+LaTeX Font Info:    ... okay on input line 59.
  (/usr/local/texlive/2025/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count483
+\scratchcounter=\count485
 \scratchdimen=\dimen306
 \scratchbox=\box88
-\nofMPsegments=\count484
-\nofMParguments=\count485
-\everyMPshowfont=\toks44
-\MPscratchCnt=\count486
+\nofMPsegments=\count486
+\nofMParguments=\count487
+\everyMPshowfont=\toks46
+\MPscratchCnt=\count488
 \MPscratchDim=\dimen307
-\MPnumerator=\count487
-\makeMPintoPDFobject=\count488
-\everyMPtoPDFconversion=\toks45
+\MPnumerator=\count489
+\makeMPintoPDFobject=\count490
+\everyMPtoPDFconversion=\toks47
 ) (/usr/local/texlive/2025/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 485.
  (/usr/local/texlive/2025/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
 ))
-Package hyperref Info: Link coloring OFF on input line 54.
+Package hyperref Info: Link coloring OFF on input line 59.
  (./main.out) (./main.out)
 \@outlinefile=\write5
 \openout5 = `main.out'.
@@ -1041,19 +1054,19 @@ Package biblatex Info: Trying to load bibliographic data...
 Package biblatex Info: ... file 'main.bbl' not found.
 
 No file main.bbl.
-Package biblatex Info: Reference section=0 on input line 54.
-Package biblatex Info: Reference segment=0 on input line 54.
-\c@lstlisting=\count489
+Package biblatex Info: Reference section=0 on input line 59.
+Package biblatex Info: Reference segment=0 on input line 59.
+\c@lstlisting=\count491
 (/usr/local/texlive/2025/texmf-dist/tex/latex/base/inputenc.sty
 Package: inputenc 2024/02/08 v1.3d Input encoding file
-\inpenc@prehook=\toks46
-\inpenc@posthook=\toks47
+\inpenc@prehook=\toks48
+\inpenc@posthook=\toks49
 )
-LaTeX Font Info:    Trying to load font information for U+msa on input line 57.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 62.
  (/usr/local/texlive/2025/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 57.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 62.
  (/usr/local/texlive/2025/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) (./main.toc
@@ -1076,34 +1089,42 @@ LaTeX Warning: Citation 'bip341' on page 3 undefined on input line 2.
 
 LaTeX Warning: Citation 'shor' on page 3 undefined on input line 2.
 
-) (./content/2-notation.tex) (./content/3-overview.tex
+Package hyperref Info: bookmark level for unknown todo defaults to 0 on input line 13.
+) (./content/2-notation.tex
 
-[3{/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}]
-<content/img/general.png, id=404, 936.49875pt x 753.81625pt>
+[3{/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}]) (./content/3-overview.tex
+Underfull \hbox (badness 3536) in paragraph at lines 2--2
+[][][]\OT1/cmr/m/n/10 Mike: I won-der if we should in-clude guidlince for state man-age-ment here. Maybe this: 
+ []
+
+<content/img/general.png, id=407, 936.49875pt x 753.81625pt>
 File: content/img/general.png Graphic file (type png)
 <use content/img/general.png>
-Package pdftex.def Info: content/img/general.png  used on input line 9.
+Package pdftex.def Info: content/img/general.png  used on input line 11.
 (pdftex.def)             Requested size: 452.9679pt x 364.61125pt.
 
+LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[4 <./content/img/general.png>]
-Overfull \hbox (45.77652pt too wide) in paragraph at lines 24--24
+
+Overfull \hbox (45.77652pt too wide) in paragraph at lines 26--26
 []    \OT1/cmtt/m/n/10 PK.sf \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 compute_stateful_root(PK.seed, ADRS, SK.seed) // Public stateful key, see Section X[] 
  []
 
 
-Overfull \hbox (56.27643pt too wide) in paragraph at lines 25--25
+Overfull \hbox (56.27643pt too wide) in paragraph at lines 27--27
 []    \OT1/cmtt/m/n/10 PK.sl \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 compute_stateless_root(PK.seed, ADRS, SK.seed) // Public stateless key, see Section X[] 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 28--29
+Underfull \hbox (badness 10000) in paragraph at lines 30--31
 
  []
 
-) (./content/4-params.tex
 
-[5]) (./content/5-functions-and-addresses.tex
+
+[4]
+
+[5 <./content/img/general.png>]) (./content/4-params.tex) (./content/5-functions-and-addresses.tex
 
 LaTeX Warning: Citation 'fips-205' on page 6 undefined on input line 10.
 
@@ -1116,11 +1137,12 @@ LaTeX Warning: Citation 'fips-205' on page 6 undefined on input line 10.
 LaTeX Warning: Citation 'wots+' on page 8 undefined on input line 2.
 
 
-LaTeX Warning: Citation 'wots+c' on page 8 undefined on input line 8.
-
-
 
 [8]
+
+LaTeX Warning: Citation 'wots+c' on page 9 undefined on input line 8.
+
+
 
 [9]
 
@@ -1129,94 +1151,94 @@ LaTeX Warning: Citation 'wots+c' on page 8 undefined on input line 8.
 [11]
 
 [12]
-Overfull \hbox (3.77689pt too wide) in paragraph at lines 226--226
+
+[13]
+Overfull \hbox (3.77689pt too wide) in paragraph at lines 228--228
 []    \OT1/cmtt/m/n/10 1. R \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 sig[0:R_SIZE]                 // maybe it makes sense to define sig_parse op[] 
  []
 
 ) (./content/7-xmss.tex
 
-[13]
-Overfull \hbox (103.52602pt too wide) in paragraph at lines 37--37
+[14]
+Overfull \hbox (103.52602pt too wide) in paragraph at lines 39--39
 []    \OT1/cmtt/m/n/10 3. right \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 xmss_treehash(SK.seed, PK.seed, ADRS, target_height - 1, start_idx + 2^(target_height - 1))[] 
  []
 
 
 
-[14]
+[15]
 
-[15]) (./content/8-uxmss.tex
-
-[16]
+[16]) (./content/8-uxmss.tex
 
 [17]
 
-[18]) (./content/9-fors.tex
-<content/img/fors.png, id=478, 756.8275pt x 359.3425pt>
+[18]
+
+[19]
+
+[20]) (./content/9-fors.tex
+<content/img/fors.png, id=516, 756.8275pt x 359.3425pt>
 File: content/img/fors.png Graphic file (type png)
 <use content/img/fors.png>
 Package pdftex.def Info: content/img/fors.png  used on input line 14.
 (pdftex.def)             Requested size: 362.37569pt x 172.05475pt.
 
 
-LaTeX Warning: `!h' float specifier changed to `!ht'.
+[21 <./content/img/fors.png>]
 
-
-
-[19]
-
-[20 <./content/img/fors.png>]
-Overfull \hbox (9.02808pt too wide) in paragraph at lines 88--88
+[22]
+Overfull \hbox (9.02808pt too wide) in paragraph at lines 91--91
 []    \OT1/cmtt/m/n/10 Algorithm: fors_treehash(SK.seed, PK.seed, ADRS, tree_idx, target_height, start_idx)[] 
  []
 
 
-Overfull \hbox (14.2768pt too wide) in paragraph at lines 105--105
+Overfull \hbox (14.2768pt too wide) in paragraph at lines 108--108
 []    \OT1/cmtt/m/n/10 2. left \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 fors_treehash(SK.seed, PK.seed, ADRS, tree_idx, target_height-1, start_idx)[] 
  []
 
 
-Overfull \hbox (24.7767pt too wide) in paragraph at lines 106--106
+Overfull \hbox (24.7767pt too wide) in paragraph at lines 109--109
 []    \OT1/cmtt/m/n/10 3. right \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 fors_treehash(SK.seed, PK.seed, ADRS, tree_idx, target_height-1, start_idx +[] 
  []
 
 
 
-[21]
-Overfull \hbox (24.7767pt too wide) in paragraph at lines 130--130
+[23]
+Overfull \hbox (24.7767pt too wide) in paragraph at lines 133--133
 []        \OT1/cmtt/m/n/10 b. auth \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 auth || fors_treehash(SK.seed, PK.seed, ADRS, tree_idx, h, sibling_start)[] 
  []
 
 
 
-[22]) (./content/10-shrincs.tex
-
-[23]
-
-[24]
+[24]) (./content/10-shrincs.tex
 
 [25]
-Overfull \hbox (61.52638pt too wide) in paragraph at lines 107--107
+
+[26]
+
+[27]
+Overfull \hbox (61.52638pt too wide) in paragraph at lines 109--109
 []        \OT1/cmtt/m/n/10 c. xmss_sig \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 xmss_sign(msg, SK.seed, SK.prf, PK.seed, PK.root, ADRS, h', leaf_idx[layer])[] 
  []
 
 
 
-[26]
+[28]
 
-[27]
-Overfull \hbox (56.27643pt too wide) in paragraph at lines 206--206
+[29]
+Overfull \hbox (56.27643pt too wide) in paragraph at lines 210--210
 []        \OT1/cmtt/m/n/10 g. msg \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 xmss_pkFromSig(wots_sig, auth, msg, PK.seed, PK.root, ADRS, h', leaf_idx[layer])[] 
  []
 
 
 
-[28])
+[30])
 
-LaTeX Warning: Empty bibliography on input line 96.
+LaTeX Warning: Empty bibliography on input line 101.
 
 
 
-[29] (./main.aux)
+[31] (./main.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
@@ -1240,18 +1262,18 @@ Package logreq Info: Writing requests to 'main.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 54147 strings out of 473190
- 1281180 string characters out of 5715799
- 2367277 words of memory out of 5000000
- 76653 multiletter control sequences out of 15000+600000
+ 54846 strings out of 473190
+ 1295716 string characters out of 5715799
+ 2380149 words of memory out of 5000000
+ 77296 multiletter control sequences out of 15000+600000
  568275 words of font info for 73 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 84i,9n,96p,967b,1151s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 84i,9n,96p,1146b,1151s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb>
-Output written on main.pdf (29 pages, 424116 bytes).
+Output written on main.pdf (31 pages, 439688 bytes).
 PDF statistics:
- 633 PDF objects out of 1000 (max. 8388607)
- 530 compressed objects within 6 object streams
- 105 named destinations out of 1000 (max. 500000)
+ 691 PDF objects out of 1000 (max. 8388607)
+ 586 compressed objects within 6 object streams
+ 147 named destinations out of 1000 (max. 500000)
  687 words of extra memory for PDF output out of 10000 (max. 10000000)
 
