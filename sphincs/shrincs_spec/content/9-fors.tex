@@ -4,7 +4,7 @@ FORS (Forest of Random Subsets) is a few-time signature scheme used at the botto
 \subsection{FORS Structure}
 FORS consists of \texttt{k} binary trees, each of height \texttt{a}:
 \begin{itemize}
-    \item Each tree has \texttt{pow(2,a)} leaves
+    \item Each tree has \texttt{$2^a$} leaves
     \item Each leaf is derived from \texttt{SK.seed} using PRF
     \item The message digest is split into \texttt{k} chunks of \texttt{a} bits each
     \item Each chunk selects one leaf index from the corresponding tree
@@ -15,7 +15,7 @@ FORS consists of \texttt{k} binary trees, each of height \texttt{a}:
     \caption{FORS architecture}
     \label{fig:shrincs}
 \end{figure}
-
+\mknote{We put the counter into PRFmsg for the stateless option, and regenerate the randomness each time. PRFmsg(inputcs, counter)= R. Hmsg(inputs, R)= digest, check if good, otherwise restart from PRFmsg with a new counter.}
 \subsection{Grinding Condition}
 \begin{verbatim}
     digest = H_msg(ADRS, R, ctr, PK.seed, PK.root, m)
@@ -25,7 +25,8 @@ FORS consists of \texttt{k} binary trees, each of height \texttt{a}:
 Cost is expected to be $\approx 2^a$ iterations.
 
 \subsection{Message to Indices}
-The \texttt{fors\_msg\_to\_indices} function converts a message digest into k leaf indices, one for each FORS tree. Each index is extracted as a consecutive a-bit chunk from the digest, selecting which leaf to reveal from the corresponding tree. The indices are integers in the range \texttt{[0, pow(2,a) - 1]}.
+The \texttt{fors\_msg\_to\_indices} function converts a message digest into k leaf indices, one for each FORS tree. 
+\mknote{ The mesage digest also contains the index of the FORS instance that is used. We also need to make sure that the output size of the function is sufficient for this encodings.} Each index is extracted as a consecutive a-bit chunk from the digest, selecting which leaf to reveal from the corresponding tree. The indices are integers in the range \texttt{[0, pow(2,a) - 1]}.
 \begin{verbatim}
     Algorithm: fors_msg_to_indices(digest)
     Input:
@@ -41,6 +42,7 @@ The \texttt{fors\_msg\_to\_indices} function converts a message digest into k le
 
 \subsection{Grinding}
 The \texttt{fors\_grind} function searches for a counter value where the last tree's index equals 0. This eliminates the need to send the authentication path for tree k-1, since when index 0 is selected, the verifier can simply receive the tree root directly. The function iterates through counter values until finding one that produces a digest whose last a bits are zero.
+\mknote{This can be variable. we can require one, two, or more indices to be 0. Also need to adapt the message hashing, and indices extraction.}
 \begin{verbatim}
     Algorithm: fors_grind(m, R, PK.seed, PK.root, ADRS)
     Input:
@@ -84,6 +86,7 @@ The \texttt{fors\_SKgen} function derives a secret leaf value for a specific tre
 
 \subsection{TreeHash}
 The \texttt{fors\_treehash} function recursively computes FORS subtree roots. At height 0 (leaf level), it generates the secret key and hashes it to produce the leaf node. At higher levels, it recursively computes left and right children, then hashes their concatenation. This function is used both for computing full tree roots and for generating individual nodes needed in authentication paths.
+\mknote{This is similar to xmss treehash. So maybe we can reuse some code, and the same comments on the start idx apply here. And for algorithms below, I think if we modularise things in the right way we can just reuse the xmss functions everywhere here.}
 \begin{verbatim}
     Algorithm: fors_treehash(SK.seed, PK.seed, ADRS, tree_idx, target_height, start_idx)
     Input:
@@ -132,7 +135,8 @@ The \texttt{fors\_auth\_path} function generates the a sibling nodes needed to a
 \end{verbatim}
 
 \subsection{Signature generation}
-The \texttt{fors\_sign} function produces a FORS+C signature by revealing k-1 leaves with their full authentication paths, plus a special case for tree k-1. Due to grinding, the last tree's index is guaranteed to be 0, so instead of revealing leaf 0 and its authentication path, the signature includes only the tree root. This saves \texttt{(n + a * n) - n = a * n} bytes compared to standard FORS. The signature format is: \texttt{R || ctr || (sk\_0 || auth\_0) || ... || (sk\_{k-2} || auth\_{k-2}) || root\_{k-1}}.
+The \texttt{fors\_sign} function produces a FORS+C signature by revealing k-1 leaves with their full authentication paths, plus a special case for tree k-1. Due to grinding, the last tree's index is guaranteed to be 0, so instead of revealing leaf 0 and its authentication path, the signature includes only the tree root.
+\mknote{We don't even need the tree root here. We just completly exclude it from the signature. the FORS+C pk = H(root0, ..., rootk-2). Line 6 can be droped.} This saves \texttt{(n + a * n) - n = a * n} bytes compared to standard FORS. The signature format is: \texttt{R || ctr || (sk\_0 || auth\_0) || ... || (sk\_{k-2} || auth\_{k-2}) || root\_{k-1}}.
 \begin{verbatim}
     Algorithm: fors_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS)
     Input:
@@ -157,6 +161,7 @@ The \texttt{fors\_sign} function produces a FORS+C signature by revealing k-1 le
 \end{verbatim}
 
 \subsection{Public Key Recovery}
+\mknote{here we can exclude the last tree root, same as above. The algorithm presented under line 9 should be a subfunction fors treehash?}
 The \texttt{fors\_pkFromSig} function recovers the FORS public key from a signature. For each of the first k-1 trees, it hashes the revealed secret key to obtain the leaf, then iteratively combines with authentication path nodes to compute the tree root. For tree k-1, the root is directly extracted from the signature (since grinding ensures index 0 was selected). Finally, all k tree roots are hashed together to produce the FORS public key. The function returns $\bot$ if the grinding condition is not satisfied (\texttt{indices[k-1] != 0}).
 \begin{verbatim}
     Algorithm: fors_pkFromSig(sig, m, PK.seed, PK.root, ADRS)

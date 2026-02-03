@@ -19,6 +19,8 @@ Layer indexing within the stateless hypertree is the following:
 
 \subsection{XMSS TreeHash}
 The \texttt{xmss\_treehash} function computes subtree roots within an XMSS tree. It takes a target height and a starting leaf index, then recursively builds the subtree by computing leaves (WOTS+C public keys) at height 0 and hashing pairs of children to form internal nodes. This function is the core building block used both for computing the full tree root (by calling it with \texttt{target\_height = h\_prime} and \texttt{start\_idx = 0}) and for generating individual nodes needed in authentication paths.
+\mknote{I see that you require here that the start idx must be zero, but don't we need a general xmss treehash alg that takes a specific leaf used to sign the message and does the same as your xmss treehash. See Algorithm 9 xmss node in SLH-DSA spec. If we decide to keep this as a function I would propose name change for the variable: leftmost leaf index (smth like this)}
+
 \begin{verbatim}
     Algorithm: xmss_treehash(SK.seed, PK.seed, ADRS, target_height, start_idx)
     Input:
@@ -77,9 +79,12 @@ For a leaf at index \texttt{idx}, the authentication path consists of sibling no
         c. auth ← auth || xmss_treehash(SK.seed, PK.seed, ADRS, h, sibling_start)
     3. return auth
 \end{verbatim}
+\mknote{2.b feels unnecessary if we update the xmss treehash function.}
 
 \subsection{XMSS Public Key Recovery from Signature}
 Given a WOTS+C signature and authentication path, this algorithm recovers the XMSS tree root. First, it recovers the WOTS+C public key (the leaf value) from the WOTS+C signature. Then, starting from the leaf, it iteratively combines the current node with the corresponding authentication path node to compute the parent, continuing until reaching the root. At each height \texttt{h}, the \texttt{h}-th bit of \texttt{idx} determines whether the current node is the left child (bit = 0) or right child (bit = 1), which dictates the ordering when hashing the pair.
+
+\mknote{And here we write a different implementation istead of reusing xmss treehash algorithm. Probably mainly because the treehash recuired the starting index to be 0.}
 \begin{verbatim}
     Algorithm: xmss_pkFromSig(wots_sig, auth, m, PK.seed, PK.root, ADRS, h_prime, idx)
     Input:
@@ -113,7 +118,8 @@ Given a WOTS+C signature and authentication path, this algorithm recovers the XM
 \end{verbatim}
 
 \subsection{XMSS Signature Generation (Stateless Layer)}
-To sign a message within the stateless hypertree, the XMSS signature generation produces a WOTS+C signature on the message followed by the authentication path for the corresponding leaf. The message being signed is typically either a FORS+C public key (at layer 0) or the root of a lower-layer XMSS tree (at layers 1 through d-1). The leaf index \texttt{idx} determines which WOTS+C key pair is used; this index is derived from the message digest during stateless signing.
+To sign a message within the stateless hypertree, the XMSS signature generation produces a WOTS+C signature on the message followed by the authentication path for the corresponding leaf. The message being signed is typically either a FORS+C public key (at layer 0) or the root of a lower-layer XMSS tree (at layers 1 through d-1). The leaf index \texttt{idx} determines which WOTS+C key pair is used; this index is determined from the message digest during stateless signing.
+
 \begin{verbatim}
     Algorithm: xmss_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS, h_prime, idx)
     Input:

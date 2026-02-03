@@ -5,7 +5,7 @@ In WOTS+, the checksum $C$ is calculated from the message digest $D$.
 
 $$C = \sum_{i=1}^{l} (w - 1 - d_i)$$
 
-This checksum is then signed using additional chains. In WOTS+C\cite{wots+c}, instead of calculating a checksum  for a fixed message digest, the signer modifies the message digest until it possesses a specific,  pre-determined checksum property. This is done by appending a counter \texttt{ctr} and a random salt \texttt{R} to the message before hashing. The signer increments \texttt{ctr} until the resulting hash digest $D$ satisfies a global target condition.
+This checksum is then signed using additional chains. In WOTS+C\cite{wots+c}, instead of calculating a checksum  for a fixed message digest, the signer modifies the message digest until it possesses a specific,  pre-determined checksum property. This is done by appending a counter \texttt{ctr} and a random salt \texttt{R} \mknote{I think we should separate those, first we use Hmsg to hash the message with R, and they we use that digest and hash it again with the counter until we find a good digest. I can try to investigate if it is possible to combine those, but it looks like two separate hashes is better.} to the message before hashing. The signer increments \texttt{ctr} until the resulting hash digest $D$ satisfies a global target condition.
 
 \subsection{The Target Condition}
 WOTS utilize a parameter \texttt{w} to define the number of hashchains and correspondingly their length. The message digest length is \texttt{n} bytes so \texttt{l = 8n/(log2(w))}. The values $d_{i\in[l]}$ are treated as integers in \texttt{0...(w-1)}. 
@@ -16,10 +16,10 @@ $$S_{wn} = \sum_{i=0}^{l-1}d_i$$
 
 By enforcing this condition during signing (including grinding), the verifier can simply assume the checksum is \texttt{Swn} without receiving it. If the reconstructed digest does not sum to \texttt{Swn}, the signature is invalid. 
 
-Additionally we can manipulate a target condition to decrease the cost of signature verification. The signature generation and verification operations together consist of \texttt{St = (w-1)*l} hashing operations. So we can increase \texttt{Swn} (grinding complexity) and receive the reduced verification complexity of \texttt{(St - Swn)} hashes. Concrete parameters are presented in Section~4.
+Additionally we can manipulate a target condition to decrease the cost of signature verification. The signature generation and verification operations together consist of \texttt{St = (w-1)*l} hashing operations \mknote{Plus grinding, Plus public key compression but we can also put that cost to the tree generation part. Moreover, during signing in the XMSS we need to compute all the chains in the WOTS anyways, since we need to get to public key to compute the leaf of the Merkle tree.}. So we can increase \texttt{Swn} (grinding complexity) and receive the reduced verification complexity of \texttt{(St - Swn)} hashes. Concrete parameters are presented in Section~4.
 
 \subsection{Base-w Representation}
-WOTS represents a message digest in base \texttt{w} so that each digit is an integer in \texttt{[0...w-1]}. These digits directly determine the number of hashes to apply to each WOTS chain element during signing and verification. The \texttt{base\_w()} function converts a byte string into an array of \texttt{out\_len} base-w digits (this requires \texttt{w} to be a power of two.).
+WOTS represents a message digest in base \texttt{w} so that each digit is an integer in \texttt{[0...w-1]}. These digits directly determine the number of hashes to apply to each WOTS chain element during signing and verification. The \texttt{base\_w()} function converts a byte string into an array of \texttt{out\_len} base-w digits (this requires \texttt{w} to be a power of two.)\mknote{It does not have to be a power of two, but it is more convinient, if it is. So yes, in this document we can assume for it to be a power of 2, but I would change the wording since it is not a strict requirement}.
 \begin{verbatim}
     Algorithm: base_w(m, w, out_len) 
         m: byte string
@@ -117,13 +117,15 @@ To create a WOTS public key for a given \texttt{keypair} index, we derive one se
         f. setKeyPairAddress(ADRS, keypair)
         g. setChainAddress(ADRS, i)
         h. tmp[i] ← chain(sk_i, 0, w - 1, PK.seed, ADRS)
-    3. setTypeAndClear(ADRS, SF_TREE)
+    3. setTypeAndClear(ADRS, SF_TREE) 
     4. setKeyPairAddress(ADRS, keypair)
     5. pk ← Tw(PK.seed, ADRS, tmp[0] || ... || tmp[l-1])
     6. return pk
 \end{verbatim}
+\mknote{Was the addrs for WOTS compression defined before? The computation of pk is never explained I think}
 
 \subsection{Messsage Digest Grinding}
+\mknote{Here we need to split message hashing into two parts. First is message digest computation with Randomness. Next hashing of the digest with the counter. I think this is better for security proofs and presents a better modular design. Because in stateless branch you will also hash for WOTS+C where you will not use any randomness, just the previous hash and the counter. Important remark for future: message hashing for SPHINCS+C  can differ in output length from the hashing for XMSS. But if we dont put the counter in neither cases we will have the same inouts.}
 WOTS+C enforces the checksum/target condition by searching over the counter \texttt{ctr}. The value \texttt{R} (a randomness/nonce input to message hashing) may be fixed (deterministic) and need not be resampled during grinding. The function \texttt{wots\_grind()} increments \texttt{ctr} and recomputes the message digest until the derived base-w digits satisfy the target condition. It outputs the found \texttt{ctr} and the corresponding digest (and \texttt{R} is carried in the signature only if verification requires it to recompute the same digest).
 
 \oleks{To consider if we need to mention counter in Section 5.4}
@@ -179,7 +181,7 @@ Additionally we need to define a func which allows to calculate the digest witho
 
 \subsection{Signature Generation}
 To sign, WOTS+C instance computes the message digits and then reveals, for each chain, the chain value after exactly \texttt{msg[i]} steps (starting from the secret-derived chain \texttt{start}). These revealed values form the WOTS signature vector. The signature also carries the randomness 
-\texttt{R} and grinding counter \texttt{ctr} needed for the verifier to reproduce the same message digits.
+\texttt{R} and grinding counter \texttt{ctr} needed for the verifier to reproduce the same message digits.\mknote{Also split the message hashing here.}
 \begin{verbatim}
     Algorithm: wots_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS, keypair)
     Input:
@@ -210,7 +212,7 @@ To sign, WOTS+C instance computes the message digits and then reveals, for each 
 \end{verbatim}
 
 \subsection{Signature Verification (Public Key Recovery)}
-Verification reconstructs the WOTS+C public key implied by the signature. For each chain element, the verifier continues hashing forward from the signature’s provided intermediate value for \texttt{w-1-msg[i]} steps to reach the end-of-chain value. Compressing all end-of-chain values yields the recovered WOTS+C public key, which can then be checked against the expected value in the surrounding scheme.
+Verification reconstructs the WOTS+C public key implied by the signature. For each chain element, the verifier continues hashing forward from the signature’s provided intermediate value for \texttt{w-1-msg[i]} steps to reach the end-of-chain value. Compressing all end-of-chain values yields the recovered WOTS+C public key, which can then be checked against the expected value in the surrounding scheme.\mknote{Message hash}
 \begin{verbatim}
     Algorithm: wots_pkFromSig(sig, m, PK.seed, PK.root, ADRS, keypair, mode)
     Input:
