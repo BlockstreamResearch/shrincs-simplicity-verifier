@@ -15,6 +15,8 @@ To prevent multi-target attacks and ensure domain separation between the various
 
 This usage of tweaked hashing is critical. It ensures that a hash computed at one position in the Merkle tree cannot be substituted for a hash at another position, effectively mitigating generic tree-grafting attacks.
 
+\oleks{\texttt{PK.seed = 16 bytes, ADRS = 32 bytes, m = 16-32 bytes}. SHA-2 operates with 64-byte blocks. So we can add a "0"-padding, like \texttt{Tw(PK.seed, ADRS, m) = H(PK.seed || $\vec{0}$[0,3n] || ADRS || m)} to have the first 64 bytes constant. It will reduce the hashing complexity to 1 block for each tweak function.}
+
 \subsection{Pseudorandom Functions}
 We use PRF for deterministic key derivation:
 

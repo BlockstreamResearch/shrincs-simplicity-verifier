@@ -154,12 +154,10 @@ The \texttt{fors\_sign} function produces a FORS+C signature by revealing k-1 le
     3. (indices, ctr) ← fors_grind(m, R, PK.seed, PK.root, ADRS)
     4. sig ← R || toByte(ctr, c)
     5. for i from 0 to k - 2:
-       a. sk_i ← fors_SKgen(SK.seed, PK.seed, ADRS, i, indices[i])
-       b. auth_i ← fors_auth_path(SK.seed, PK.seed, ADRS, i, indices[i])
-       c. sig ← sig || sk_i || auth_i
-    6. root_last ← fors_treehash(SK.seed, PK.seed, ADRS, k-1, a, 0)
-    7. sig ← sig || root_last
-    8. return sig
+        a. sk_i ← fors_SKgen(SK.seed, PK.seed, ADRS, i, indices[i])
+        b. auth_i ← fors_auth_path(SK.seed, PK.seed, ADRS, i, indices[i])
+        c. sig ← sig || sk_i || auth_i
+    6. return sig
 \end{verbatim}
 
 \subsection{Public Key Recovery}
@@ -177,7 +175,7 @@ The \texttt{fors\_pkFromSig} function recovers the FORS public key from a signat
         pk: FORS public key (n bytes), or $\bot$ if invalid
 
     1. R ← sig[0 : n]
-    2. ctr ← sig[n : n + c] 
+    2. ctr ← sig[n : n + c]
     3. setTypeAndClear(ADRS, H_MSG)
     4. digest ← H_msg(ADRS, R, ctr, PK.seed, PK.root, m)
     5. indices ← fors_msg_to_indices(digest)
@@ -186,30 +184,27 @@ The \texttt{fors\_pkFromSig} function recovers the FORS public key from a signat
     7. roots ← []
     8. offset ← n + c
     9. for i from 0 to k - 2:
-       a. sk_i ← sig[offset : offset + n]
-       b. auth_i ← sig[offset + n : offset + n + a * n]
-       c. offset ← offset + n + a * n
-       
-       d. setTypeAndClear(ADRS, SL_FORS)  
-       e. setKeyPairAddress(ADRS, i)
-       f. setTreeHeight(ADRS, 0)
-       g. setTreeIndex(ADRS, indices[i])
-       j. node ← Tw(PK.seed, ADRS, sk_i)
-       k. idx ← indices[i]
-       l. for h from 0 to a - 1:
-              setTreeHeight(ADRS, h + 1)
-              setTreeIndex(ADRS, idx >> 1)
-              if (idx AND 1) == 0:
-                  node ← Tw(PK.seed, ADRS, node || auth_i[h * n : (h+1) * n])
-              else:
-                  node ← Tw(PK.seed, ADRS, auth_i[h * n : (h+1) * n] || node)
-              idx ← idx >> 1
-       m. roots[i] ← node
-
-    10. roots[k-1] ← sig[offset : offset + n]
-    11. setTypeAndClear(ADRS, SL_FORS)
-    12. setTreeHeight(ADRS, a)
-    13. setTreeIndex(ADRS, 0)
-    14. pk ← Tw(PK.seed, ADRS, roots[0] || ... || roots[k-1])
-    15. return pk
+        a. sk_i ← sig[offset : offset + n]
+        b. auth_i ← sig[offset + n : offset + n + a * n]
+        c. offset ← offset + n + a * n
+        d. setTypeAndClear(ADRS, SL_FORS)
+        e. setKeyPairAddress(ADRS, i)
+        f. setTreeHeight(ADRS, 0)
+        g. setTreeIndex(ADRS, indices[i])
+        j. node ← Tw(PK.seed, ADRS, sk_i)
+        k. idx ← indices[i]
+        l. for h from 0 to a - 1:
+            setTreeHeight(ADRS, h + 1)
+            setTreeIndex(ADRS, idx >> 1)
+            if (idx AND 1) == 0:
+                node ← Tw(PK.seed, ADRS, node || auth_i[h * n : (h+1) * n])
+            else:
+                node ← Tw(PK.seed, ADRS, auth_i[h * n : (h+1) * n] || node)
+            idx ← idx >> 1
+        m. roots[i] ← node
+    10. setTypeAndClear(ADRS, SL_FORS)
+    11. setTreeHeight(ADRS, a)
+    12. setTreeIndex(ADRS, 0)
+    13. pk ← Tw(PK.seed, ADRS, roots[0] || ... || roots[k-2])
+    14. return pk
 \end{verbatim}

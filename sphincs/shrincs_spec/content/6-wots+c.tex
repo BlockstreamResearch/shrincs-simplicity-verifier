@@ -8,7 +8,7 @@ $$C = \sum_{i=1}^{l} (w - 1 - d_i)$$
 This checksum is then signed using additional chains. In WOTS+C\cite{wots+c}, instead of calculating a checksum  for a fixed message digest, the signer modifies the message digest until it possesses a specific,  pre-determined checksum property. This is done by appending a counter \texttt{ctr} and a random salt \texttt{R} \mknote{I think we should separate those, first we use Hmsg to hash the message with R, and they we use that digest and hash it again with the counter until we find a good digest. I can try to investigate if it is possible to combine those, but it looks like two separate hashes is better.} to the message before hashing. The signer increments \texttt{ctr} until the resulting hash digest $D$ satisfies a global target condition.
 
 \subsection{The Target Condition}
-WOTS utilize a parameter \texttt{w} to define the number of hashchains and correspondingly their length. The message digest length is \texttt{n} bits so \texttt{l = 8n/(log2(w))}. The values $d_{i\in[l]}$ are treated as integers in \texttt{0...(w-1)}. 
+WOTS utilize a parameter \texttt{w} to define the number of hashchains and correspondingly their length. The message digest length is \texttt{n} bytes so \texttt{l = 8n/(log2(w))}. The values $d_{i\in[l]}$ are treated as integers in \texttt{0...(w-1)}. 
 
 Let \texttt{Swn} be a protocol parameter (often near the expected value, but may be chosen larger to trade signing/grinding cost for verification cost). If the hash output is uniform, the expected value of a single digit is \texttt{d\_i = (w-1)/2}. For \texttt{l} digits, the expected \texttt{Swn} is: 
 
@@ -214,7 +214,7 @@ To sign, WOTS+C instance computes the message digits and then reveals, for each 
 \subsection{Signature Verification (Public Key Recovery)}
 Verification reconstructs the WOTS+C public key implied by the signature. For each chain element, the verifier continues hashing forward from the signature’s provided intermediate value for \texttt{w-1-msg[i]} steps to reach the end-of-chain value. Compressing all end-of-chain values yields the recovered WOTS+C public key, which can then be checked against the expected value in the surrounding scheme.\mknote{Message hash}
 \begin{verbatim}
-    Algorithm: wots_pkFromSig(sig, m, PK.seed, PK.root, ADRS, keypair)
+    Algorithm: wots_pkFromSig(sig, m, PK.seed, PK.root, ADRS, keypair, mode)
     Input:
         sig: signature
         m: signed message
@@ -243,3 +243,9 @@ Verification reconstructs the WOTS+C public key implied by the signature. For ea
     10. pk ← Tw(PK.seed, ADRS, tmp[0] || ... || tmp[l-1])
     11. return pk
 \end{verbatim}
+
+\subsection{Contribution to the Signature Size and Verification Complexity}
+
+
+\subsection{Implementation notes}
+In this section we have defined basic WOTS+C operations for stateful tree instance. But actually the same one time signature is used in stateless instance too. So we recommend to have a \texttt{mode} parameter that defines the \texttt{ADRS} with \texttt{SF\_WOTS\_CHAIN / SL\_WOTS\_CHAIN} and \texttt{SF\_TREE / SL\_TREE} correspondingly.

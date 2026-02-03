@@ -105,16 +105,16 @@ Given a WOTS+C signature and authentication path, this algorithm recovers the XM
     3. node ← pk
     4. for h from 0 to h_prime - 1:
         a. setTypeAndClear(ADRS, SL_TREE)
-        b. setKeyPairAddress(ADRS, idx >> (h + 1))
+        b. setKeyPairAddress(ADRS, idx >> 1)
         c. setTreeHeight(ADRS, h + 1)
-        d. setTreeIndex(ADRS, idx >> (h + 1))
+        d. setTreeIndex(ADRS, idx >> 1)
         e. auth_node ← auth[h * n : (h + 1) * n]
-        f. if (idx >> h) AND 1 == 0:
+        f. if (idx AND 1) == 0:
             node ← Tw(PK.seed, ADRS, node || auth_node)
         g. else:
             node ← Tw(PK.seed, ADRS, auth_node || node)
         h. idx ← idx >> 1
-5. return node
+    5. return node
 \end{verbatim}
 
 \subsection{XMSS Signature Generation (Stateless Layer)}
