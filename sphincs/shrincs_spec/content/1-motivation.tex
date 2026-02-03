@@ -29,21 +29,21 @@ Users and developers should be aware of the following limitations inherent to st
     \item Accept stateless-only operation for multi-device wallets.
 \end{itemize}
 
-\paragraph{State Corruption and Power Failure}
-If a signing operation is interrupted (e.g., due to power failure) after producing a signature but before persisting the updated state, the signer may not know whether the one-time key was used. Subsequent signing attempts risk catastrophic key reuse. Approaches for mitigation:
+\paragraph{State Corruption and Power Failure.}
+If a signing operation is interrupted (e.g., due to power failure) after producing a signature but before persisting the updated state, the signer may not know whether the one-time key was used. Subsequent signing attempts risk catastrophic key reuse. Approaches to mitigate:
 \begin{itemize}
     \item Incrementing the state counter before the signature. If signing fails, a leaf is wasted but security is preserved.
-    \item State corruption detection: Maintain checksums or redundant state copies to detect corruption. If corruption is detected, fall back to stateless mode.\footnote{Here is a nice guide how to manage a state and backup for post-quantum constructions: https://datatracker.ietf.org/doc/draft-ietf-pquip-hbs-state/}
+    \item State corruption detection, to maintain checksums or redundant state copies to detect corruption. If corruption is detected, fall back to stateless mode.\footnote{Here is an explicit guide for how to manage a state and backups for post-quantum constructions: https://datatracker.ietf.org/doc/draft-ietf-pquip-hbs-state/}
 \end{itemize}
 
-\paragraph{State Growth with Multiple Addresses}
+\paragraph{State Growth with Multiple Addresses.}
 Each SHRINCS-based address requires its own signing state. As users generate new addresses (as recommended for privacy), they must maintain state for each address that may be used for future spending. This state must be preserved for as long as the address holds funds. Mitigation:
 \begin{itemize}
     \item Wallet backups must include current state for all active addresses, not just the seed.
     \item Addresses can be marked as "stateless-only" after backup, accepting larger signatures for those addresses.
 \end{itemize}
 
-\paragraph{Variable Stateful Signature Sizes}
+\paragraph{Variable Stateful Signature Sizes.}
 SHRINKS signatures presume variable signature size and verification complexity depending on: (1) the number of already produced stateful signatures; (2) the signing mode. In decentralized system we need to consider how the cost of the signature verification is calculated to prevent spam attacks.
 \begin{itemize}
     \item That's basically the reason this specification introduced two modes for SHRINCS. SHRINCS-B is designed for accounting systems, where the user pays for each transaction byte, so the signature size matters. SHRINCS-L suits better for systems which calculate the transaction cost based on how many computation units it consumes (like Liquid\footnote{\oleks{Make a reference how WU are calculated for liquid and why signatures with begger sizes can result to cheaper transactions}}).

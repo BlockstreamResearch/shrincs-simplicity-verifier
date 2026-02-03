@@ -2,9 +2,9 @@
 \contentsline {subsection}{\numberline {1.1}SHRINCS}{3}{subsection.1.1}%
 \contentsline {subsection}{\numberline {1.2}Limitations and Practical Considerations}{3}{subsection.1.2}%
 \contentsline {paragraph}{State Management Across Devices.}{3}{section*.2}%
-\contentsline {paragraph}{State Corruption and Power Failure}{4}{section*.3}%
-\contentsline {paragraph}{State Growth with Multiple Addresses}{4}{section*.4}%
-\contentsline {paragraph}{Variable Stateful Signature Sizes}{4}{section*.5}%
+\contentsline {paragraph}{State Corruption and Power Failure.}{4}{section*.3}%
+\contentsline {paragraph}{State Growth with Multiple Addresses.}{4}{section*.4}%
+\contentsline {paragraph}{Variable Stateful Signature Sizes.}{4}{section*.5}%
 \contentsline {section}{\numberline {2}Notation}{4}{section.2}%
 \contentsline {section}{\numberline {3}Overview}{5}{section.3}%
 \contentsline {subsection}{\numberline {3.1}Key Pair Derivation and Size}{6}{subsection.3.1}%
