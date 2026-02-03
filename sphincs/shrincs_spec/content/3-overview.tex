@@ -1,5 +1,5 @@
 \section{Overview}
-\mknote{I wonder if we should include guidlince for state management here. Maybe this: https://datatracker.ietf.org/doc/draft-ietf-pquip-hbs-state/02/ can be useful. But maybe it is not for this document. Maybe it is better to update our HB paper with these discussions.}
+%\mknote{I wonder if we should include guidlince for state management here. Maybe this: https://datatracker.ietf.org/doc/draft-ietf-pquip-hbs-state/02/ can be useful. But maybe it is not for this document. Maybe it is better to update our HB paper with these discussions.} DONE, added to 1st section
 
 SHRINCS is designed in the way it can operate in two modes: \textbf{stateful} and \textbf{stateless}. Stateful mode is represented by the instance of Unbalanced XMSS (UXMSS) with a root public key \texttt{PK.sf}. An optimized variant of SPHINCS+ is used to support the stateless operating mode (which is represented by the public key \texttt{PK.sl}). The root public key is a hashed concatenation of (\texttt{PK.sf}, \texttt{PK.sl}), which is being converted to the Bitcoin address. 
 
@@ -16,20 +16,21 @@ If the state is corrupted (or the limit for stateful operations is met), the sig
 \subsection{Key Pair Derivation and Size}
 SHRINCS keys are derived from a single random seed (\oleks{to add notes about BIP-39 usage and hd wallets if needed, maybe in appendix}):
 \begin{verbatim}
-    seed ←$ {0,1}^(3n)
+    seed ←$ {0,1}^(3*8*n) // 3n bytes
 \end{verbatim}
 Seed allows to derive a private key \texttt{SK ← (SK.seed, SK.prf, PK.seed, PK.sf, PK.sl, PK.root)}:
 \begin{verbatim}
     SK.seed ← seed[0:n]  // Seed for key derivation
     SK.prf ← seed[n:2n]  // Secret needed for PRF_msg
     PK.seed ← seed[2n:3n] // Domain separator for different SHRINCS key pairs
-    PK.sf ← compute_stateful_root(PK.seed, ADRS, SK.seed) // Public stateful key, see Section X
-    PK.sl ← compute_stateless_root(PK.seed, ADRS, SK.seed) // Public stateless key, see Section X
+    PK.sf ← compute_stateful_root(PK.seed, ADRS, SK.seed) // Public stateful key, see Sec.~10
+    PK.sl ← compute_stateless_root(PK.seed, ADRS, SK.seed) // Public stateless key, see Sec.~10
     PK.root ← H(PK.seed, ADRS, PK.sf, PK.sl) // Root public key
 \end{verbatim}
-where \texttt{ADRS} is a tweak also known as a context address (see Section 5.5). \\
+where \texttt{ADRS} is a tweak also known as a context address (see Sec.~5.5). \\
 
-The size of the secret key is \texttt{6n} bytes. A public key consists of two values \texttt{PK ← (PK.seed, PK.root)} and has a size of \texttt{2n} bytes.\mknote{bits, bot bytes}
+The size of the secret key is \texttt{6n} bytes. A public key consists of two values \texttt{PK ← (PK.seed, PK.root)} and has a size of \texttt{2n} bytes.
+%\mknote{bits, bot bytes} DONE
 
 \subsection{Signature Size and Verification Cost}
 \subsubsection{Stateful}
