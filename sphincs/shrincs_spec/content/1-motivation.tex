@@ -11,7 +11,7 @@ The key challenges for deploying hash-based signatures in Bitcoin are:
 SHRINCS (Stateful Hash-based Robust Integrated NIST-Compatible Signatures) is a hybrid post-quantum signature scheme that combines the efficiency of stateful signatures with the robustness of stateless ones:
 \begin{itemize}
     \item \textbf{Efficient stateful path.} During normal operation with intact state, SHRINCS uses an Unbalanced XMSS (UXMSS) tree with WOTS+C one-time signatures. Signature size is $308 + 16q$ bytes (where $q\geq 1$ is the signature index), yielding 324 bytes for the first signature, which is $\times 20$ smaller than the smallest SLH-DSA variant.
-    \item \textbf{Robust stateless fallback.} When the state is lost, corrupted, or exhausted, SHRINCS falls back to a SPHINCS+-based stateless signature (3912 bytes). This is still smaller than standard SLH-DSA.
+    \item \textbf{Robust stateless fallback.} When the state is lost, corrupted, or exhausted, SHRINCS falls back to a SPHINCS+-based stateless signature (3992 bytes). This is still smaller than standard SLH-DSA.
     \item \textbf{Static seed backup.} Users can back up their wallet using a standard seed phrase. Upon recovery, the wallet operates in stateless-only mode, preserving funds while accepting larger signatures.
     \item It provides with two parameters set depending on what matters for verifier:
     \begin{itemize}

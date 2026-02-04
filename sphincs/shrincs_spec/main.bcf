@@ -2378,7 +2378,7 @@
     <bcf:citekey order="4" intorder="1">slh-dsa</bcf:citekey>
     <bcf:citekey order="5" intorder="1">xmss</bcf:citekey>
     <bcf:citekey order="6" intorder="1">bip-39</bcf:citekey>
-    <bcf:citekey order="7" intorder="1">fips-205</bcf:citekey>
+    <bcf:citekey order="7" intorder="1">https://sphincs.org/data/sphincs+-paper.pdf</bcf:citekey>
     <bcf:citekey order="8" intorder="1">wots+</bcf:citekey>
     <bcf:citekey order="9" intorder="1">wots+c</bcf:citekey>
   </bcf:section>

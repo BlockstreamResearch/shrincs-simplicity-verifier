@@ -1,13 +1,14 @@
 \section{Underlying Functions and Addresses}
+This section defines the cryptographic primitives and addressing scheme used throughout SHRINCS.
 \subsection{Hash Function}
 
-SHRINCS uses SHA-256 truncated to \texttt{n} bytes \mknote{Sometimes n appears to be bytes, but sometimes it is used for bits. Should unify.} for all internal hash operations. 
+SHRINCS uses SHA-256 truncated to \texttt{n} bytes for all internal hash operations. 
 \begin{center}
 \texttt{H(m) = SHA-256(m)[0:n]}
 \end{center}
 
 \subsection{Tweakable Hash Function}
-To prevent multi-target attacks and ensure domain separation between the various components, we employ the tweakable hash function construction defined in FIPS 205 \cite{fips-205}\mknote{It was introduced in https://sphincs.org/data/sphincs+-paper.pdf}:
+To prevent multi-target attacks and ensure domain separation between the various components, we employ the tweakable hash function construction defined in SPHINCS+ \cite{https://sphincs.org/data/sphincs+-paper.pdf}:
 
 \begin{center}
 \texttt{Tw(PK.seed, ADRS, m) = H(PK.seed || ADRS || m)}
@@ -15,22 +16,42 @@ To prevent multi-target attacks and ensure domain separation between the various
 
 This usage of tweaked hashing is critical. It ensures that a hash computed at one position in the Merkle tree cannot be substituted for a hash at another position, effectively mitigating generic tree-grafting attacks.
 
-\oleks{\texttt{PK.seed = 16 bytes, ADRS = 32 bytes, m = 16-32 bytes}. SHA-2 operates with 64-byte blocks. So we can add a "0"-padding, like \texttt{Tw(PK.seed, ADRS, m) = H(PK.seed || $\vec{0}$[0,3n] || ADRS || m)} to have the first 64 bytes constant. It will reduce the hashing complexity to 1 block for each tweak function.}
+Note. For SHA-256, the compression function operates on 64-byte blocks. Since \texttt{PK.seed || ADRS} is 16 + 32 = 48 bytes, we pad it to 64 bytes to optimize performance:
+
+\begin{center}
+    \texttt{Tw(PK.seed, ADRS, m) = H(PK.seed || 0\string^16|| ADRS || m)}
+\end{center}
+
+Having the first 64-byte precomputed, we reduce the hashing complexity to 1 block for each tweak function.
 
 \subsection{Pseudorandom Functions}
-We use PRF for deterministic key derivation:
+SHRINCS uses two pseudorandom functions for different purposes: key derivation and getting the randomizer for the signature. 
+
+For deterministic derivation of secret key material (WOTS+C chain starting values, FORS secret keys):
 
 \begin{center}
     \texttt{PRF(PK.seed, ADRS, SK.seed) = Tw(PK.seed, ADRS, SK.seed)}
 \end{center}
 
-Additionally we use a pseudorandom function to generate the randomizer \texttt{R} for the randomized hashing of the message to be signed.
+The address structure ADRS ensures that each derived value is unique and bound to its position in the scheme. 
+
+For generating the randomizer \texttt{R} used in message hashing:
 
 \begin{center}
     \texttt{PRF\_msg(SK.prf, PK.seed, opt\_rand, m) = HMAC-SHA-256(SK.prf, PK.seed || opt\_rand || m)},
 \end{center}
-\mknote{We will need to plug a counter into PRF msg to be able to grind for FORS+C}
 where \texttt{opt\_rand} is an optional randomness (\texttt{n} bytes), can be \texttt{PK.seed} for deterministic signing.
+
+\mknote{We will need to plug a counter into PRF msg to be able to grind for FORS+C}
+
+For FORS+C grinding in stateless signatures, we use a counter-based variant:
+\begin{center}
+    \texttt{PRF\_msg\_ctr(SK.prf, PK.seed, opt\_rand, ctr, m) = HMAC-SHA-256(SK.prf, PK.seed || opt\_rand || ctr || m)[0:n]},
+\end{center}
+
+
+
+
 
 \subsection{Message Hash Function}
 To generate the digest of the message to be signed we use the following function:

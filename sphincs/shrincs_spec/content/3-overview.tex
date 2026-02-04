@@ -67,12 +67,12 @@ Stateless signatures consist of:
 
 Signature size calculation: 
 \begin{verbatim}
-    General formula: size  = fors_size(R_SIZE + c + (k-1)*(n + a*n)) 
-                           + xmss_layer_size(R_SIZE + c + l*n + h'*n) * d
-          SHRINCS-B. size  = fors_size(32 + 4 + 4*(16 + 22*16)) 
+    General formula: size  = fors_size(R_SIZE + ctr_SIZE + (k-1)*(n + a*n)) 
+                           + xmss_layer_size(R_SIZE + ctr_SIZE + l*n + h'*n) * d
+          SHRINCS-B. size  = fors_size(32 + 4 + 5*(16 + 22*16)) 
                            + xmss_layer_size(32 + 4 + 16*16 + 8*16) * 5
                            = 3992
-          SHRINCS-L. size  = fors_size(32 + 4 + 4*(16 + 22*16)) 
+          SHRINCS-L. size  = fors_size(32 + 4 + 5*(16 + 22*16)) 
                            + xmss_layer_size(32 + 4 + 64*16 + 8*16) * 5
                            = 7832
 \end{verbatim}
