@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.12.17)  3 FEB 2026 20:38
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.12.17)  4 FEB 2026 17:28
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1135,16 +1135,17 @@ Underfull \hbox (badness 10000) in paragraph at lines 30--31
 
  []
 
-Package hyperref Info: bookmark level for unknown todo defaults to 0 on input line 39.
-) (./content/4-params.tex
-
-[6]) (./content/5-functions-and-addresses.tex
-
-LaTeX Warning: Citation 'fips-205' on page 7 undefined on input line 10.
 
 
+[6]
+Package hyperref Info: bookmark level for unknown todo defaults to 0 on input line 103.
+) (./content/4-params.tex) (./content/5-functions-and-addresses.tex
 
 [7]
+
+LaTeX Warning: Citation 'fips-205' on page 8 undefined on input line 10.
+
+
 
 [8]) (./content/6-wots+c.tex
 
@@ -1165,13 +1166,13 @@ LaTeX Warning: Citation 'wots+c' on page 10 undefined on input line 8.
 [12]
 
 [13]
+
+[14]
 Overfull \hbox (3.77689pt too wide) in paragraph at lines 228--228
 []    \OT1/cmtt/m/n/10 1. R \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 sig[0:R_SIZE]                 // maybe it makes sense to define sig_parse op[] 
  []
 
-
-
-[14]) (./content/7-xmss.tex
+) (./content/7-xmss.tex
 
 [15]
 Overfull \hbox (103.52602pt too wide) in paragraph at lines 39--39
@@ -1188,10 +1189,10 @@ Overfull \hbox (103.52602pt too wide) in paragraph at lines 39--39
 
 [19]
 
-[20]) (./content/9-fors.tex
+[20]
 
-[21]
-<content/img/fors.png, id=530, 756.8275pt x 359.3425pt>
+[21]) (./content/9-fors.tex
+<content/img/fors.png, id=534, 756.8275pt x 359.3425pt>
 File: content/img/fors.png Graphic file (type png)
 <use content/img/fors.png>
 Package pdftex.def Info: content/img/fors.png  used on input line 14.
@@ -1199,13 +1200,13 @@ Package pdftex.def Info: content/img/fors.png  used on input line 14.
 
 
 [22 <./content/img/fors.png>]
+
+[23]
 Overfull \hbox (9.02808pt too wide) in paragraph at lines 91--91
 []    \OT1/cmtt/m/n/10 Algorithm: fors_treehash(SK.seed, PK.seed, ADRS, tree_idx, target_height, start_idx)[] 
  []
 
 
-
-[23]
 Overfull \hbox (14.2768pt too wide) in paragraph at lines 108--108
 []    \OT1/cmtt/m/n/10 2. left \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 fors_treehash(SK.seed, PK.seed, ADRS, tree_idx, target_height-1, start_idx)[] 
  []
@@ -1216,41 +1217,43 @@ Overfull \hbox (24.7767pt too wide) in paragraph at lines 109--109
  []
 
 
+
+[24]
 Overfull \hbox (24.7767pt too wide) in paragraph at lines 133--133
 []        \OT1/cmtt/m/n/10 b. auth \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 auth || fors_treehash(SK.seed, PK.seed, ADRS, tree_idx, h, sibling_start)[] 
  []
 
 
 
-[24]
-
 [25]) (./content/10-shrincs.tex
 
 [26]
 
 [27]
+
+[28]
 Overfull \hbox (61.52638pt too wide) in paragraph at lines 109--109
 []        \OT1/cmtt/m/n/10 c. xmss_sig \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 xmss_sign(msg, SK.seed, SK.prf, PK.seed, PK.root, ADRS, h', leaf_idx[layer])[] 
  []
 
 
 
-[28]
-
 [29]
+
+[30]
 Overfull \hbox (56.27643pt too wide) in paragraph at lines 210--210
 []        \OT1/cmtt/m/n/10 g. msg \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 xmss_pkFromSig(wots_sig, auth, msg, PK.seed, PK.root, ADRS, h', leaf_idx[layer])[] 
  []
 
 
 
-[30])
+[31])
 
 LaTeX Warning: Empty bibliography on input line 102.
 
 
 
-[31] (./main.aux)
+[32] (./main.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
@@ -1274,18 +1277,18 @@ Package logreq Info: Writing requests to 'main.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 54839 strings out of 473190
- 1295557 string characters out of 5715799
- 2380947 words of memory out of 5000000
- 77288 multiletter control sequences out of 15000+600000
+ 54836 strings out of 473190
+ 1295399 string characters out of 5715799
+ 2384755 words of memory out of 5000000
+ 77280 multiletter control sequences out of 15000+600000
  568416 words of font info for 73 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  84i,9n,96p,1110b,1239s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb>
-Output written on main.pdf (31 pages, 445403 bytes).
+Output written on main.pdf (32 pages, 445824 bytes).
 PDF statistics:
- 701 PDF objects out of 1000 (max. 8388607)
- 596 compressed objects within 6 object streams
- 148 named destinations out of 1000 (max. 500000)
+ 711 PDF objects out of 1000 (max. 8388607)
+ 604 compressed objects within 7 object streams
+ 153 named destinations out of 1000 (max. 500000)
  703 words of extra memory for PDF output out of 10000 (max. 10000000)
 

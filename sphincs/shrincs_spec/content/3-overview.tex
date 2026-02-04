@@ -34,26 +34,70 @@ The size of the secret key is \texttt{6n} bytes. A public key consists of two va
 
 \subsection{Signature Size and Verification Cost}
 \subsubsection{Stateful}
-SHRINCS-B: 
-\begin{itemize}
-    \item Size: 256 + 16 + 4 + q * 16 = 276 + 16q bytes \mknote{I think we need to put formulas like w*l + r + ctr + q*hash. Randomness should be 32. Maybe we should add indices that point to which leaf we are using. It is redundant, but i think it is better for the implementation.}
-    \item Verification cost: 2042 hashes \mknote{Verification hashes should depend on q. Also we need to define q in Notation}
-\end{itemize}
-SHRINCS-L: \mknote{I am not sure what is the difference between SHRINCS-B and SHRINCS-L. Are these two modes of opertaions? With different parameter sets. If so - I think we should add some more explanation to the text.}
-\begin{itemize}
-    \item Size: 1024 + 16 + 4 + q * 16 = 1044 + 16q bytes \mknote{Same as above, I would add the formula for computing.}
-    \item Verification cost: 54 hashes \mknote{Same as above - verification depends on q.}
-\end{itemize}
+Stateful signatures consist of:
+\begin{enumerate}
+    \item \texttt{PK.sl}: the stateless public key (for unified verification)
+    \item \texttt{R}: randomness for message hashing
+    \item \texttt{ctr}: grinding counter
+    \item \texttt{chain\_values}: WOTS+C signature (\texttt{l} chains)
+    \item \texttt{auth\_path}: UXMSS authentication path (q nodes)
+\end{enumerate}
+
+Signature size calculation: 
+\begin{verbatim}
+    General formula: size = n  + R_SIZE + ctr_SIZE +  l * n +  q*n  
+           SHRINCS-B.size = 16 +    32  +    4     + 16 * 16 + q*16 = 308 + 16q
+           SHRINCS-L.size = 16 +    32  +    4     + 64 * 16 + q*16 = 1076 + 16q
+\end{verbatim}
+
+The signature verification cost is:
+\begin{verbatim}
+    General formula: hash_ops = (w-1) * l -  S_wn + q + 1  
+           SHRINCS-B.hash_ops =  255  * 16 - 2040 + q + 1 = 2041 + q
+           SHRINCS-L.hash_ops =   3   * 64 - 140  + q + 1 = 53 + q
+\end{verbatim}
 
 \subsubsection{Stateless}
-\oleks{in progress} \\
-SHRINCS-B: 
-\begin{itemize}
-    \item Size: 
-    \item Verification cost:
-\end{itemize}
-SHRINCS-L: 
-\begin{itemize}
-    \item Size: 
-    \item Verification cost: 
-\end{itemize}
+Stateless signatures consist of:
+\begin{enumerate}
+    \item \texttt{PK.sf}: the stateful public key
+    \item FORS+C signature: few-time signature on the message
+    \item HT signature: \texttt{d} XMSS signatures forming the hypertree
+\end{enumerate}
+
+Signature size calculation: 
+\begin{verbatim}
+    General formula: size  = fors_size(R_SIZE + c + (k-1)*(n + a*n)) 
+                           + xmss_layer_size(R_SIZE + c + l*n + h'*n) * d
+          SHRINCS-B. size  = fors_size(32 + 4 + 4*(16 + 22*16)) 
+                           + xmss_layer_size(32 + 4 + 16*16 + 8*16) * 5
+                           = 3992
+          SHRINCS-L. size  = fors_size(32 + 4 + 4*(16 + 22*16)) 
+                           + xmss_layer_size(32 + 4 + 64*16 + 8*16) * 5
+                           = 7832
+\end{verbatim}
+
+The signature verification cost is:
+\begin{verbatim}
+    General formula:
+        fors_hashes = (k-1)*(1 + a) + 1
+        wots_per_layer = (w-1)*l - S_wn + 1
+        xmss_per_layer = wots_per_layer + h'
+        total = fors_hashes + d*xmss_per_layer
+
+    SHRINCS-B:
+        fors_hashes = 5*23 + 1 = 116
+        wots_per_layer = (256-1)*16 - 2040 + 1 = 2041
+        xmss_per_layer = 2041 + 8 = 2049
+        total = 116 + 5*2049 = 10361 hashes
+
+    SHRINCS-L:
+        fors_hashes = 116
+        wots_per_layer = (w-1)*l - S_wn + 1 = 53
+        xmss_per_layer = wots_per_layer + h' = 53 + 8 = 61
+        total = fors_hashes + d*xmss_per_layer
+              = 116 + 5*61 = 421 hashes
+\end{verbatim}
+
+
+\mknote{I am not sure what is the difference between SHRINCS-B and SHRINCS-L. Are these two modes of opertaions? With different parameter sets. If so - I think we should add some more explanation to the text.}
