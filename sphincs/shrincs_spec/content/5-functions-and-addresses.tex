@@ -16,7 +16,7 @@ To prevent multi-target attacks and ensure domain separation between the various
 
 This usage of tweaked hashing is critical. It ensures that a hash computed at one position in the Merkle tree cannot be substituted for a hash at another position, effectively mitigating generic tree-grafting attacks.
 
-Note. For SHA-256, the compression function operates on 64-byte blocks. Since \texttt{PK.seed || ADRS} is 16 + 32 = 48 bytes, we pad it to 64 bytes to optimize performance:
+\paragraph{Note.} For SHA-256, the compression function operates on 64-byte blocks. Since \texttt{PK.seed || ADRS} is 16 + 32 = 48 bytes, we pad it to 64 bytes to optimize performance:
 
 \begin{center}
     \texttt{Tw(PK.seed, ADRS, m) = H(PK.seed || 0\string^16|| ADRS || m)}
@@ -101,8 +101,9 @@ A total \texttt{ADRS} size is 32 bytes.
 0x09: WOTS_GRIND:   WOTS+C grinding
 0x0A: FORS_GRIND:   FORS+C grinding
 0x0B: H_MSG:        Message hash
-0x0C: PRF:          Pseudorandom function
-0x0D: ROOT:         Root public key computation
+0x0C: WOTS_PRF:     PRF for WOTS+C key derivation
+0x0D: FORS_PRF:     PRF for FORS secret key derivation
+0x0E: ROOT:         Root public key computation
 \end{verbatim}
 Summarizing, \texttt{(0x00, 0x01, 0x02)} are stateful only types, \texttt{(0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x0A)} are stateless only and \texttt{(0x09, 0x0B, 0x0C, 0x0D)} are shared types. 
 
@@ -158,8 +159,9 @@ Note that \texttt{setTreeHeight} and \texttt{setChainAddress} both write to byte
 0x09 & \texttt{WOTS\_GRIND}     & keypair   & 0       & 0 \\
 0x0A & \texttt{FORS\_GRIND}     & 0         & 0       & 0 \\
 0x0B & \texttt{H\_MSG}          & 0         & 0       & 0 \\
-0x0C & \texttt{PRF}             & keypair/tree\_idx & chain/0 & 0/leaf\_idx \\
-0x0D & \texttt{ROOT}            & 0         & 0       & 0 \\
+0x0C & \texttt{WOTS\_PRF}       & keypair   & chain   & 0 \\
+0x0D & \texttt{FORS\_PRF}       & tree\_idx & 0       & leaf\_idx \\
+0x0E & \texttt{ROOT}            & 0         & 0       & 0 \\
 \hline
 \end{tabular}
 \caption{Type-dependent interpretation of ADRS words \texttt{(bytes [20:32])}. For PRF \texttt{(0x0C)}, field interpretation depends on context: WOTS uses \texttt{(keypair, chain, 0)}, FORS uses \texttt{(tree\_idx, 0, leaf\_idx)}. Compression addresses \texttt{(SF\_WOTS\_PK, SL\_WOTS\_PK, FORS\_PK)} use only keypair/tree identification}

@@ -5,7 +5,7 @@ SHRINCS is designed in the way it can operate in two modes: \textbf{stateful} an
 
 During normal operation with intact state, the user generates signatures according to efficient stateful path. Each leaf of the UXMSS is represented by WOTS+C one time signature instance. UXMSS is right-skewed, which makes the first stateful signature (\texttt{q=1}) the cheapest from the verification and size perspective (\textcolor{red}{324} bytes) and adds the constant size (16 bytes) and one additional hashing operation for each next stateful signature. A right-skewed UXMSS is a tree construction in which every internal node has a one-time signature leaf as its left child and a UXMSS subtree as its right child, yielding a recursively right-branching authentication tree (as shown on the Figure~1).
 
-If the state is corrupted (or the limit for stateful operations is met), the signature can continue operating with stateless mode. Stateless mode utilizes an optimized SPHINCS+ variant with WOTS+C signatures in regular XMSS trees on each layer in the hypertree and FORS+C for few-time signature scheme. The general construction of SHRINCS signature is presented on the Figure~1.
+If the state is corrupted (or the limit for stateful operations is met), the scheme can continue operating with stateless mode. Stateless mode utilizes an optimized SPHINCS+ variant with WOTS+C signatures in regular XMSS trees on each layer in the hypertree and FORS+C for few-time signature scheme. The general construction of SHRINCS signature is presented on the Figure~1.
 \begin{figure}[h!]
     \centering
     \includegraphics[width=1\linewidth]{content/img/general.png}
@@ -37,7 +37,7 @@ The size of the secret key is \texttt{6n} bytes. A public key consists of two va
 Stateful signatures consist of:
 \begin{enumerate}
     \item \texttt{PK.sl}: the stateless public key (for unified verification)
-    \item \texttt{R}: randomness for message hashing
+    \item \texttt{R}: randomness for message hashing (32-byte value)
     \item \texttt{ctr}: grinding counter
     \item \texttt{chain\_values}: WOTS+C signature (\texttt{l} chains)
     \item \texttt{auth\_path}: UXMSS authentication path (q nodes)

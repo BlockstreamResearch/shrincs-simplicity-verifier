@@ -22,7 +22,7 @@ SHRINCS (Stateful Hash-based Robust Integrated NIST-Compatible Signatures) is a 
 
 \subsection{Limitations and Practical Considerations} 
 Users and developers should be aware of the following limitations inherent to stateful signature schemes:
-\paragraph{State Management Across Devices.} The signing state (specifically, the counter $q$ indicating which one-time keys have been already used) cannot be safely shared across multiple devices without coordination. Two devices signing with the same $q$ value would reuse a one-time signature, which leads to the key is compromised. Some mitigation strategies can be:
+\paragraph{State Management Across Devices.} The signing state (specifically, the counter $q$ indicating which one-time keys have been already used) cannot be safely shared across multiple devices without coordination. Two devices signing with the same $q$ value would reuse a one-time signature, which leads to key compromise. Some mitigation strategies can be:
 \begin{itemize}
     \item Dedicate disjoint ranges of leaf indices to different devices.
     \item Use a single signing device with secure state storage (other devices are stateless backups).
@@ -44,9 +44,9 @@ Each SHRINCS-based address requires its own signing state. As users generate new
 \end{itemize}
 
 \paragraph{Variable Stateful Signature Sizes.}
-SHRINKS signatures presume variable signature size and verification complexity depending on: (1) the number of already produced stateful signatures; (2) the signing mode. In decentralized system we need to consider how the cost of the signature verification is calculated to prevent spam attacks.
+SHRINCS signatures presume variable signature size and verification complexity depending on: (1) the number of already produced stateful signatures; (2) the signing mode. In decentralized system we need to consider how the cost of the signature verification is calculated to prevent spam attacks.
 \begin{itemize}
-    \item That's basically the reason this specification introduced two modes for SHRINCS. SHRINCS-B is designed for accounting systems, where the user pays for each transaction byte, so the signature size matters. SHRINCS-L suits better for systems which calculate the transaction cost based on how many computation units it consumes (like Liquid\footnote{\oleks{Make a reference how WU are calculated for liquid and why signatures with begger sizes can result to cheaper transactions}}).
+    \item That's basically the reason this specification introduced two modes for SHRINCS. SHRINCS-B is designed for accounting systems, where the user pays for each transaction byte, so the signature size matters. SHRINCS-L suits better for systems which calculate the transaction cost based on how many computation units it consumes (like Liquid\footnote{\oleks{Make a reference how WU are calculated for liquid and why signatures with bigger sizes can result to cheaper transactions}}).
 \end{itemize}
 
 

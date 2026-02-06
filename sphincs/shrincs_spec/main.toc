@@ -15,11 +15,12 @@
 \contentsline {section}{\numberline {5}Underlying Functions and Addresses}{8}{section.5}%
 \contentsline {subsection}{\numberline {5.1}Hash Function}{8}{subsection.5.1}%
 \contentsline {subsection}{\numberline {5.2}Tweakable Hash Function}{8}{subsection.5.2}%
+\contentsline {paragraph}{Note.}{8}{section*.8}%
 \contentsline {subsection}{\numberline {5.3}Pseudorandom Functions}{8}{subsection.5.3}%
 \contentsline {subsection}{\numberline {5.4}Message Hash Function}{8}{subsection.5.4}%
 \contentsline {subsubsection}{\numberline {5.4.1}WOTS+C: Two-Phase Hashing}{8}{subsubsection.5.4.1}%
-\contentsline {paragraph}{Phase 1. Message Digest}{9}{section*.8}%
-\contentsline {paragraph}{Phase 2. Grinding Hash}{9}{section*.9}%
+\contentsline {paragraph}{Phase 1. Message Digest}{9}{section*.9}%
+\contentsline {paragraph}{Phase 2. Grinding Hash}{9}{section*.10}%
 \contentsline {subsubsection}{\numberline {5.4.2}FORS+C: Single-Phase Hashing}{9}{subsubsection.5.4.2}%
 \contentsline {subsection}{\numberline {5.5}Tweak Structure and Domain Separation}{9}{subsection.5.5}%
 \contentsline {subsubsection}{\numberline {5.5.1}Address Types}{9}{subsubsection.5.5.1}%

@@ -450,6 +450,8 @@ INPUT ./content/img/general.png
 INPUT ./content/4-params.tex
 INPUT ./content/4-params.tex
 INPUT content/4-params.tex
+INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmtt8.tfm
+INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/jknappen/ec/tctt0800.tfm
 INPUT ./content/5-functions-and-addresses.tex
 INPUT ./content/5-functions-and-addresses.tex
 INPUT content/5-functions-and-addresses.tex

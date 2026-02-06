@@ -17,10 +17,11 @@ This specification provides with the list of parameters for different SHRINCS in
  \texttt{w} & $256$ & $4$ & Winternitz parameter \\
  \texttt{l}  & $16$ & $64$ & The number of WOTS+C chains \\
  \texttt{Swn} & $2040$ & $140$ & Target sum for WOTS+C \\
- \texttt{hsf} & 226 & 418 & Maximum stateful tree height \\
+ \texttt{hsf} & 226 & 418 & Maximum stateful tree height\footnote{Chosen so that the maximum stateful signature \texttt{(at q = hsf + 1)} remains smaller than a stateless signature: \texttt{n + R\_SIZE + c + l·n + (hsf+1)·n < stateless\_size.}} \\
  \texttt{hsl} & $\color{red}40\color{black}$ & $\color{red}40\color{black}$ & Maximum stateless hypertree height \\
  \texttt{d} & $\color{red}5\color{black}$ & $\color{red}5\color{black}$ & Stateless hypertree layers \\
- \texttt{a} & $22$ & $22$ & FORS tree height \\
+ \texttt{h'} & $8$ & $8$ & XMSS tree height per hypertree layer \texttt{hsl/d = 8} \\
+ \texttt{a} & $22$ & $22$ & FORS tree height \\ 
  \texttt{k} & $6$ & $6$ & Number of FORS+C trees \\
  \texttt{c} & $4$ & $4$ & Counter size for WOTS+C grinding (bytes) \\
 \end{tabular}
