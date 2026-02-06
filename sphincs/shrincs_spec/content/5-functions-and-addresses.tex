@@ -42,22 +42,34 @@ For generating the randomizer \texttt{R} used in message hashing:
 \end{center}
 where \texttt{opt\_rand} is an optional randomness (\texttt{n} bytes), can be \texttt{PK.seed} for deterministic signing.
 
-\mknote{We will need to plug a counter into PRF msg to be able to grind for FORS+C}
-
-For FORS+C grinding in stateless signatures, we use a counter-based variant:
-\begin{center}
-    \texttt{PRF\_msg\_ctr(SK.prf, PK.seed, opt\_rand, ctr, m) = HMAC-SHA-256(SK.prf, PK.seed || opt\_rand || ctr || m)[0:n]},
-\end{center}
-
-
-
-
-
 \subsection{Message Hash Function}
-To generate the digest of the message to be signed we use the following function:
+SHRINCS uses different hashing strategies for WOTS+C and FORS+C, optimized for their respective use cases.
 
+\subsubsection{WOTS+C: Two-Phase Hashing}
+WOTS+C uses a two-phase approach for message hashing and grinding. This design is necessary because:
+\begin{itemize}
+    \item User messages need randomized hashing (Phase 1 + Phase 2)
+    \item Internal XMSS signatures sign tree roots that are already hashes (Phase 2 only)
+\end{itemize}
+
+\paragraph{Phase 1. Message Digest}
+Computes a randomized hash of the user message:
 \begin{center}
-    \texttt{H\_msg(ADRS, R, PK.seed, PK.root, m) = H(ADRS || R || PK.seed || PK.root || m)}
+    \texttt{H\_msg(ADRS, R, PK.seed, PK.root, m) = SHA-256(ADRS || R || PK.seed || PK.root || m)[0:n]}
+\end{center}
+This is computed once per signature, producing an n-byte digest.
+
+\paragraph{Phase 2. Grinding Hash}
+Takes the digest and a counter:
+\begin{center}
+    \texttt{H\_grind(ADRS, digest, ctr) = SHA-256(ADRS || digest || ctr)[0:n]}
+\end{center}
+This is computed repeatedly during grinding, but operates only on small fixed-size inputs (52 bytes), making iterations fast.
+
+\subsubsection{FORS+C: Single-Phase Hashing}
+FORS+C always signs user messages (never tree roots), so it uses a simpler single-phase approach with the counter included directly:
+\begin{center}
+    \texttt{H\_msg\_fors(ADRS, R, ctr, PK.seed, PK.root, m) = SHA-256(ADRS || R || ctr || PK.seed || PK.root || m)[0:(k*a)/8]}
 \end{center}
 
 \subsection{Tweak Structure and Domain Separation}
@@ -76,17 +88,25 @@ where:
 A total \texttt{ADRS} size is 32 bytes.
 
 \subsubsection{Address Types}
-\begin{itemize}
-    \item[] \texttt{0x00}: Stateful WOTS+C chains (\texttt{SF\_WOTS\_CHAIN})
-    \item[] \texttt{0x01}: Stateful tree nodes (\texttt{SF\_TREE})
-    \item[] \texttt{0x02}: Stateless WOTS+C chains (\texttt{SL\_WOTS\_CHAIN})
-    \item[] \texttt{0x03}: Stateless tree nodes (\texttt{SL\_TREE})
-    \item[] \texttt{0x04}: FORS (\texttt{SL\_FORS})
-    \item[] \texttt{0x05}: Message hash (\texttt{H\_MSG})
-    \item[] \texttt{0x06}: Pseudorandom function (\texttt{PRF})
-    \item[] \texttt{0x07}: Root public key (\texttt{ROOT})
-\end{itemize}
-Summarizing, \texttt{(0x00, 0x01)} are stateful only types, \texttt{(0x02, 0x03, 0x04)} are stateless only and \texttt{(0x05, 0x06, 0x07)} are shared types. \mknote{I think SLH-DSA has more ADRS types, such as public-key compression address, FORS tree roots compression address, and we also need need two types for grinding WOTS and for grinding FORS}
+\begin{verbatim}
+0x00: SF_WOTS_HASH: Stateful WOTS+C chain hashing
+0x01: SF_WOTS_PK:   Stateful WOTS+C public key compression
+0x02: SF_TREE:      Stateful tree internal nodes
+0x03: SL_WOTS_HASH: Stateless WOTS+C chain hashing  
+0x04: SL_WOTS_PK:   Stateless WOTS+C public key compression
+0x05: SL_TREE:      Stateless tree internal nodes
+0x06: FORS_HASH:    FORS leaf hashing
+0x07: FORS_TREE:    FORS tree internal nodes
+0x08: FORS_PK:      FORS roots compression
+0x09: WOTS_GRIND:   WOTS+C grinding
+0x0A: FORS_GRIND:   FORS+C grinding
+0x0B: H_MSG:        Message hash
+0x0C: PRF:          Pseudorandom function
+0x0D: ROOT:         Root public key computation
+\end{verbatim}
+Summarizing, \texttt{(0x00, 0x01, 0x02)} are stateful only types, \texttt{(0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x0A)} are stateless only and \texttt{(0x09, 0x0B, 0x0C, 0x0D)} are shared types. 
+
+%\mknote{I think SLH-DSA has more ADRS types, such as public-key compression address, FORS tree roots compression address, and we also need need two types for grinding WOTS and for grinding FORS}
 
 \subsubsection{Address Manipulation Functions}
 \begin{verbatim}
@@ -124,18 +144,24 @@ Note that \texttt{setTreeHeight} and \texttt{setChainAddress} both write to byte
 \centering
 \begin{tabular}{c c c c c}
 \hline
-\textbf{Type} & \textbf{Meaning} & \textbf{word1 [20:24]} & \textbf{word2 [24:28]} & \textbf{word3 [28:32]} \\
+\textbf{Type} & \textbf{Name} & \textbf{word1 [20:24]} & \textbf{word2 [24:28]} & \textbf{word3 [28:32]} \\
 \hline
-0x00 & \texttt{SF\_WOTS\_CHAIN} & keypair & chain & hash \\
-0x01 & \texttt{SF\_TREE}        & keypair & height & index \\
-0x02 & \texttt{SL\_WOTS\_CHAIN} & keypair & chain & hash \\
-0x03 & \texttt{SL\_TREE}        & keypair & height & index \\
-0x04 & \texttt{SL\_FORS}        & tree\_idx & height & index \\
-0x05 & \texttt{H\_MSG}          & 0 & 0 & 0 \\
-0x06 & \texttt{PRF}             & W: keypair / F: tree\_idx & W: chain / F: 0 & W: 0 / F: leaf\_idx \\
-0x07 & \texttt{ROOT}            & 0 & 0 & 0 \\
+0x00 & \texttt{SF\_WOTS\_HASH}  & keypair   & chain   & hash \\
+0x01 & \texttt{SF\_WOTS\_PK}    & keypair   & 0       & 0 \\
+0x02 & \texttt{SF\_TREE}        & keypair   & height  & index \\
+0x03 & \texttt{SL\_WOTS\_HASH}  & keypair   & chain   & hash \\
+0x04 & \texttt{SL\_WOTS\_PK}    & keypair   & 0       & 0 \\
+0x05 & \texttt{SL\_TREE}        & keypair   & height  & index \\
+0x06 & \texttt{FORS\_HASH}      & tree\_idx & 0       & leaf\_idx \\
+0x07 & \texttt{FORS\_TREE}      & tree\_idx & height  & index \\
+0x08 & \texttt{FORS\_PK}        & 0         & 0       & 0 \\
+0x09 & \texttt{WOTS\_GRIND}     & keypair   & 0       & 0 \\
+0x0A & \texttt{FORS\_GRIND}     & 0         & 0       & 0 \\
+0x0B & \texttt{H\_MSG}          & 0         & 0       & 0 \\
+0x0C & \texttt{PRF}             & keypair/tree\_idx & chain/0 & 0/leaf\_idx \\
+0x0D & \texttt{ROOT}            & 0         & 0       & 0 \\
 \hline
 \end{tabular}
-\caption{Type-dependent interpretation of ADRS words (bytes [20:32]). W is a WOTS an F is a FORS}
+\caption{Type-dependent interpretation of ADRS words \texttt{(bytes [20:32])}. For PRF \texttt{(0x0C)}, field interpretation depends on context: WOTS uses \texttt{(keypair, chain, 0)}, FORS uses \texttt{(tree\_idx, 0, leaf\_idx)}. Compression addresses \texttt{(SF\_WOTS\_PK, SL\_WOTS\_PK, FORS\_PK)} use only keypair/tree identification}
 \end{table}
 
