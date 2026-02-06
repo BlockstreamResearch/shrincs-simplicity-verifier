@@ -8,7 +8,7 @@
 #include "sphincs_utils.simf"
 
 type SPHINCSWOTSTWKey = [u128; 64];
-type SPHINCSWOTSTWSignature = (u32, [u128; 64]);
+type SPHINCSWOTSTWSignature = (u128, u32, [u128; 64]);
 // Represent signature proof as (message_hash, signature, public_key, key_index, public_parameter)
 type SPHINCSWOTSTWSignProof = (u128, SPHINCSWOTSTWSignature, SPHINCSWOTSTWKey, u32, u128);
 
@@ -63,7 +63,7 @@ fn sphincs_restore_wots_tw_signature(el: u128, ctx: (u128, u32, u8, u32, Ctx8, u
     let n: u8 = <(u4, (u2, u2))>::into((0, (0, n)));
 
     let (_, s_n): (bool, u8) = jet::subtract_8(3, n);
-    let (_, checksum): (bool, u8) = jet::add_8(checksum, s_n);
+    let (_, checksum): (bool, u8) = jet::add_8(checksum, n);
 
     let verify_part: Either<u128, u128> = for_while::<sphincs_wots_tw_hash_n_times_iter>(el, (s_n, idx, key_idx, hash_ctx, n, layer_adrs, tree_adrs_1, tree_adrs_2, wots_type));
 

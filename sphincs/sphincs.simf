@@ -16,14 +16,14 @@
 type SPHINCSPK = (u128, u128);
 // d len array of XMSS signatures
 type XMSSHTSignature = [XMSSSignature; 2];
-// (R, FORSSign, HTSign)
-type SPHINCSSignature = (u128, SPHINCSFORSSignature, XMSSHTSignature);
+// (FORSSign, HTSign)
+type SPHINCSSignature = (SPHINCSFORSSignature, XMSSHTSignature);
 // (Message, PK, Signature)
-type SPHINCSSignProof = (u256, SPHINCSPK, SPHINCSSignature);
+type SPHINCSSignProof = (u128, SPHINCSPK, SPHINCSSignature);
 
-fn sphincs_root_from_path_iter(el: XMSSSignature, ctx: (u128, u128, u128, u128, u32, Ctx8, u32, u64, u32)) -> (u128, u128, u128, u128, u32, Ctx8, u32, u64, u32) {
-    let (r, pk_seed, pk_root, message, key_index, hash_ctx, layer_adrs, tree_adrs_2, idx): (u128, u128, u128, u128, u32, Ctx8, u32, u64, u32) = ctx;
-    let pub_key: u128 = sphincs_get_xmss_pub_key(el, r, pk_seed, pk_root, message, key_index, hash_ctx, layer_adrs, 0, tree_adrs_2);
+fn sphincs_root_from_path_iter(el: XMSSSignature, ctx: (u128, u128, u128, u32, Ctx8, u32, u64, u32)) -> (u128, u128, u128, u32, Ctx8, u32, u64, u32) {
+    let (pk_seed, pk_root, message, key_index, hash_ctx, layer_adrs, tree_adrs_2, idx): (u128, u128, u128, u32, Ctx8, u32, u64, u32) = ctx;
+    let pub_key: u128 = sphincs_get_xmss_pub_key(el, pk_seed, pk_root, message, key_index, hash_ctx, layer_adrs, 0, tree_adrs_2);
 
     let key_index: u32 = jet::and_32(idx, 0x00000FFF);
     let idx: u32 = jet::right_shift_32(12, idx);
@@ -31,28 +31,27 @@ fn sphincs_root_from_path_iter(el: XMSSSignature, ctx: (u128, u128, u128, u128, 
 
     let (_, layer_adrs): (bool, u32) = jet::add_32(layer_adrs, 1);
 
-    (r, pk_seed, pk_root, pub_key, key_index, hash_ctx, layer_adrs, tree_adrs, idx)
+    (pk_seed, pk_root, pub_key, key_index, hash_ctx, layer_adrs, tree_adrs, idx)
 }
 
-fn ht_verify(signature: XMSSHTSignature, r: u128, pk_seed: u128, message: u128, hash_ctx: Ctx8, tree_adrs_2: u64, leaf_idx: u32, pk_root: u128, idx: u32) -> u128 {
-    let (_, _, _, root, _, _, _, _, _): (u128, u128, u128, u128, u32, Ctx8, u32, u64, u32) = array_fold::<sphincs_root_from_path_iter, 2>(signature, (r, pk_seed, pk_root, message, leaf_idx, hash_ctx, 0, tree_adrs_2, idx));
+fn ht_verify(signature: XMSSHTSignature, pk_seed: u128, message: u128, hash_ctx: Ctx8, tree_adrs_2: u64, leaf_idx: u32, pk_root: u128, idx: u32) -> u128 {
+    let (_, _, root, _, _, _, _, _): (u128, u128, u128, u32, Ctx8, u32, u64, u32) = array_fold::<sphincs_root_from_path_iter, 2>(signature, (pk_seed, pk_root, message, leaf_idx, hash_ctx, 0, tree_adrs_2, idx));
     root
 }
 
 fn sphincs_verify(proof: SPHINCSSignProof, hash_ctx: Ctx8) -> u128 {
     let (message_hash, pk, signature): SPHINCSSignProof = proof;
     let (pk_seed, pk_root): SPHINCSPK = pk;
-    let (r, fors_signature, xmss_ht_signature): SPHINCSSignature = signature;
-    let (counter, _): SPHINCSFORSSignature = fors_signature;
+    let (fors_signature, xmss_ht_signature): SPHINCSSignature = signature;
+    let (r, _, _): SPHINCSFORSSignature = fors_signature;
 
-    // Not sure about it (fips 205 is different from shrincs spec)
     let hash: Ctx8 = jet::sha_256_ctx_8_init();
     let hash: Ctx8 = add_adrs_to_ctx8(hash, 0, 0, 0, 5, 0, 0);
     let hash: Ctx8 = jet::sha_256_ctx_8_add_16(hash, r);
-    let hash: Ctx8 = jet::sha_256_ctx_8_add_4(hash, counter);
+    let hash: Ctx8 = jet::sha_256_ctx_8_add_4(hash, 0);
     let hash: Ctx8 = jet::sha_256_ctx_8_add_16(hash, pk_seed);
     let hash: Ctx8 = jet::sha_256_ctx_8_add_16(hash, pk_root);
-    let hash: Ctx8 = jet::sha_256_ctx_8_add_32(hash, message_hash);
+    let hash: Ctx8 = jet::sha_256_ctx_8_add_16(hash, message_hash);
     let message: u256 = jet::sha_256_ctx_8_finalize(hash);
 
     let (((leaf_part, _), _), _): (((u32, u32), u64), u128) = <u256>::into(message);
@@ -61,8 +60,9 @@ fn sphincs_verify(proof: SPHINCSSignProof, hash_ctx: Ctx8) -> u128 {
     let idx: u32 = jet::right_shift_32(12, idx);
     let tree_adrs: u64 = <(u32, u32)>::into((0, jet::and_32(idx, 0x00000FFF)));
 
-    let fors_pk: u128 = sphincs_get_fors_pub_key(fors_signature, r, pk_seed, pk_root, hash_ctx, message_hash, 0, tree_adrs);
-    ht_verify(xmss_ht_signature, r, pk_seed, fors_pk, hash_ctx, tree_adrs, leaf_adrs, pk_root, idx)
+    let fors_pk: u128 = sphincs_get_fors_pub_key(fors_signature, pk_seed, pk_root, hash_ctx, message_hash, 0, tree_adrs);
+
+    ht_verify(xmss_ht_signature, pk_seed, fors_pk, hash_ctx, tree_adrs, leaf_adrs, pk_root, idx)
 }
 
 #endif
