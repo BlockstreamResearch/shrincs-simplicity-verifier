@@ -1,12 +1,12 @@
 # Fdb version 4
-["biber main"] 0 "main.bcf" "main.bbl" "main" 1770391006.71228 0
+["biber main"] 0 "main.bcf" "main.bbl" "main" 1770473501.97497 0
   "main.bcf" 0 -1 0 "pdflatex"
   "references.bib" 0 -1 0 ""
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1770391005.07791 "/Users/oleksandr.kurbatov/mjthatch/HB-Liquid/sphincs/shrincs_spec/main.tex" "main.pdf" "main" 1770391006.71252 0
+["pdflatex"] 1770473500.37809 "/Users/oleksandr.kurbatov/mjthatch/HB-Liquid/sphincs/shrincs_spec/main.tex" "main.pdf" "main" 1770473501.97522 0
   "/Users/oleksandr.kurbatov/mjthatch/HB-Liquid/sphincs/shrincs_spec/main.tex" 1770140373.28018 2742 20da9a1c4c6b47ecf7872151eb8d8130 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1136849721 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
@@ -269,20 +269,20 @@
   "content/10-shrincs.tex" 1770106544.76129 13236 384d3e16133f250df81b8ac6904e7b42 ""
   "content/2-notation.tex" 1770140259.60664 757 2b701c78aa0f782483d216b9da5aa895 ""
   "content/3-overview.tex" 1770390673.93127 5943 efb92845d8e203b523f7045847523d62 ""
-  "content/4-params.tex" 1770391003.1013 1811 2b8dc23e39615adbe2060c96f36aac06 ""
+  "content/4-params.tex" 1770391026.90636 1811 2b8dc23e39615adbe2060c96f36aac06 ""
   "content/5-functions-and-addresses.tex" 1770390963.17304 7575 0d8bffd305b9f5274d5b7932091de523 ""
-  "content/6-wots+c.tex" 1770106544.76335 13879 8b3f832cdddbfccab674814b28638d86 ""
-  "content/7-xmss.tex" 1770106544.76389 8261 c9f0909f7d03009d29ede6512b7158e8 ""
+  "content/6-wots+c.tex" 1770464735.32713 15707 e2d1cd5cc0ac47438f498229750446cb ""
+  "content/7-xmss.tex" 1770473498.50619 9562 ed803098a1e26c49a54052b191217fb6 ""
   "content/8-uxmss.tex" 1770106544.76468 8878 b7afe060f06dd48bb8e6557a302aa355 ""
   "content/9-fors.tex" 1770106544.76516 10843 6b0d1ecdbc75d3b7de1266e0cbba4d6d ""
   "content/img/fors.png" 1769506942.18236 73039 043f0cf01ff3763ec5052b6038615988 ""
   "content/img/general.png" 1769429465.28667 186822 35f81f789621d676a7d91821bc87997c ""
-  "main.aux" 1770391006.53679 14989 9fa72439b854474b5359d8829911ca45 "pdflatex"
+  "main.aux" 1770473501.80302 14033 5fc672070dbcbef6c303349c5bc6fa8b "pdflatex"
   "main.bbl" 0 -1 0 "biber main"
-  "main.out" 1770391006.53818 11480 cbca20b491bcdd35168a0c4634281700 "pdflatex"
-  "main.run.xml" 1770391006.54091 2311 f7f9575452fdf7cd4d07e97486caa775 "pdflatex"
+  "main.out" 1770473501.80434 11685 ed1990deb0658420bafdf0f6fbb563c9 "pdflatex"
+  "main.run.xml" 1770473501.80721 2311 f7f9575452fdf7cd4d07e97486caa775 "pdflatex"
   "main.tex" 1770140373.28018 2742 20da9a1c4c6b47ecf7872151eb8d8130 ""
-  "main.toc" 1770391006.54105 6526 bb03fe68a22b71900293f7c4707f1738 "pdflatex"
+  "main.toc" 1770473501.80727 6717 6be0c57fe8350332b3e83d9af5e26365 "pdflatex"
   (generated)
   "main.aux"
   "main.bcf"

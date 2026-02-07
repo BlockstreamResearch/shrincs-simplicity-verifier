@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.12.17)  6 FEB 2026 17:16
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.12.17)  7 FEB 2026 16:11
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1173,47 +1173,58 @@ LaTeX Warning: Citation 'wots+c' on page 11 undefined on input line 8.
 [13]
 
 [14]
-
-[15]
-Overfull \hbox (3.77689pt too wide) in paragraph at lines 228--228
-[]    \OT1/cmtt/m/n/10 1. R \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 sig[0:R_SIZE]                 // maybe it makes sense to define sig_parse op[] 
+Overfull \hbox (51.02771pt too wide) in paragraph at lines 203--203
+[]    \OT1/cmtt/m/n/10 Algorithm: wots_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS, keypair, mode, is_internal)[] 
  []
 
-) (./content/7-xmss.tex
+
+Overfull \hbox (14.27803pt too wide) in paragraph at lines 247--247
+[]    \OT1/cmtt/m/n/10 Algorithm: wots_pkFromSig(sig, m, PK.seed, PK.root, ADRS, keypair, mode, is_internal)[] 
+ []
+
+
+
+[15])
+Overfull \hbox (7.0607pt too wide) in paragraph at lines 300--89
+[]\OT1/cmr/m/n/10 The ver-i-fi-ca-tion cost is \OT1/cmtt/m/n/10 (w-1)*l - S[]wn + 1 \OT1/cmr/m/n/10 hashes per WOTS+C in-stance (2041 hashes for SHRINCS-
+ []
+
+(./content/7-xmss.tex
 
 [16]
-Overfull \hbox (103.52602pt too wide) in paragraph at lines 39--39
-[]    \OT1/cmtt/m/n/10 3. right \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 xmss_treehash(SK.seed, PK.seed, ADRS, target_height - 1, start_idx + 2^(target_height - 1))[] 
- []
-
-
 
 [17]
 
-[18]) (./content/8-uxmss.tex
+[18]
 
-[19]
+[19]) (./content/8-uxmss.tex
 
 [20]
 
-[21]) (./content/9-fors.tex
+[21]
 
-[22]
-<content/img/fors.png, id=549, 756.8275pt x 359.3425pt>
+[22]) (./content/9-fors.tex
+<content/img/fors.png, id=544, 756.8275pt x 359.3425pt>
 File: content/img/fors.png Graphic file (type png)
 <use content/img/fors.png>
 Package pdftex.def Info: content/img/fors.png  used on input line 14.
 (pdftex.def)             Requested size: 362.37569pt x 172.05475pt.
 
 
-[23 <./content/img/fors.png>]
+LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[24]
+
+
+[23]
+
+[24 <./content/img/fors.png>]
 Overfull \hbox (9.02808pt too wide) in paragraph at lines 91--91
 []    \OT1/cmtt/m/n/10 Algorithm: fors_treehash(SK.seed, PK.seed, ADRS, tree_idx, target_height, start_idx)[] 
  []
 
 
+
+[25]
 Overfull \hbox (14.2768pt too wide) in paragraph at lines 108--108
 []    \OT1/cmtt/m/n/10 2. left \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 fors_treehash(SK.seed, PK.seed, ADRS, tree_idx, target_height-1, start_idx)[] 
  []
@@ -1230,35 +1241,35 @@ Overfull \hbox (24.7767pt too wide) in paragraph at lines 133--133
 
 
 
-[25]
+[26]
 
-[26]) (./content/10-shrincs.tex
-
-[27]
+[27]) (./content/10-shrincs.tex
 
 [28]
+
+[29]
 Overfull \hbox (61.52638pt too wide) in paragraph at lines 109--109
 []        \OT1/cmtt/m/n/10 c. xmss_sig \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 xmss_sign(msg, SK.seed, SK.prf, PK.seed, PK.root, ADRS, h', leaf_idx[layer])[] 
  []
 
 
 
-[29]
-
 [30]
+
+[31]
 Overfull \hbox (56.27643pt too wide) in paragraph at lines 210--210
 []        \OT1/cmtt/m/n/10 g. msg \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 xmss_pkFromSig(wots_sig, auth, msg, PK.seed, PK.root, ADRS, h', leaf_idx[layer])[] 
  []
 
 
 
-[31])
+[32])
 
 LaTeX Warning: Empty bibliography on input line 102.
 
 
 
-[32] (./main.aux)
+[33] (./main.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
@@ -1271,7 +1282,7 @@ LaTeX Warning: There were undefined references.
 LaTeX Warning: There were multiply-defined labels.
 
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: CBCA20B491BCDD35168A0C4634281700;11480.
+(rerunfilecheck)             Checksum: ED1990DEB0658420BAFDF0F6FBB563C9;11685.
 
 Package biblatex Warning: Please (re)run Biber on the file:
 (biblatex)                main
@@ -1282,10 +1293,10 @@ Package logreq Info: Writing requests to 'main.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 54836 strings out of 473190
- 1295348 string characters out of 5715799
- 2385634 words of memory out of 5000000
- 77276 multiletter control sequences out of 15000+600000
+ 54812 strings out of 473190
+ 1294862 string characters out of 5715799
+ 2385144 words of memory out of 5000000
+ 77256 multiletter control sequences out of 15000+600000
  568881 words of font info for 75 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  84i,14n,96p,1110b,1239s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1293,10 +1304,10 @@ Here is how much of TeX's memory you used:
 pdfTeX warning (dest): name{Hfootnote.3} has been referenced but does not exist, replaced by a fixed one
 
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb>
-Output written on main.pdf (32 pages, 446779 bytes).
+Output written on main.pdf (33 pages, 447549 bytes).
 PDF statistics:
- 722 PDF objects out of 1000 (max. 8388607)
- 615 compressed objects within 7 object streams
- 155 named destinations out of 1000 (max. 500000)
+ 721 PDF objects out of 1000 (max. 8388607)
+ 613 compressed objects within 7 object streams
+ 151 named destinations out of 1000 (max. 500000)
  719 words of extra memory for PDF output out of 10000 (max. 10000000)
 
