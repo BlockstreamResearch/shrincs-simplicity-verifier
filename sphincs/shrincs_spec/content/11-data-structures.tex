@@ -1,0 +1,28 @@
+\section{Data structures}
+
+\subsection{Secret Key Format}
+
+\subsection{Public Key Format}
+
+\subsection{Stateful Signature Format}
+\begin{verbatim}
+SHRINCS-B:
+    PK.sl : 16 bytes    //public key of stateless instance
+    c : 4 bytes. // 
+    chain_values : l * 16 = 16 * 16 = 256 bytes
+    merkle_path : q * 16 bytes
+    R : 16 bytes
+\end{verbatim}
+Total size: 292 + q * 16 bytes
+
+\begin{verbatim}
+SHRINCS-L:
+    PK.sl : 16 bytes    //public key of stateless instance
+    c : 4 bytes. // 
+    chain_values : l * 16 = 64 * 16 = 1024 bytes
+    merkle_path : q * 16 bytes
+    R : 16 bytes
+\end{verbatim}
+Total size: 1060 + q * 16 bytes
+
+\subsection{Stateless Signature Format}

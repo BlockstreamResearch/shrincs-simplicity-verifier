@@ -475,6 +475,9 @@ INPUT ./content/img/fors.png
 INPUT ./content/10-shrincs.tex
 INPUT ./content/10-shrincs.tex
 INPUT content/10-shrincs.tex
+INPUT ./content/11-data-structures.tex
+INPUT ./content/11-data-structures.tex
+INPUT content/11-data-structures.tex
 INPUT main.aux
 INPUT ./main.out
 INPUT ./main.out

@@ -75,11 +75,12 @@
 \contentsline {subsection}{\numberline {10.3}Statefull signing}{30}{subsection.10.3}%
 \contentsline {subsection}{\numberline {10.4}Stateless signing}{30}{subsection.10.4}%
 \contentsline {subsection}{\numberline {10.5}Index Parsing}{31}{subsection.10.5}%
-\contentsline {subsection}{\numberline {10.6}Statefull verification}{31}{subsection.10.6}%
+\contentsline {paragraph}{Note:}{32}{section*.20}%
+\contentsline {subsection}{\numberline {10.6}Statefull verification}{32}{subsection.10.6}%
 \contentsline {subsection}{\numberline {10.7}Stateless verification}{32}{subsection.10.7}%
 \contentsline {subsection}{\numberline {10.8}Unified Verification}{33}{subsection.10.8}%
-\contentsline {section}{\numberline {11}Data structures}{33}{section.11}%
-\contentsline {subsection}{\numberline {11.1}Secret Key Format}{33}{subsection.11.1}%
-\contentsline {subsection}{\numberline {11.2}Public Key Format}{33}{subsection.11.2}%
-\contentsline {subsection}{\numberline {11.3}Stateful Signature Format}{33}{subsection.11.3}%
+\contentsline {section}{\numberline {11}Data structures}{34}{section.11}%
+\contentsline {subsection}{\numberline {11.1}Secret Key Format}{34}{subsection.11.1}%
+\contentsline {subsection}{\numberline {11.2}Public Key Format}{34}{subsection.11.2}%
+\contentsline {subsection}{\numberline {11.3}Stateful Signature Format}{34}{subsection.11.3}%
 \contentsline {subsection}{\numberline {11.4}Stateless Signature Format}{34}{subsection.11.4}%
