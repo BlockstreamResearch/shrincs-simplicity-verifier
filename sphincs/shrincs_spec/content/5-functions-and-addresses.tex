@@ -16,13 +16,13 @@ To prevent multi-target attacks and ensure domain separation between the various
 
 This usage of tweaked hashing is critical. It ensures that a hash computed at one position in the Merkle tree cannot be substituted for a hash at another position, effectively mitigating generic tree-grafting attacks.
 
-\paragraph{Note.} For SHA-256, the compression function operates on 64-byte blocks. Since \texttt{PK.seed || ADRS} is 16 + 32 = 48 bytes, we pad it to 64 bytes to optimize performance:
+\paragraph{Note.} For SHA-256, the compression function operates on 64-byte blocks. Since \texttt{PK.seed} is 16 bytes, we pad it to 64 bytes to enable precomputation:
 
 \begin{center}
-    \texttt{Tw(PK.seed, ADRS, m) = H(PK.seed || 0\string^16|| ADRS || m)}
+    \texttt{Tw(PK.seed, ADRS, m) = H(PK.seed || 0\string^48|| ADRS || m)}
 \end{center}
 
-Having the first 64-byte precomputed, we reduce the hashing complexity to 1 block for each tweak function.
+Having the first 64 bytes constant (\texttt{PK.seed || 0\string^48}), we can precompute the compression function state once per key pair. Each tweak call then only needs to process the variable part (\texttt{ADRS || m}), reducing per-call overhead.
 
 \subsection{Pseudorandom Functions}
 SHRINCS uses two pseudorandom functions for different purposes: key derivation and getting the randomizer for the signature. 

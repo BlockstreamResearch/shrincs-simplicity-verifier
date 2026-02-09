@@ -1,6 +1,4 @@
 \section{Overview}
-%\mknote{I wonder if we should include guidlince for state management here. Maybe this: https://datatracker.ietf.org/doc/draft-ietf-pquip-hbs-state/02/ can be useful. But maybe it is not for this document. Maybe it is better to update our HB paper with these discussions.} DONE, added to 1st section
-
 SHRINCS is designed in the way it can operate in two modes: \textbf{stateful} and \textbf{stateless}. Stateful mode is represented by the instance of Unbalanced XMSS (UXMSS) with a root public key \texttt{PK.sf}. An optimized variant of SPHINCS+ is used to support the stateless operating mode (which is represented by the public key \texttt{PK.sl}). The root public key is a hashed concatenation of (\texttt{PK.sf}, \texttt{PK.sl}), which is being converted to the Bitcoin address. 
 
 During normal operation with intact state, the user generates signatures according to efficient stateful path. Each leaf of the UXMSS is represented by WOTS+C one time signature instance. UXMSS is right-skewed, which makes the first stateful signature (\texttt{q=1}) the cheapest from the verification and size perspective (\textcolor{red}{324} bytes) and adds the constant size (16 bytes) and one additional hashing operation for each next stateful signature. A right-skewed UXMSS is a tree construction in which every internal node has a one-time signature leaf as its left child and a UXMSS subtree as its right child, yielding a recursively right-branching authentication tree (as shown on the Figure~1).
@@ -52,9 +50,9 @@ Signature size calculation:
 
 The signature verification cost is:
 \begin{verbatim}
-    General formula: hash_ops = (w-1) * l -  S_wn + q + 1  
-           SHRINCS-B.hash_ops =  255  * 16 - 2040 + q + 1 = 2041 + q
-           SHRINCS-L.hash_ops =   3   * 64 - 140  + q + 1 = 53 + q
+    General formula: hash_ops = (w-1) * l -  S_wn + q + 2  
+           SHRINCS-B.hash_ops =  255  * 16 - 2040 + q + 2 = 2042 + q
+           SHRINCS-L.hash_ops =   3   * 64 - 140  + q + 2 = 54 + q
 \end{verbatim}
 
 \subsubsection{Stateless}

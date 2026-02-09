@@ -1,0 +1,19 @@
+[0] Config.pm:308> INFO - This is Biber 2.20
+[0] Config.pm:311> INFO - Logfile is 'main.blg'
+[34] biber-darwin:340> INFO - === Mon Feb  9, 2026, 16:59:45
+[41] Biber.pm:420> INFO - Reading 'main.bcf'
+[79] Biber.pm:994> INFO - Found 11 citekeys in bib section 0
+[85] Biber.pm:4463> INFO - Processing section 0
+[90] Biber.pm:4654> INFO - Looking for bibtex file 'main.bib' for section 0
+[91] bibtex.pm:1713> INFO - LaTeX decoding ...
+[95] bibtex.pm:1519> INFO - Found BibTeX data source 'main.bib'
+[130] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[130] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[130] Biber.pm:4283> INFO - Sorting list 'nyt/global//global/global/global' of type 'entry' with template 'nyt' and locale 'en-US'
+[130] Biber.pm:4289> INFO - No sort tailoring available for locale 'en-US'
+[136] bbl.pm:676> INFO - Writing 'main.bbl' with encoding 'UTF-8'
+[138] bbl.pm:779> INFO - Output to main.bbl
+[138] Biber.pm:131> WARN - I didn't find a database entry for 'https://sphincs.org/data/sphincs+-paper.pdf' (section 0)
+[138] Biber.pm:131> WARN - I didn't find a database entry for 'wots+' (section 0)
+[138] Biber.pm:131> WARN - I didn't find a database entry for 'wots+c' (section 0)
+[138] Biber.pm:133> INFO - WARNINGS: 3

@@ -24,7 +24,7 @@
 \newcommand{\mike}[1]{\todo[color=red!40]{Mike: #1}}
 
 
-\addbibresource{references.bib}
+\addbibresource{main.bib}
 
 \usepackage[most]{tcolorbox}
 \tcbset{
@@ -61,8 +61,7 @@
 \maketitle
 
 \begin{abstract}
-  \oleks{To update after the spec is ready}
-  This document specifies \textbf{SHRINCS} (Stateful Hash-based Robust Integrated NIST-Compatible Signatures), a post-quantum signature scheme optimized for Bitcoin. SHRINCS combines efficient stateful hash-based signatures (unbalanced XMSS with WOTS+C) for normal operation with a stateless fallback (SPHINCS+ variant) for scenarios when state management failed. The scheme achieves minimal \textcolor{red}{324}-byte signatures during normal stateful operation while maintaining the robustness of stateless signatures as a backup when state is corrupted or lost.
+  This document specifies \textbf{SHRINCS} (Stateful Hash-based Robust Integrated NIST-Compatible Signatures), a post-quantum signature scheme optimized for Bitcoin and Liquid. SHRINCS combines efficient stateful hash-based signatures (unbalanced XMSS with WOTS+C) for normal operation with a stateless fallback (an SPHINCS+ variant) for scenarios where state management is corrupted or unavailable. This specification provides with two parameter sets optimized for different deployment scenarios: (1) SHRINCS-B (Bitcoin-optimized) minimizes signature size for byte-based fee systems (\textbf{324}-byte signature with 2043 hashes for verification for the first use, growing by 16 bytes and one hashing per subsequent signature); (2) SHRINCS-L (Liquid-optimized) reduces verification cost for computation-based fee systems (only \textbf{55} hash operations with 1092-byte signature for the first use). Both variants support "stateless-only after recovery" mode to preserve funds while accepting larger and more expensive from the verification perspective signatures. 
 \end{abstract}
 
 \tableofcontents
@@ -101,7 +100,6 @@
 
 % --- Section 11: Data structures ---
 \input{content/11-data-structures.tex}
-
 
 \printbibliography{}
 

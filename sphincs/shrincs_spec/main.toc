@@ -7,9 +7,9 @@
 \contentsline {paragraph}{Variable Stateful Signature Sizes.}{4}{section*.5}%
 \contentsline {section}{\numberline {2}Notation}{4}{section.2}%
 \contentsline {section}{\numberline {3}Overview}{5}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Key Pair Derivation and Size}{6}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2}Signature Size and Verification Cost}{6}{subsection.3.2}%
-\contentsline {subsubsection}{\numberline {3.2.1}Stateful}{6}{subsubsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.1}Key Pair Derivation and Size}{5}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Signature Size and Verification Cost}{5}{subsection.3.2}%
+\contentsline {subsubsection}{\numberline {3.2.1}Stateful}{5}{subsubsection.3.2.1}%
 \contentsline {subsubsection}{\numberline {3.2.2}Stateless}{6}{subsubsection.3.2.2}%
 \contentsline {section}{\numberline {4}Parameters}{7}{section.4}%
 \contentsline {section}{\numberline {5}Underlying Functions and Addresses}{8}{section.5}%
