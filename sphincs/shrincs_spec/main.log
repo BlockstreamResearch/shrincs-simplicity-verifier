@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.12.17)  9 FEB 2026 12:20
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.12.17)  9 FEB 2026 13:16
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1225,24 +1225,24 @@ Package pdftex.def Info: content/img/fors.png  used on input line 14.
 [24 <./content/img/fors.png>]
 
 [25]
-Overfull \hbox (9.02808pt too wide) in paragraph at lines 91--91
+Overfull \hbox (9.02808pt too wide) in paragraph at lines 97--97
 []    \OT1/cmtt/m/n/10 Algorithm: fors_treehash(SK.seed, PK.seed, ADRS, tree_idx, target_height, start_idx)[] 
  []
 
 
-Overfull \hbox (14.2768pt too wide) in paragraph at lines 108--108
-[]    \OT1/cmtt/m/n/10 2. left \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 fors_treehash(SK.seed, PK.seed, ADRS, tree_idx, target_height-1, start_idx)[] 
+Overfull \hbox (24.7767pt too wide) in paragraph at lines 114--114
+[]    \OT1/cmtt/m/n/10 2. left \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 fors_treehash(SK.seed, PK.seed, ADRS, tree_idx, target_height - 1, start_idx)[] 
  []
 
 
-Overfull \hbox (24.7767pt too wide) in paragraph at lines 109--109
-[]    \OT1/cmtt/m/n/10 3. right \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 fors_treehash(SK.seed, PK.seed, ADRS, tree_idx, target_height-1, start_idx +[] 
+Overfull \hbox (156.02556pt too wide) in paragraph at lines 115--115
+[]    \OT1/cmtt/m/n/10 3. right \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 fors_treehash(SK.seed, PK.seed, ADRS, tree_idx, target_height - 1, start_idx + 2^(target_height - 1))[] 
  []
 
 
 
 [26]
-Overfull \hbox (24.7767pt too wide) in paragraph at lines 133--133
+Overfull \hbox (24.7767pt too wide) in paragraph at lines 138--138
 []        \OT1/cmtt/m/n/10 b. auth \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 auth || fors_treehash(SK.seed, PK.seed, ADRS, tree_idx, h, sibling_start)[] 
  []
 
@@ -1303,10 +1303,10 @@ Package logreq Info: Writing requests to 'main.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 54818 strings out of 473190
- 1294904 string characters out of 5715799
- 2385001 words of memory out of 5000000
- 77260 multiletter control sequences out of 15000+600000
+ 54802 strings out of 473190
+ 1294602 string characters out of 5715799
+ 2384707 words of memory out of 5000000
+ 77248 multiletter control sequences out of 15000+600000
  568881 words of font info for 75 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  84i,14n,96p,1110b,1239s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1314,10 +1314,10 @@ Here is how much of TeX's memory you used:
 pdfTeX warning (dest): name{Hfootnote.3} has been referenced but does not exist, replaced by a fixed one
 
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb>
-Output written on main.pdf (34 pages, 450119 bytes).
+Output written on main.pdf (34 pages, 449007 bytes).
 PDF statistics:
- 730 PDF objects out of 1000 (max. 8388607)
- 621 compressed objects within 7 object streams
- 153 named destinations out of 1000 (max. 500000)
+ 725 PDF objects out of 1000 (max. 8388607)
+ 616 compressed objects within 7 object streams
+ 149 named destinations out of 1000 (max. 500000)
  727 words of extra memory for PDF output out of 10000 (max. 10000000)
 
