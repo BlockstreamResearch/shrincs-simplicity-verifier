@@ -111,6 +111,10 @@ Summarizing, \texttt{(0x00, 0x01, 0x02)} are stateful only types, \texttt{(0x03,
 
 \subsubsection{Address Manipulation Functions}
 \begin{verbatim}
+
+new_ADRS():
+     return toByte(0, 32)
+
 setLayerAddress(ADRS, layer):
     ADRS[0:4] ← toByte(layer, 4)
 
