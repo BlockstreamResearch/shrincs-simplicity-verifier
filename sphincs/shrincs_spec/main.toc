@@ -49,31 +49,35 @@
 \contentsline {section}{\numberline {8}UXMSS. The Stateful Tree}{20}{section.8}%
 \contentsline {subsection}{\numberline {8.1}UXMSS Tree Structure}{20}{subsection.8.1}%
 \contentsline {subsection}{\numberline {8.2}UXMSS TreeHash}{20}{subsection.8.2}%
+\contentsline {paragraph}{Note:}{21}{section*.14}%
 \contentsline {subsection}{\numberline {8.3}UXMSS Root Computation}{21}{subsection.8.3}%
 \contentsline {subsection}{\numberline {8.4}UXMSS Authentication Path Generation}{21}{subsection.8.4}%
+\contentsline {paragraph}{Note:}{22}{section*.16}%
 \contentsline {subsection}{\numberline {8.5}UXMSS Public Key Recovery from Signature}{22}{subsection.8.5}%
+\contentsline {paragraph}{Note:}{23}{section*.17}%
 \contentsline {subsection}{\numberline {8.6}UXMSS Signature Generation}{23}{subsection.8.6}%
-\contentsline {section}{\numberline {9}FORS+C}{23}{section.9}%
-\contentsline {subsection}{\numberline {9.1}FORS Structure}{23}{subsection.9.1}%
-\contentsline {subsection}{\numberline {9.2}Grinding Condition}{24}{subsection.9.2}%
-\contentsline {subsection}{\numberline {9.3}Message to Indices}{24}{subsection.9.3}%
-\contentsline {subsection}{\numberline {9.4}Grinding}{24}{subsection.9.4}%
-\contentsline {subsection}{\numberline {9.5}Secret Key Generation}{25}{subsection.9.5}%
-\contentsline {subsection}{\numberline {9.6}TreeHash}{25}{subsection.9.6}%
-\contentsline {subsection}{\numberline {9.7}FORS Authentication path}{26}{subsection.9.7}%
-\contentsline {subsection}{\numberline {9.8}Signature generation}{26}{subsection.9.8}%
-\contentsline {subsection}{\numberline {9.9}Public Key Recovery}{27}{subsection.9.9}%
-\contentsline {section}{\numberline {10}SHRINCS}{28}{section.10}%
-\contentsline {subsection}{\numberline {10.1}Key Generation}{28}{subsection.10.1}%
-\contentsline {subsection}{\numberline {10.2}Recovery from Seed}{28}{subsection.10.2}%
-\contentsline {subsection}{\numberline {10.3}Statefull signing}{29}{subsection.10.3}%
+\contentsline {subsection}{\numberline {8.7}Contribution to Signature Size and Verification Complexity}{23}{subsection.8.7}%
+\contentsline {section}{\numberline {9}FORS+C}{24}{section.9}%
+\contentsline {subsection}{\numberline {9.1}FORS Structure}{24}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}Grinding Condition}{25}{subsection.9.2}%
+\contentsline {subsection}{\numberline {9.3}Message to Indices}{25}{subsection.9.3}%
+\contentsline {subsection}{\numberline {9.4}Grinding}{25}{subsection.9.4}%
+\contentsline {subsection}{\numberline {9.5}Secret Key Generation}{26}{subsection.9.5}%
+\contentsline {subsection}{\numberline {9.6}TreeHash}{26}{subsection.9.6}%
+\contentsline {subsection}{\numberline {9.7}FORS Authentication path}{27}{subsection.9.7}%
+\contentsline {subsection}{\numberline {9.8}Signature generation}{27}{subsection.9.8}%
+\contentsline {subsection}{\numberline {9.9}Public Key Recovery}{28}{subsection.9.9}%
+\contentsline {section}{\numberline {10}SHRINCS}{29}{section.10}%
+\contentsline {subsection}{\numberline {10.1}Key Generation}{29}{subsection.10.1}%
+\contentsline {subsection}{\numberline {10.2}Recovery from Seed}{29}{subsection.10.2}%
+\contentsline {subsection}{\numberline {10.3}Statefull signing}{30}{subsection.10.3}%
 \contentsline {subsection}{\numberline {10.4}Stateless signing}{30}{subsection.10.4}%
-\contentsline {subsection}{\numberline {10.5}Index Parsing}{30}{subsection.10.5}%
-\contentsline {subsection}{\numberline {10.6}Statefull verification}{31}{subsection.10.6}%
-\contentsline {subsection}{\numberline {10.7}Stateless verification}{31}{subsection.10.7}%
-\contentsline {subsection}{\numberline {10.8}Unified Verification}{32}{subsection.10.8}%
-\contentsline {section}{\numberline {11}Data structures}{33}{section.11}%
-\contentsline {subsection}{\numberline {11.1}Secret Key Format}{33}{subsection.11.1}%
-\contentsline {subsection}{\numberline {11.2}Public Key Format}{33}{subsection.11.2}%
-\contentsline {subsection}{\numberline {11.3}Stateful Signature Format}{33}{subsection.11.3}%
-\contentsline {subsection}{\numberline {11.4}Stateless Signature Format}{33}{subsection.11.4}%
+\contentsline {subsection}{\numberline {10.5}Index Parsing}{31}{subsection.10.5}%
+\contentsline {subsection}{\numberline {10.6}Statefull verification}{32}{subsection.10.6}%
+\contentsline {subsection}{\numberline {10.7}Stateless verification}{32}{subsection.10.7}%
+\contentsline {subsection}{\numberline {10.8}Unified Verification}{33}{subsection.10.8}%
+\contentsline {section}{\numberline {11}Data structures}{34}{section.11}%
+\contentsline {subsection}{\numberline {11.1}Secret Key Format}{34}{subsection.11.1}%
+\contentsline {subsection}{\numberline {11.2}Public Key Format}{34}{subsection.11.2}%
+\contentsline {subsection}{\numberline {11.3}Stateful Signature Format}{34}{subsection.11.3}%
+\contentsline {subsection}{\numberline {11.4}Stateless Signature Format}{34}{subsection.11.4}%
