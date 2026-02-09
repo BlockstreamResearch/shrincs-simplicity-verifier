@@ -10,78 +10,81 @@
 \contentsline {subsection}{\numberline {3.1}Key Pair Derivation and Size}{5}{subsection.3.1}%
 \contentsline {subsection}{\numberline {3.2}Signature Size and Verification Cost}{5}{subsection.3.2}%
 \contentsline {subsubsection}{\numberline {3.2.1}Stateful}{5}{subsubsection.3.2.1}%
+\contentsline {paragraph}{Note:}{6}{section*.6}%
 \contentsline {subsubsection}{\numberline {3.2.2}Stateless}{6}{subsubsection.3.2.2}%
+\contentsline {paragraph}{Note:}{7}{section*.7}%
 \contentsline {section}{\numberline {4}Parameters}{7}{section.4}%
+\contentsline {paragraph}{Note:}{8}{section*.10}%
 \contentsline {section}{\numberline {5}Underlying Functions and Addresses}{8}{section.5}%
 \contentsline {subsection}{\numberline {5.1}Hash Function}{8}{subsection.5.1}%
 \contentsline {subsection}{\numberline {5.2}Tweakable Hash Function}{8}{subsection.5.2}%
-\contentsline {paragraph}{Note.}{8}{section*.8}%
+\contentsline {paragraph}{Note:}{8}{section*.11}%
 \contentsline {subsection}{\numberline {5.3}Pseudorandom Functions}{8}{subsection.5.3}%
-\contentsline {subsection}{\numberline {5.4}Message Hash Function}{8}{subsection.5.4}%
-\contentsline {subsubsection}{\numberline {5.4.1}WOTS+C: Two-Phase Hashing}{8}{subsubsection.5.4.1}%
-\contentsline {paragraph}{Phase 1. Message Digest}{9}{section*.9}%
-\contentsline {paragraph}{Phase 2. Grinding Hash}{9}{section*.10}%
+\contentsline {subsection}{\numberline {5.4}Message Hash Function}{9}{subsection.5.4}%
+\contentsline {subsubsection}{\numberline {5.4.1}WOTS+C: Two-Phase Hashing}{9}{subsubsection.5.4.1}%
+\contentsline {paragraph}{Phase 1. Message Digest.}{9}{section*.12}%
+\contentsline {paragraph}{Phase 2. Grinding Hash.}{9}{section*.13}%
 \contentsline {subsubsection}{\numberline {5.4.2}FORS+C: Single-Phase Hashing}{9}{subsubsection.5.4.2}%
 \contentsline {subsection}{\numberline {5.5}Tweak Structure and Domain Separation}{9}{subsection.5.5}%
-\contentsline {subsubsection}{\numberline {5.5.1}Address Types}{9}{subsubsection.5.5.1}%
+\contentsline {subsubsection}{\numberline {5.5.1}Address Types}{10}{subsubsection.5.5.1}%
 \contentsline {subsubsection}{\numberline {5.5.2}Address Manipulation Functions}{10}{subsubsection.5.5.2}%
 \contentsline {subsubsection}{\numberline {5.5.3}Type-Dependent Words}{10}{subsubsection.5.5.3}%
-\contentsline {section}{\numberline {6}WOTS+C}{10}{section.6}%
+\contentsline {section}{\numberline {6}WOTS+C}{11}{section.6}%
 \contentsline {subsection}{\numberline {6.1}The Target Condition}{11}{subsection.6.1}%
-\contentsline {subsection}{\numberline {6.2}Base-w Representation}{11}{subsection.6.2}%
-\contentsline {subsection}{\numberline {6.3}Chain Function}{12}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.2}Base-w Representation}{12}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Chain Function}{13}{subsection.6.3}%
 \contentsline {subsection}{\numberline {6.4}Key Generation}{13}{subsection.6.4}%
 \contentsline {subsection}{\numberline {6.5}Messsage Digest Grinding}{14}{subsection.6.5}%
 \contentsline {subsection}{\numberline {6.6}Signature Generation}{15}{subsection.6.6}%
-\contentsline {subsection}{\numberline {6.7}Signature Verification (Public Key Recovery)}{15}{subsection.6.7}%
-\contentsline {subsection}{\numberline {6.8}Contribution to the Signature Size and Verification Complexity}{16}{subsection.6.8}%
+\contentsline {subsection}{\numberline {6.7}Signature Verification (Public Key Recovery)}{16}{subsection.6.7}%
+\contentsline {subsection}{\numberline {6.8}Contribution to the Signature Size and Verification Complexity}{17}{subsection.6.8}%
 \contentsline {section}{\numberline {7}XMSS}{17}{section.7}%
 \contentsline {subsection}{\numberline {7.1}XMSS Tree Structure}{17}{subsection.7.1}%
 \contentsline {subsection}{\numberline {7.2}XMSS TreeHash}{17}{subsection.7.2}%
-\contentsline {paragraph}{Note:}{18}{section*.11}%
+\contentsline {paragraph}{Note:}{18}{section*.16}%
 \contentsline {subsection}{\numberline {7.3}XMSS Root Computation}{18}{subsection.7.3}%
 \contentsline {subsection}{\numberline {7.4}XMSS Authentication Path Generation}{18}{subsection.7.4}%
-\contentsline {paragraph}{Note:}{18}{section*.12}%
-\contentsline {subsection}{\numberline {7.5}XMSS Public Key Recovery from Signature}{18}{subsection.7.5}%
-\contentsline {subsection}{\numberline {7.6}XMSS Signature Generation (Stateless Layer)}{19}{subsection.7.6}%
+\contentsline {paragraph}{Note:}{19}{section*.17}%
+\contentsline {subsection}{\numberline {7.5}XMSS Public Key Recovery from Signature}{19}{subsection.7.5}%
+\contentsline {subsection}{\numberline {7.6}XMSS Signature Generation (Stateless Layer)}{20}{subsection.7.6}%
 \contentsline {subsection}{\numberline {7.7}Contribution to Signature Size and Verification Complexity}{20}{subsection.7.7}%
-\contentsline {paragraph}{Note:}{20}{section*.13}%
+\contentsline {paragraph}{Note:}{20}{section*.18}%
 \contentsline {section}{\numberline {8}UXMSS. The Stateful Tree}{20}{section.8}%
 \contentsline {subsection}{\numberline {8.1}UXMSS Tree Structure}{20}{subsection.8.1}%
 \contentsline {subsection}{\numberline {8.2}UXMSS TreeHash}{21}{subsection.8.2}%
-\contentsline {paragraph}{Note:}{21}{section*.14}%
-\contentsline {subsection}{\numberline {8.3}UXMSS Root Computation}{21}{subsection.8.3}%
-\contentsline {subsection}{\numberline {8.4}UXMSS Authentication Path Generation}{21}{subsection.8.4}%
-\contentsline {paragraph}{Note:}{22}{section*.16}%
-\contentsline {subsection}{\numberline {8.5}UXMSS Public Key Recovery from Signature}{22}{subsection.8.5}%
-\contentsline {paragraph}{Note:}{23}{section*.17}%
-\contentsline {subsection}{\numberline {8.6}UXMSS Signature Generation}{23}{subsection.8.6}%
+\contentsline {paragraph}{Note:}{21}{section*.19}%
+\contentsline {subsection}{\numberline {8.3}UXMSS Root Computation}{22}{subsection.8.3}%
+\contentsline {subsection}{\numberline {8.4}UXMSS Authentication Path Generation}{22}{subsection.8.4}%
+\contentsline {paragraph}{Note:}{23}{section*.22}%
+\contentsline {subsection}{\numberline {8.5}UXMSS Public Key Recovery from Signature}{23}{subsection.8.5}%
+\contentsline {paragraph}{Note:}{23}{section*.23}%
+\contentsline {subsection}{\numberline {8.6}UXMSS Signature Generation}{24}{subsection.8.6}%
 \contentsline {subsection}{\numberline {8.7}Contribution to Signature Size and Verification Complexity}{24}{subsection.8.7}%
 \contentsline {section}{\numberline {9}FORS+C}{24}{section.9}%
-\contentsline {subsection}{\numberline {9.1}FORS Structure}{24}{subsection.9.1}%
-\contentsline {subsection}{\numberline {9.2}Grinding Condition}{24}{subsection.9.2}%
+\contentsline {subsection}{\numberline {9.1}FORS Structure}{25}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}Grinding Condition}{25}{subsection.9.2}%
 \contentsline {subsection}{\numberline {9.3}Message to Indices}{25}{subsection.9.3}%
-\contentsline {paragraph}{Note:}{25}{section*.18}%
-\contentsline {subsection}{\numberline {9.4}Grinding}{25}{subsection.9.4}%
+\contentsline {paragraph}{Note:}{26}{section*.24}%
+\contentsline {subsection}{\numberline {9.4}Grinding}{26}{subsection.9.4}%
 \contentsline {subsection}{\numberline {9.5}Secret Key Generation}{26}{subsection.9.5}%
 \contentsline {subsection}{\numberline {9.6}TreeHash}{26}{subsection.9.6}%
-\contentsline {paragraph}{Note:}{26}{section*.19}%
+\contentsline {paragraph}{Note:}{27}{section*.25}%
 \contentsline {subsection}{\numberline {9.7}FORS Authentication path}{27}{subsection.9.7}%
-\contentsline {subsection}{\numberline {9.8}Signature generation}{27}{subsection.9.8}%
+\contentsline {subsection}{\numberline {9.8}Signature generation}{28}{subsection.9.8}%
 \contentsline {subsection}{\numberline {9.9}Public Key Recovery}{28}{subsection.9.9}%
-\contentsline {section}{\numberline {10}SHRINCS}{28}{section.10}%
+\contentsline {section}{\numberline {10}SHRINCS}{29}{section.10}%
 \contentsline {subsection}{\numberline {10.1}Key Generation}{29}{subsection.10.1}%
-\contentsline {subsection}{\numberline {10.2}Recovery from Seed}{29}{subsection.10.2}%
+\contentsline {subsection}{\numberline {10.2}Recovery from Seed}{30}{subsection.10.2}%
 \contentsline {subsection}{\numberline {10.3}Statefull signing}{30}{subsection.10.3}%
-\contentsline {subsection}{\numberline {10.4}Stateless signing}{30}{subsection.10.4}%
-\contentsline {subsection}{\numberline {10.5}Index Parsing}{31}{subsection.10.5}%
-\contentsline {paragraph}{Note:}{32}{section*.20}%
+\contentsline {subsection}{\numberline {10.4}Stateless signing}{31}{subsection.10.4}%
+\contentsline {subsection}{\numberline {10.5}Index Parsing}{32}{subsection.10.5}%
+\contentsline {paragraph}{Note:}{32}{section*.26}%
 \contentsline {subsection}{\numberline {10.6}Statefull verification}{32}{subsection.10.6}%
-\contentsline {subsection}{\numberline {10.7}Stateless verification}{32}{subsection.10.7}%
-\contentsline {subsection}{\numberline {10.8}Unified Verification}{33}{subsection.10.8}%
+\contentsline {subsection}{\numberline {10.7}Stateless verification}{33}{subsection.10.7}%
+\contentsline {subsection}{\numberline {10.8}Unified Verification}{34}{subsection.10.8}%
 \contentsline {section}{\numberline {11}Data structures}{34}{section.11}%
 \contentsline {subsection}{\numberline {11.1}Secret Key Format}{34}{subsection.11.1}%
 \contentsline {subsection}{\numberline {11.2}Public Key Format}{34}{subsection.11.2}%
-\contentsline {subsection}{\numberline {11.3}Stateful Signature Format}{34}{subsection.11.3}%
+\contentsline {subsection}{\numberline {11.3}Stateful Signature Format}{35}{subsection.11.3}%
 \contentsline {subsection}{\numberline {11.4}Stateless Signature Format}{35}{subsection.11.4}%
-\contentsline {subsection}{\numberline {11.5}Signature Type Indication}{35}{subsection.11.5}%
+\contentsline {subsection}{\numberline {11.5}Signature Type Indication}{36}{subsection.11.5}%

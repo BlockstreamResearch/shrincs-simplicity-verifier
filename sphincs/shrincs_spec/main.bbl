@@ -19,6 +19,63 @@
 
 \refsection{0}
   \datalist[entry]{nyt/global//global/global/global}
+    \entry{sphincsplus_paper2019}{misc}{}{}
+      \name{author}{6}{}{%
+        {{hash=cc77f8b5fa3840f90938819e591aae07}{%
+           family={Bernstein},
+           familyi={B\bibinitperiod},
+           given={Daniel\bibnamedelima J.},
+           giveni={D\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
+        {{hash=e07df980cdbfba600caca198384a3e85}{%
+           family={Hülsing},
+           familyi={H\bibinitperiod},
+           given={Andreas},
+           giveni={A\bibinitperiod}}}%
+        {{hash=fe391f7e19dfca255947eb107e21327b}{%
+           family={Kölbl},
+           familyi={K\bibinitperiod},
+           given={Stefan},
+           giveni={S\bibinitperiod}}}%
+        {{hash=bb5b512ed728a3c1bb3aa19834ddc78c}{%
+           family={Niederhagen},
+           familyi={N\bibinitperiod},
+           given={Ruben},
+           giveni={R\bibinitperiod}}}%
+        {{hash=c64359006336c5372b142310b5e4eee4}{%
+           family={Rijneveld},
+           familyi={R\bibinitperiod},
+           given={Joost},
+           giveni={J\bibinitperiod}}}%
+        {{hash=d73f5269a295977070bf92d05cf9415e}{%
+           family={Schwabe},
+           familyi={S\bibinitperiod},
+           given={Peter},
+           giveni={P\bibinitperiod}}}%
+      }
+      \strng{namehash}{ad63d5a879ce705516adb9af26e5193b}
+      \strng{fullhash}{66ed15b4b3df3425c226d77e75bd3b33}
+      \strng{fullhashraw}{66ed15b4b3df3425c226d77e75bd3b33}
+      \strng{bibnamehash}{ad63d5a879ce705516adb9af26e5193b}
+      \strng{authorbibnamehash}{ad63d5a879ce705516adb9af26e5193b}
+      \strng{authornamehash}{ad63d5a879ce705516adb9af26e5193b}
+      \strng{authorfullhash}{66ed15b4b3df3425c226d77e75bd3b33}
+      \strng{authorfullhashraw}{66ed15b4b3df3425c226d77e75bd3b33}
+      \field{labelalpha}{Ber+19}
+      \field{sortinit}{B}
+      \field{sortinithash}{d7095fff47cda75ca2589920aae98399}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{howpublished}{Full version}
+      \field{month}{9}
+      \field{title}{The SPHINCS+ Signature Framework}
+      \field{year}{2019}
+      \verb{urlraw}
+      \verb https://sphincs.org/data/sphincs+-paper.pdf
+      \endverb
+      \verb{url}
+      \verb https://sphincs.org/data/sphincs+-paper.pdf
+      \endverb
+    \endentry
     \entry{nist_sp800_208}{misc}{}{}
       \name{author}{6}{}{%
         {{hash=d12eb5323d122f4ef0cebd96948a1e56}{%
@@ -77,6 +134,132 @@
       \endverb
       \verb{url}
       \verb https://csrc.nist.gov/pubs/sp/800/208/final
+      \endverb
+    \endentry
+    \entry{hulsing2013wotsplus}{inproceedings}{}{}
+      \name{author}{1}{}{%
+        {{hash=e07df980cdbfba600caca198384a3e85}{%
+           family={Hülsing},
+           familyi={H\bibinitperiod},
+           given={Andreas},
+           giveni={A\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Springer}%
+      }
+      \strng{namehash}{e07df980cdbfba600caca198384a3e85}
+      \strng{fullhash}{e07df980cdbfba600caca198384a3e85}
+      \strng{fullhashraw}{e07df980cdbfba600caca198384a3e85}
+      \strng{bibnamehash}{e07df980cdbfba600caca198384a3e85}
+      \strng{authorbibnamehash}{e07df980cdbfba600caca198384a3e85}
+      \strng{authornamehash}{e07df980cdbfba600caca198384a3e85}
+      \strng{authorfullhash}{e07df980cdbfba600caca198384a3e85}
+      \strng{authorfullhashraw}{e07df980cdbfba600caca198384a3e85}
+      \field{labelalpha}{Hül13}
+      \field{sortinit}{H}
+      \field{sortinithash}{23a3aa7c24e56cfa16945d55545109b5}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Progress in Cryptology -- AFRICACRYPT 2013}
+      \field{series}{Lecture Notes in Computer Science}
+      \field{title}{W-OTS+ -- Shorter Signatures for Hash-Based Signature Schemes}
+      \field{volume}{7918}
+      \field{year}{2013}
+      \field{pages}{173\bibrangedash 188}
+      \range{pages}{16}
+      \verb{doi}
+      \verb 10.1007/978-3-642-38553-7_10
+      \endverb
+      \verb{urlraw}
+      \verb https://link.springer.com/chapter/10.1007/978-3-642-38553-7_10
+      \endverb
+      \verb{url}
+      \verb https://link.springer.com/chapter/10.1007/978-3-642-38553-7_10
+      \endverb
+    \endentry
+    \entry{kudinov_nick_2025_hbs_bitcoin}{misc}{}{}
+      \name{author}{2}{}{%
+        {{hash=004f807896556db718364d7201c93594}{%
+           family={Kudinov},
+           familyi={K\bibinitperiod},
+           given={Mikhail},
+           giveni={M\bibinitperiod}}}%
+        {{hash=a2e92e7bf7aa632a52287c4e7ee2f4c0}{%
+           family={Nick},
+           familyi={N\bibinitperiod},
+           given={Jonas},
+           giveni={J\bibinitperiod}}}%
+      }
+      \strng{namehash}{26f4280bdaeaa964ec2143f6e89b2fdc}
+      \strng{fullhash}{26f4280bdaeaa964ec2143f6e89b2fdc}
+      \strng{fullhashraw}{26f4280bdaeaa964ec2143f6e89b2fdc}
+      \strng{bibnamehash}{26f4280bdaeaa964ec2143f6e89b2fdc}
+      \strng{authorbibnamehash}{26f4280bdaeaa964ec2143f6e89b2fdc}
+      \strng{authornamehash}{26f4280bdaeaa964ec2143f6e89b2fdc}
+      \strng{authorfullhash}{26f4280bdaeaa964ec2143f6e89b2fdc}
+      \strng{authorfullhashraw}{26f4280bdaeaa964ec2143f6e89b2fdc}
+      \field{labelalpha}{KN25}
+      \field{sortinit}{K}
+      \field{sortinithash}{c02bf6bff1c488450c352b40f5d853ab}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{howpublished}{IACR Cryptology ePrint Archive, Report 2025/2203}
+      \field{month}{12}
+      \field{note}{Technical report referenced on the Bitcoin Development Mailing List}
+      \field{title}{Hash-Based Signatures for Bitcoin's Post-Quantum Future}
+      \field{year}{2025}
+      \verb{urlraw}
+      \verb https://eprint.iacr.org/2025/2203
+      \endverb
+      \verb{url}
+      \verb https://eprint.iacr.org/2025/2203
+      \endverb
+    \endentry
+    \entry{wotsc_sphincsc2022}{misc}{}{}
+      \name{author}{4}{}{%
+        {{hash=004f807896556db718364d7201c93594}{%
+           family={Kudinov},
+           familyi={K\bibinitperiod},
+           given={Mikhail},
+           giveni={M\bibinitperiod}}}%
+        {{hash=e07df980cdbfba600caca198384a3e85}{%
+           family={Hülsing},
+           familyi={H\bibinitperiod},
+           given={Andreas},
+           giveni={A\bibinitperiod}}}%
+        {{hash=6fd7e4eea16cc4fefb8c0f4661fb7d1f}{%
+           family={Ronen},
+           familyi={R\bibinitperiod},
+           given={Eyal},
+           giveni={E\bibinitperiod}}}%
+        {{hash=7e9d4a5192683290c59adf2c9b3d8dca}{%
+           family={Yogev},
+           familyi={Y\bibinitperiod},
+           given={Eylon},
+           giveni={E\bibinitperiod}}}%
+      }
+      \strng{namehash}{c8522754d4da16eb5709482e088f1113}
+      \strng{fullhash}{e4daf538886d81466736014e51ac812d}
+      \strng{fullhashraw}{e4daf538886d81466736014e51ac812d}
+      \strng{bibnamehash}{c8522754d4da16eb5709482e088f1113}
+      \strng{authorbibnamehash}{c8522754d4da16eb5709482e088f1113}
+      \strng{authornamehash}{c8522754d4da16eb5709482e088f1113}
+      \strng{authorfullhash}{e4daf538886d81466736014e51ac812d}
+      \strng{authorfullhashraw}{e4daf538886d81466736014e51ac812d}
+      \field{labelalpha}{Kud+22}
+      \field{sortinit}{K}
+      \field{sortinithash}{c02bf6bff1c488450c352b40f5d853ab}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{howpublished}{IACR Cryptology ePrint Archive, Report 2022/778}
+      \field{note}{Introduces WOTS+C (a compressed variant of WOTS+) and FORS+C}
+      \field{title}{SPHINCS+C: Compressing SPHINCS+ With (Almost) No Cost}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://eprint.iacr.org/2022/778
+      \endverb
+      \verb{url}
+      \verb https://eprint.iacr.org/2022/778
       \endverb
     \endentry
     \entry{ecdsa_fips186}{misc}{}{}
@@ -373,9 +556,6 @@
       \endverb
     \endentry
   \enddatalist
-  \missing{https://sphincs.org/data/sphincs+-paper.pdf}
-  \missing{wots+}
-  \missing{wots+c}
 \endrefsection
 \endinput
 

@@ -20,8 +20,6 @@ Layer indexing within the stateless hypertree is the following:
 \subsection{XMSS TreeHash}
 The \texttt{xmss\_treehash} function computes subtree roots within an XMSS tree. It takes a target height and a leftmost leaf index, then recursively builds the subtree by computing leaves (WOTS+C public keys) at height 0 and hashing pairs of children to form internal nodes. This function is the core building block used both for computing the full tree root (by calling it with \texttt{target\_height = h'} and \texttt{start\_idx = 0}) and for generating individual sibling nodes needed in authentication paths (with arbitrary \texttt{start\_idx}).
 
-%\mknote{I see that you require here that the start idx must be zero, but don't we need a general xmss treehash alg that takes a specific leaf used to sign the message and does the same as your xmss treehash. See Algorithm 9 xmss node in SLH-DSA spec. If we decide to keep this as a function I would propose name change for the variable: leftmost leaf index (smth like this)}
-
 \begin{verbatim}
     Algorithm: xmss_treehash(SK.seed, PK.seed, ADRS, target_height, start_idx)
     Input:
@@ -63,7 +61,7 @@ The \texttt{xmss\_root} function computes the root of an entire XMSS tree by inv
 \end{verbatim}
 
 \subsection{XMSS Authentication Path Generation}
-For a leaf at index \texttt{idx}, the authentication path consists of the sibling nodes at each level from the leaf up to (but not including) the root. The authentication path contains \texttt{h'} nodes, each of size \texttt{n} bytes, allowing a verifier to reconstruct the path from the leaf to the root.
+For a leaf at index \texttt{idx}, the authentication path consists of the sibling nodes at each level from the leaf up to (but not including) the root. The authentication path contains \texttt{h\_prime} nodes, each of size \texttt{n} bytes, allowing a verifier to reconstruct the path from the leaf to the root.
 
 At height \texttt{h}, the sibling subtree's leftmost leaf index is determined by flipping the h-th bit of \texttt{idx} (using XOR) and clearing all lower bits. The sibling node is then computed by calling \texttt{xmss\_treehash} on the subtree rooted at that position.
 \begin{verbatim}
@@ -87,7 +85,7 @@ At height \texttt{h}, the sibling subtree's leftmost leaf index is determined by
 \subsection{XMSS Public Key Recovery from Signature}
 Given a WOTS+C signature and authentication path, this algorithm recovers the XMSS tree root. First, it recovers the WOTS+C public key (the leaf value) from the WOTS+C signature. Then, starting from the leaf, it iteratively combines the current node with the corresponding authentication path node to compute the parent, continuing until reaching the root. At each height \texttt{h}, the \texttt{h}-th bit of idx determines whether the current node is the left child \texttt{(bit = 0)} or right child \texttt{(bit = 1)}, which dictates the ordering when hashing the pair.
 
-The message \texttt{m} being verified is either a FORS+C public key (at layer 0) or a lower-layer tree root (at layers \texttt{1...d-1}). In both cases, m is already a hash, so \texttt{wots\_pkFromSig} is called with \texttt{is\_internal = true} (Phase 1 of message hashing is skipped; see Section~6.7).
+The message \texttt{m} being verified is either a FORS+C public key (at layer 0) or a lower-layer tree root (at layers \texttt{1...d-1}). In both cases, m is already a hash, so \texttt{wots\_pkFromSig} is called with \texttt{is\_internal = true} (phase 1 of message hashing is skipped; see Section~6.7).
 
 \begin{verbatim}
     Algorithm: xmss_pkFromSig(wots_sig, auth, m, PK.seed, PK.root, ADRS, h_prime, idx)
@@ -101,11 +99,11 @@ The message \texttt{m} being verified is either a FORS+C public key (at layer 0)
         h_prime: tree height
         idx: leaf index
     Output:
-        root: computed tree root (n bytes), or $\bot$ if invalid
+        root: computed tree root (n bytes), or "false" if invalid
 
     1. pk ← wots_pkFromSig(wots_sig, m, PK.seed, PK.root, ADRS, idx, SL, true)
-    2. if pk == $\bot$:
-        return $\bot$
+    2. if pk == false:
+        return false
     3. node ← pk
     4. for h from 0 to h_prime - 1:
         a. setTypeAndClear(ADRS, SL_TREE)
@@ -116,14 +114,14 @@ The message \texttt{m} being verified is either a FORS+C public key (at layer 0)
                 node ← Tw(PK.seed, ADRS, node || auth_node)
             else:
                 node ← Tw(PK.seed, ADRS, auth_node || node)
-    f. idx ← idx >> 1
+        f. idx ← idx >> 1
     5. return node
 \end{verbatim}
 
 \subsection{XMSS Signature Generation (Stateless Layer)}
 To sign a message within the stateless hypertree, the XMSS signature generation produces a WOTS+C signature on the message followed by the authentication path for the corresponding leaf. The message being signed is typically either a FORS+C public key (at layer 0) or the root of a lower-layer XMSS tree (at layers 1 through \texttt{d-1}). In both cases the message is already a hash value, so \texttt{wots\_sign} is called with \texttt{is\_internal = true}.
 
-The leaf index idx determines which WOTS+C key pair is used; this index is determined from the message digest during stateless signing (see Section~10.5).
+The leaf index \texttt{idx} determines which WOTS+C key pair is used; this index is determined from the message digest during stateless signing (see Section~10.5).
 
 \begin{verbatim}
     Algorithm: xmss_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS, h_prime, idx)
@@ -148,7 +146,7 @@ The leaf index idx determines which WOTS+C key pair is used; this index is deter
 \subsection{Contribution to Signature Size and Verification Complexity}
 Each XMSS signature consists of a WOTS+C signature plus an authentication path of \texttt{h'} nodes: \texttt{R\_SIZE + c + (l + h') * n} bytes (420 bytes for SHRINCS-B and 1188 bytes for SHRINCS-L).
 
-The full stateless hypertree consists of d = 5 layers, giving:
+The full stateless hypertree consists of \texttt{d = 5} layers, giving:
 \begin{itemize}
     \item 2100 bytes and 10245 hashes for SHRINCS-B
     \item 5940 bytes and 305 hashes for SHRINCS-L

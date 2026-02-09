@@ -22,6 +22,9 @@
 \usepackage{todonotes}  % Adds the nice todos
 \newcommand{\mknote}[1]{\todo[inline, color=red!40,caption={}]{Mike: #1}}
 \newcommand{\mike}[1]{\todo[color=red!40]{Mike: #1}}
+\definecolor{green}{RGB}{0,200,0}
+\newcommand{\oknote}[1]{\todo[inline, color=green,caption={}]{Oleks: #1}}
+\newcommand{\oleks}[1]{\todo[color=green]{Oleks: #1}}
 
 
 \addbibresource{main.bib}
@@ -47,10 +50,6 @@
 \newtheorem{corollary}{Corollary}[theorem]
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{definition}{Definition}[section]
-
-% Select your own color for comments
-\definecolor{darkgreen}{RGB}{0,100,0}
-\newcommand{\oleks}[1]{{\color{darkgreen} \textbf{Oleks:} {#1}}}
 
 \title{SHRINCS specification}
 \author{Blockstream Research}

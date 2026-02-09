@@ -4,7 +4,6 @@ Standard XMSS uses a balanced binary tree, which minimizes the maximum path leng
 In this topology the \texttt{q}-th signature requires a path of length \texttt{q}. This linear growth is superior to logarithmic growth for small \texttt{q}. For \texttt{q=1}, the path is just 16 bytes. Even for \texttt{q=10}, the path is $10 \times 16 = 160$ bytes, which is extremely small compared to the fixed $\approx 2.5$KB of a balanced tree or the $\approx 8$KB of SLH-DSA.
 
 \subsection{UXMSS Tree Structure}
-%\mknote{I meean, it is possible to understand, but I think it is better to unify the numbering.}
 The UXMSS tree is constructed recursively as a right-skewed binary tree with \texttt{h\_sf + 1} leaves. To describe the tree structure, we use "level" to denote depth from the root, with level 0 at the root and level \texttt{h\_sf - 1} at the bottom internal node. Note that this UXMSS convention is the inverse of the convention used in the balanced XMSS trees of the stateless component (Section~7). However, the ADRS height field for internal nodes is set to (\texttt{h\_sf - level}), so both constructions use increasing height values toward the root.
 The UXMSS tree is constructed as follows:
 \begin{itemize}
@@ -70,7 +69,7 @@ The \texttt{uxmss\_root} function computes \texttt{PK.sf}, the root of the state
 \subsection{UXMSS Authentication Path Generation}
 For signature number \texttt{1 <= q <= hsf + 1}, the authentication path contains exactly \texttt{q} sibling nodes needed to reconstruct \texttt{PK.sf} from the WOTS+C public key at position \texttt{q}. The structure of the path differs based on whether \texttt{q <= hsf} or \texttt{q = hsf + 1}. For \texttt{q <= hsf}, the first sibling is either a subtree root (if \texttt{q < hsf}) or the rightmost WOTS+C key (if \texttt{q = hsf}), followed by q-1 WOTS+C public keys ascending toward the root. For \texttt{q = hsf + 1} (the rightmost leaf), all hsf siblings are WOTS+C public keys. This asymmetric structure reflects the right-skewed nature of UXMSS.
 \mknote{I think we still can use idx variable, and just use it as a pointer to the leaf, counted from left to right.}
-\oleks{we can, but I think the semantics of \texttt{q} and \texttt{idx} are different. \texttt{idx} is a position in a symmetric tree where all leaves are equivalent, the auth path is always \texttt{h'} nodes regardless of which \texttt{idx} we pick. \texttt{q} is the signature counter that directly determines the auth path length and structure}
+\oknote{we can, but I think the semantics of \texttt{q} and \texttt{idx} are different. \texttt{idx} is a position in a symmetric tree where all leaves are equivalent, the auth path is always \texttt{h'} nodes regardless of which \texttt{idx} we pick. \texttt{q} is the signature counter that directly determines the auth path length and structure}
 
 \begin{verbatim}
     Algorithm: uxmss_auth_path(SK.seed, PK.seed, ADRS, q)
@@ -79,7 +78,7 @@ For signature number \texttt{1 <= q <= hsf + 1}, the authentication path contain
         ADRS: address
         q: signature number (1 to hsf + 1)
     Output:
-        auth: authentication path (q * n bytes)
+        auth: authentication path (q*n bytes)
 
     1. auth ← []
     2. setLayerAddress(ADRS, 0)
@@ -96,7 +95,7 @@ For signature number \texttt{1 <= q <= hsf + 1}, the authentication path contain
                 auth ← auth || wots_PKgen(SK.seed, PK.seed, ADRS, hsf - i, SF)
     6. return auth
 \end{verbatim}
-\paragraph{Note:} For \texttt{q <= h\_sf}, the authentication path has exactly q nodes. For \texttt{q = h\_sf + 1}, it has \texttt{h\_sf} nodes, since the rightmost leaf shares its parent's other child (a WOTS+C key) rather than a subtree root.
+\paragraph{Note:} For \texttt{q <= h\_sf}, the authentication path has exactly \texttt{q} nodes. For \texttt{q = h\_sf + 1}, it has \texttt{h\_sf} nodes, since the rightmost leaf shares its parent's other child (a WOTS+C key) rather than a subtree root.
 
 \subsection{UXMSS Public Key Recovery from Signature}
 Given a WOTS+C signature and authentication path, this algorithm reconstructs \texttt{PK.sf}. First, it recovers the WOTS+C public key from the signature. Then, starting from this leaf, it iteratively combines the current node with authentication path nodes to compute parent nodes until reaching the root.
@@ -107,8 +106,6 @@ The combination order follows from the tree structure:
     \item Case \texttt{q = h\_sf + 1}: The recovered key is the rightmost leaf (a right child). All auth nodes are WOTS+C keys on the left.
 \end{itemize}
 
-
-%\mknote{The checks at 7.c can be just moved outside the loop. First sibling is always left, then it is always right. }
 \begin{verbatim}
     Algorithm: uxmss_pkFromSig(wots_sig, auth, m, PK.seed, PK.root, ADRS, q)
     Input:
@@ -120,13 +117,13 @@ The combination order follows from the tree structure:
         ADRS: address
         q: signature number
     Output:
-        root: computed PK.sf, or $\bot$ if invalid
+        root: computed PK.sf, or "false" if invalid
 
     1. setLayerAddress(ADRS, 0)
     2. setTreeAddress(ADRS, 0)
     3. pk ← wots_pkFromSig(wots_sig, m, PK.seed, PK.root, ADRS, q, SF, false)
-    4. if pk == $\bot$:
-        return $\bot$
+    4. if pk == false:
+        return false$
     5. node ← pk
     6. setTypeAndClear(ADRS, SF_TREE)
     7. if q <= h_sf:

@@ -1,5 +1,5 @@
 \section{FORS+C}
-FORS (Forest of Random Subsets) is a few-time signature scheme used at the bottom of the stateless hypertree. FORS allows to sign a limited number of messages, when the security degrades with each use. Standard FORS signs a message by revealing \texttt{k} secret values, one from each of \texttt{k} binary trees of height \texttt{a}. The message digest determines which leaf to reveal from each tree. FORS+C applies the similar grinding optimization as WOTS+C: by searching for a digest where the last tree's index equals 0, the authentication path and leaf for that tree can be omitted entirely from the signature.
+FORS (Forest of Random Subsets) is a few-time signature scheme used at the bottom of the stateless hypertree \cite{sphincsplus_paper2019}. FORS allows to sign a limited number of messages, when the security degrades with each use. Standard FORS signs a message by revealing \texttt{k} secret values, one from each of \texttt{k} binary trees of height \texttt{a}. The message digest determines which leaf to reveal from each tree. FORS+C \cite{wotsc_sphincsc2022} applies the similar grinding optimization as WOTS+C: by searching for a digest where the last tree's index equals 0, the authentication path and leaf for that tree can be omitted entirely from the signature.
 
 \subsection{FORS Structure}
 FORS consists of \texttt{k} binary trees, each of height \texttt{a}:
@@ -29,7 +29,6 @@ Expected grinding cost is $\approx 2^a$ iterations. With a = 22, this is approxi
 
 \subsection{Message to Indices}
 The \texttt{fors\_msg\_to\_indices} function converts a message digest into \texttt{k} leaf indices, one for each FORS tree. Each index is extracted as a consecutive a-bit chunk from the digest. The indices are integers in the range \texttt{[0, 2\string^a - 1]}.
-% \mknote{ The mesage digest also contains the index of the FORS instance that is used. We also need to make sure that the output size of the function is sufficient for this encodings.} Each index is extracted as a consecutive a-bit chunk from the digest, selecting which leaf to reveal from the corresponding tree. The indices are integers in the range \texttt{[0, pow(2,a) - 1]}.
 \begin{verbatim}
     Algorithm: fors_msg_to_indices(digest)
     Input:
@@ -79,7 +78,7 @@ The \texttt{fors\_SKgen} function derives a secret leaf value for a specific tre
         tree_idx: tree index (0 to k-1)
         leaf_idx: leaf index within tree
     Output:
-        sk: secret value (n bytes)
+        sk: secret value
 
     1. setTypeAndClear(ADRS, PRF)
     2. setKeyPairAddress(ADRS, tree_idx)
@@ -92,7 +91,6 @@ The \texttt{fors\_SKgen} function derives a secret leaf value for a specific tre
 The \texttt{fors\_treehash} function recursively computes FORS subtree roots. At height 0 (leaf level), it generates the secret key and hashes it to produce the leaf node using address type \texttt{FORS\_HASH}. At higher levels, it recursively computes left and right children, then hashes their concatenation using \texttt{FORS\_TREE}. This function is used both for computing full tree roots and for generating individual sibling nodes needed in authentication paths.
 
 \paragraph{Note:} The structure is analogous to \texttt{xmss\_treehash} (Section~7.2), with the difference being the leaf computation (FORS uses hashed secret keys rather than WOTS+C public keys).
-%\mknote{This is similar to xmss treehash. So maybe we can reuse some code, and the same comments on the start idx apply here. And for algorithms below, I think if we modularise things in the right way we can just reuse the xmss functions everywhere here.}
 \begin{verbatim}
     Algorithm: fors_treehash(SK.seed, PK.seed, ADRS, tree_idx, target_height, start_idx)
     Input:
@@ -111,8 +109,10 @@ The \texttt{fors\_treehash} function recursively computes FORS subtree roots. At
         d. setTreeHeight(ADRS, 0)
         e. setTreeIndex(ADRS, start_idx)
         f. return Tw(PK.seed, ADRS, sk)
-    2. left ← fors_treehash(SK.seed, PK.seed, ADRS, tree_idx, target_height - 1, start_idx)
-    3. right ← fors_treehash(SK.seed, PK.seed, ADRS, tree_idx, target_height - 1, start_idx + 2^(target_height - 1))
+    2. left ← fors_treehash(SK.seed, PK.seed, ADRS, tree_idx, 
+                                    target_height - 1, start_idx)
+    3. right ← fors_treehash(SK.seed, PK.seed, ADRS, tree_idx, 
+            target_height - 1, start_idx + 2^(target_height - 1))
     4. setTypeAndClear(ADRS, FORS_TREE)
     5. setKeyPairAddress(ADRS, tree_idx)
     6. setTreeHeight(ADRS, target_height)
@@ -156,7 +156,7 @@ The \texttt{fors\_sign} function produces a FORS+C signature. Due to grinding, t
     1. opt_rand ← random(n) or PK.seed
     2. R ← PRF_msg(SK.prf, PK.seed, opt_rand, m)
     3. (indices, ctr) ← fors_grind(m, R, PK.seed, PK.root, ADRS)
-    4. sig ← R || toByte(ctr, c)
+    4. sig ← R || ctr
     5. for i from 0 to k - 2:
         a. sk_i ← fors_SKgen(SK.seed, PK.seed, ADRS, i, indices[i])
         b. auth_i ← fors_auth_path(SK.seed, PK.seed, ADRS, i, indices[i])
@@ -165,7 +165,7 @@ The \texttt{fors\_sign} function produces a FORS+C signature. Due to grinding, t
 \end{verbatim}
 
 \subsection{Public Key Recovery}
-The \texttt{fors\_pkFromSig} function recovers the FORS+C public key from a signature. For each of the first k-1 trees, it hashes the revealed secret key to obtain the leaf, then iteratively combines with authentication path nodes to compute the tree root. The FORS+C public key is the tweakable hash of these \texttt{k-1} roots (tree \texttt{k-1} is excluded entirely due to grinding). The function returns $\bot$ if the grinding condition is not satisfied.
+The \texttt{fors\_pkFromSig} function recovers the FORS+C public key from a signature. For each of the first \texttt{k-1} trees, it hashes the revealed secret key to obtain the leaf, then iteratively combines with authentication path nodes to compute the tree root. The FORS+C public key is the tweakable hash of these \texttt{k-1} roots (tree \texttt{k-1} is excluded entirely due to grinding). The function returns \texttt{"false"} if the grinding condition is not satisfied.
 \begin{verbatim}
     Algorithm: fors_pkFromSig(sig, m, PK.seed, PK.root, ADRS)
     Input:
@@ -175,15 +175,15 @@ The \texttt{fors\_pkFromSig} function recovers the FORS+C public key from a sign
         PK.root: public key root
         ADRS: tweak
     Output:
-        pk: FORS+C public key (n bytes), or $\bot$ if invalid
+        pk: FORS+C public key or "false"if invalid
 
     1. R ← sig[0 : R_SIZE]
     2. ctr ← sig[R_SIZE : R_SIZE + c]
     3. setTypeAndClear(ADRS, FORS_GRIND)
-    4. digest ← H_msg_fors(ADRS, R, toByte(ctr, c), PK.seed, PK.root, m)
+    4. digest ← H_msg_fors(ADRS, R, ctr, PK.seed, PK.root, m)
     5. indices ← fors_msg_to_indices(digest)
     6. if indices[k-1] != 0:
-        return $\bot$
+        return false
     7. roots ← []
     8. offset ← R_SIZE + c
     9. for i from 0 to k - 2:

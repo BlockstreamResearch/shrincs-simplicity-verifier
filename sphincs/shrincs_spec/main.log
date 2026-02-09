@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.12.17)  9 FEB 2026 17:18
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.12.17)  9 FEB 2026 20:02
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -998,24 +998,24 @@ LaTeX Warning: Label `fig:shrincs' multiply defined.
 )
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
  (/usr/local/texlive/2025/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count485
@@ -1035,7 +1035,7 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 48
  (/usr/local/texlive/2025/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
 ))
-Package hyperref Info: Link coloring OFF on input line 59.
+Package hyperref Info: Link coloring OFF on input line 58.
  (./main.out) (./main.out)
 \@outlinefile=\write5
 \openout5 = `main.out'.
@@ -1052,42 +1052,20 @@ Package biblatex Info: Automatic encoding selection.
 
 Package biblatex Info: Trying to load bibliographic data...
 Package biblatex Info: ... file 'main.bbl' found.
- (./main.bbl
-
-Package biblatex Warning: The following entry could not be found
-(biblatex)                in the database:
-(biblatex)                https://sphincs.org/data/sphincs+-paper.pdf
-(biblatex)                Please verify the spelling and rerun
-(biblatex)                LaTeX afterwards.
-
-
-Package biblatex Warning: The following entry could not be found
-(biblatex)                in the database:
-(biblatex)                wots+
-(biblatex)                Please verify the spelling and rerun
-(biblatex)                LaTeX afterwards.
-
-
-Package biblatex Warning: The following entry could not be found
-(biblatex)                in the database:
-(biblatex)                wots+c
-(biblatex)                Please verify the spelling and rerun
-(biblatex)                LaTeX afterwards.
-
-)
-Package biblatex Info: Reference section=0 on input line 59.
-Package biblatex Info: Reference segment=0 on input line 59.
+ (./main.bbl)
+Package biblatex Info: Reference section=0 on input line 58.
+Package biblatex Info: Reference segment=0 on input line 58.
 \c@lstlisting=\count491
  (/usr/local/texlive/2025/texmf-dist/tex/latex/base/inputenc.sty
 Package: inputenc 2024/02/08 v1.3d Input encoding file
 \inpenc@prehook=\toks48
 \inpenc@posthook=\toks49
 )
-LaTeX Font Info:    Trying to load font information for U+msa on input line 62.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 61.
  (/usr/local/texlive/2025/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 62.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 61.
  (/usr/local/texlive/2025/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) (./main.toc
@@ -1120,16 +1098,6 @@ Package pdftex.def Info: content/img/general.png  used on input line 9.
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 
-Overfull \hbox (35.27661pt too wide) in paragraph at lines 24--24
-[]    \OT1/cmtt/m/n/10 PK.sf \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 compute_stateful_root(PK.seed, ADRS, SK.seed) // Public stateful key, see Sec.~10[] 
- []
-
-
-Overfull \hbox (45.77652pt too wide) in paragraph at lines 25--25
-[]    \OT1/cmtt/m/n/10 PK.sl \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 compute_stateless_root(PK.seed, ADRS, SK.seed) // Public stateless key, see Sec.~10[] 
- []
-
-
 Underfull \hbox (badness 10000) in paragraph at lines 28--29
 
  []
@@ -1139,30 +1107,18 @@ Underfull \hbox (badness 10000) in paragraph at lines 28--29
 [5]
 
 [6 <./content/img/general.png>]
-Package hyperref Info: bookmark level for unknown todo defaults to 0 on input line 101.
-) (./content/4-params.tex) (./content/5-functions-and-addresses.tex
+Package hyperref Info: bookmark level for unknown todo defaults to 0 on input line 105.
+) (./content/4-params.tex
 
-[7]
-
-LaTeX Warning: Citation 'https://sphincs.org/data/sphincs+-paper.pdf' on page 8 undefined on input line 11.
-
-
-Overfull \hbox (78.89247pt too wide) in paragraph at lines 11--12
-\OT1/cmr/m/n/10 ploy the tweak-able hash func-tion con-struc-tion de-fined in SPHINCS+ [[]]: 
- []
-
-
+[7]) (./content/5-functions-and-addresses.tex
 
 [8]
 
-[9]) (./content/6-wots+c.tex
+[9]
 
-LaTeX Warning: Citation 'wots+' on page 10 undefined on input line 2.
+LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-
-LaTeX Warning: Citation 'wots+c' on page 10 undefined on input line 8.
-
-
+) (./content/6-wots+c.tex
 
 [10]
 
@@ -1173,76 +1129,62 @@ LaTeX Warning: Citation 'wots+c' on page 10 undefined on input line 8.
 [13]
 
 [14]
-Overfull \hbox (51.02771pt too wide) in paragraph at lines 203--203
+Overfull \hbox (51.02771pt too wide) in paragraph at lines 200--200
 []    \OT1/cmtt/m/n/10 Algorithm: wots_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS, keypair, mode, is_internal)[] 
  []
 
 
 
 [15]
-Overfull \hbox (14.27803pt too wide) in paragraph at lines 247--247
+Overfull \hbox (14.27803pt too wide) in paragraph at lines 243--243
 []    \OT1/cmtt/m/n/10 Algorithm: wots_pkFromSig(sig, m, PK.seed, PK.root, ADRS, keypair, mode, is_internal)[] 
  []
 
-)
-Overfull \hbox (7.0607pt too wide) in paragraph at lines 300--88
+
+
+[16])
+Overfull \hbox (7.0607pt too wide) in paragraph at lines 296--87
 []\OT1/cmr/m/n/10 The ver-i-fi-ca-tion cost is \OT1/cmtt/m/n/10 (w-1)*l - S[]wn + 1 \OT1/cmr/m/n/10 hashes per WOTS+C in-stance (2041 hashes for SHRINCS-
  []
 
-
-
-[16] (./content/7-xmss.tex
+(./content/7-xmss.tex
 
 [17]
 
 [18]
 
 [19]) (./content/8-uxmss.tex
-LaTeX Font Info:    Trying to load font information for OMS+cmtt on input line 24.
-LaTeX Font Info:    No file OMScmtt.fd. on input line 24.
+
+[20]
+LaTeX Font Info:    Trying to load font information for OMS+cmtt on input line 23.
+LaTeX Font Info:    No file OMScmtt.fd. on input line 23.
 
 
 LaTeX Font Warning: Font shape `OMS/cmtt/m/n' undefined
 (Font)              using `OMS/cmsy/m/n' instead
-(Font)              for symbol `textbraceleft' on input line 24.
+(Font)              for symbol `textbraceleft' on input line 23.
 
 
-
-[20]
 
 [21]
 
 [22]
 
 [23]) (./content/9-fors.tex
-<content/img/fors.png, id=567, 756.8275pt x 359.3425pt>
+
+[24]
+<content/img/fors.png, id=585, 756.8275pt x 359.3425pt>
 File: content/img/fors.png Graphic file (type png)
 <use content/img/fors.png>
 Package pdftex.def Info: content/img/fors.png  used on input line 14.
 (pdftex.def)             Requested size: 362.37569pt x 172.05475pt.
 
 
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-
-
-[24]
-
 [25 <./content/img/fors.png>]
-Overfull \hbox (9.02808pt too wide) in paragraph at lines 97--97
-[]    \OT1/cmtt/m/n/10 Algorithm: fors_treehash(SK.seed, PK.seed, ADRS, tree_idx, target_height, start_idx)[] 
- []
-
-
-Overfull \hbox (24.7767pt too wide) in paragraph at lines 114--114
-[]    \OT1/cmtt/m/n/10 2. left \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 fors_treehash(SK.seed, PK.seed, ADRS, tree_idx, target_height - 1, start_idx)[] 
- []
-
-
 
 [26]
-Overfull \hbox (156.02556pt too wide) in paragraph at lines 115--115
-[]    \OT1/cmtt/m/n/10 3. right \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 fors_treehash(SK.seed, PK.seed, ADRS, tree_idx, target_height - 1, start_idx + 2^(target_height - 1))[] 
+Overfull \hbox (9.02808pt too wide) in paragraph at lines 95--95
+[]    \OT1/cmtt/m/n/10 Algorithm: fors_treehash(SK.seed, PK.seed, ADRS, tree_idx, target_height, start_idx)[] 
  []
 
 
@@ -1252,15 +1194,15 @@ Overfull \hbox (24.7767pt too wide) in paragraph at lines 138--138
 
 
 
-[27]) (./content/10-shrincs.tex
+[27]
 
-[28]
+[28]) (./content/10-shrincs.tex
 
 [29]
 
 [30]
-Overfull \hbox (61.52638pt too wide) in paragraph at lines 126--126
-[]        \OT1/cmtt/m/n/10 c. xmss_sig \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 xmss_sign(msg, SK.seed, SK.prf, PK.seed, PK.root, ADRS, h', leaf_idx[layer])[] 
+Overfull \hbox (87.77615pt too wide) in paragraph at lines 126--126
+[]        \OT1/cmtt/m/n/10 c. xmss_sig \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 xmss_sign(msg, SK.seed, SK.prf, PK.seed, PK.root, ADRS, h_prime, leaf_idx[layer])[] 
  []
 
 
@@ -1268,24 +1210,26 @@ Overfull \hbox (61.52638pt too wide) in paragraph at lines 126--126
 [31]
 
 [32]
-Overfull \hbox (56.27643pt too wide) in paragraph at lines 230--230
-[]        \OT1/cmtt/m/n/10 g. msg \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 xmss_pkFromSig(wots_sig, auth, msg, PK.seed, PK.root, ADRS, h', leaf_idx[layer])[] 
+Overfull \hbox (82.5262pt too wide) in paragraph at lines 229--229
+[]        \OT1/cmtt/m/n/10 g. msg \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 xmss_pkFromSig(wots_sig, auth, msg, PK.seed, PK.root, ADRS, h_prime, leaf_idx[layer])[] 
  []
 
-) (./content/11-data-structures.tex
 
-[33]
+
+[33]) (./content/11-data-structures.tex
 
 [34]
 
 [35])
-Overfull \hbox (20.63127pt too wide) in paragraph at lines 104--104
+
+[36]
+Overfull \hbox (21.46461pt too wide) in paragraph at lines 103--103
 \OT1/cmr/m/n/10 1509. \OT1/cmr/m/sc/10 doi\OT1/cmr/m/n/10 : []$\OT1/cmtt/m/n/10 10 . 1137 / S0097539795293172$[]\OT1/cmr/m/n/10 . \OT1/cmr/m/sc/10 url\OT1/cmr/m/n/10 : []$\OT1/cmtt/m/n/10 https : / / doi . org / 10 . 1137 / S0097539795293172$[]\OT1/cmr/m/n/10 . 
  []
 
 
 
-[36] (./main.aux)
+[37] (./main.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
@@ -1304,21 +1248,18 @@ Package logreq Info: Writing requests to 'main.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 54868 strings out of 473190
- 1296693 string characters out of 5715799
- 2384901 words of memory out of 5000000
- 77302 multiletter control sequences out of 15000+600000
- 569219 words of font info for 76 fonts, out of 8000000 for 9000
+ 54893 strings out of 473190
+ 1297630 string characters out of 5715799
+ 2383258 words of memory out of 5000000
+ 77319 multiletter control sequences out of 15000+600000
+ 568754 words of font info for 74 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 84i,14n,96p,1170b,1358s stack positions out of 10000i,1000n,20000p,200000b,200000s
-
-pdfTeX warning (dest): name{Hfootnote.1} has been referenced but does not exist, replaced by a fixed one
-
+ 84i,10n,96p,1170b,1502s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmcsc10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb>
-Output written on main.pdf (36 pages, 452587 bytes).
+Output written on main.pdf (37 pages, 458990 bytes).
 PDF statistics:
- 760 PDF objects out of 1000 (max. 8388607)
- 651 compressed objects within 7 object streams
- 155 named destinations out of 1000 (max. 500000)
+ 789 PDF objects out of 1000 (max. 8388607)
+ 679 compressed objects within 7 object streams
+ 165 named destinations out of 1000 (max. 500000)
  735 words of extra memory for PDF output out of 10000 (max. 10000000)
 

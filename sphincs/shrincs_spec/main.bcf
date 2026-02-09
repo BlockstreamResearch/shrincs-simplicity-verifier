@@ -2380,9 +2380,12 @@
     <bcf:citekey order="5" intorder="1">nist_sp800_208</bcf:citekey>
     <bcf:citekey order="6" intorder="1">bip39</bcf:citekey>
     <bcf:citekey order="7" intorder="1">draft-ietf-pquip-hbs-state-03</bcf:citekey>
-    <bcf:citekey order="8" intorder="1">https://sphincs.org/data/sphincs+-paper.pdf</bcf:citekey>
-    <bcf:citekey order="9" intorder="1">wots+</bcf:citekey>
-    <bcf:citekey order="10" intorder="1">wots+c</bcf:citekey>
+    <bcf:citekey order="8" intorder="1">kudinov_nick_2025_hbs_bitcoin</bcf:citekey>
+    <bcf:citekey order="9" intorder="1">sphincsplus_paper2019</bcf:citekey>
+    <bcf:citekey order="10" intorder="1">hulsing2013wotsplus</bcf:citekey>
+    <bcf:citekey order="11" intorder="1">wotsc_sphincsc2022</bcf:citekey>
+    <bcf:citekey order="12" intorder="1">sphincsplus_paper2019</bcf:citekey>
+    <bcf:citekey order="13" intorder="1">wotsc_sphincsc2022</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="nyt">

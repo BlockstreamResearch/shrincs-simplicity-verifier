@@ -64,7 +64,7 @@ Hypertree: d XMSS signatures. For each layer i:
     xmss_R[i]     : R_SIZE bytes            // Randomness for WOTS+C
     xmss_ctr[i]   : c bytes                 // Grinding counter for WOTS+C
     xmss_chains[i]: l * n bytes             // WOTS+C chain values
-    xmss_auth[i]  : h' * n bytes            // XMSS authentication path
+    xmss_auth[i]  : h_prime * n bytes       // XMSS authentication path
 
 SHRINCS-B (n=16, R_SIZE=32, c=4, k=6, a=22, d=5, h'=8, l=16):
     PK.sf       : 16 bytes
