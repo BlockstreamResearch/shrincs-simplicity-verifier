@@ -8,7 +8,7 @@
 #include "sphincs_utils.simf"
 
 type SPHINCSWOTSTWKey = [u128; 64];
-type SPHINCSWOTSTWSignature = (u128, u32, [u128; 64]);
+type SPHINCSWOTSTWSignature = (u256, u32, [u128; 64]);
 // Represent signature proof as (message_hash, signature, public_key, key_index, public_parameter)
 type SPHINCSWOTSTWSignProof = (u128, SPHINCSWOTSTWSignature, SPHINCSWOTSTWKey, u32, u128);
 

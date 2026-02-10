@@ -25,7 +25,7 @@ fn shrincs_verify(proof: SHRINCSSignProof) {
         },
     };
 
-    let hash: Ctx8 = add_adrs_to_ctx8(hash_ctx, 0, 0, 0, 7, 0, 0);
+    let hash: Ctx8 = add_adrs_to_ctx8(hash_ctx, 0, 0, 0, 14, 0, 0);
     let hash: Ctx8 = jet::sha_256_ctx_8_add_32(hash, roots);
     let (root, _): (u128, u128) = <u256>::into(jet::sha_256_ctx_8_finalize(hash));
     assert!(eq_128(root, expected_root));
