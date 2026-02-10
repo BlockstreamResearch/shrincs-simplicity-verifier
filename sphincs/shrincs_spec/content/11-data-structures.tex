@@ -1,0 +1,117 @@
+\section{Data structures}
+
+This section specifies the binary encoding of SHRINCS keys and signatures. All multi-byte integers are encoded in big-endian byte order unless otherwise specified.
+
+\subsection{Secret Key Format}
+The secret key consists of six \texttt{n}-byte values:
+\begin{verbatim}
+SK.seed     : n bytes   // Seed for key derivation
+SK.prf      : n bytes   // Secret for PRF_msg
+PK.seed     : n bytes   // Domain separator
+PK.sf       : n bytes   // Stateful public key
+PK.sl       : n bytes   // Stateless public key  
+PK.root     : n bytes   // Combined public key
+\end{verbatim}
+Total size: \texttt{6n = 96 bytes}. The first \texttt{3n} bytes (\texttt{SK.seed || SK.prf || PK.seed}) constitute the master seed that can be backed up using standard seed phrase mechanisms. The remaining \texttt{3n} bytes can be deterministically recomputed from the seed.
+
+\subsection{Public Key Format}
+The public key consists of two \texttt{n}-byte values:
+\begin{verbatim}
+PK.seed     : n bytes   // Domain separator
+PK.root     : n bytes   // Root public key
+\end{verbatim}
+Total size: \texttt{2n = 32 bytes}.
+
+\subsection{Stateful Signature Format}
+A stateful signature consists of the stateless public key followed by a UXMSS signature:
+\begin{verbatim}
+PK.sl       : n bytes          // Stateless public key
+R           : R_SIZE bytes     // Randomness for message hashing  
+ctr         : c bytes          // Grinding counter
+chain_values: l * n bytes      // WOTS+C signature
+auth_path   : q * n bytes      // UXMSS authentication path
+\end{verbatim}
+The signature size depends on the signature index \texttt{q}:
+\begin{verbatim}
+SHRINCS-B (n=16, R_SIZE=32, c=4, l=16):
+    PK.sl       : 16 bytes
+    R           : 32 bytes
+    ctr         : 4 bytes
+    chain_values: 256 bytes  
+    auth_path   : q * 16 bytes
+  
+    Total: 308 + 16*q bytes
+
+SHRINCS-L (n=16, R_SIZE=32, c=4, l=64):
+    PK.sl       : 16 bytes
+    R           : 32 bytes  
+    ctr         : 4 bytes
+    chain_values: 1024 bytes   
+    auth_path   : q * 16 bytes
+  
+    Total: 1076 + 16*q bytes
+\end{verbatim}
+
+\subsection{Stateless Signature Format}
+A stateless signature consists of the stateful public key, a FORS+C signature, and \texttt{d} XMSS signatures forming the hypertree:
+\begin{verbatim}
+PK.sf       : n bytes                       // Stateful public key 
+FORS+C signature:
+    fors_R      : R_SIZE bytes              // Randomness
+    fors_ctr    : c bytes                   // Grinding counter  
+    fors_sigs   : (k-1) * (n + a*n) bytes   // k-1 trees
+Hypertree: d XMSS signatures. For each layer i:
+    xmss_R[i]     : R_SIZE bytes            // Randomness for WOTS+C
+    xmss_ctr[i]   : c bytes                 // Grinding counter for WOTS+C
+    xmss_chains[i]: l * n bytes             // WOTS+C chain values
+    xmss_auth[i]  : h_prime * n bytes       // XMSS authentication path
+
+SHRINCS-B (n=16, R_SIZE=32, c=4, k=6, a=22, d=5, h'=8, l=16):
+    PK.sf       : 16 bytes
+    FORS+C signature:
+        fors_R    : 32 bytes
+        fors_ctr  : 4 bytes
+        fors_sigs : 5 * (16 + 22*16) = 5 * 368 = 1840 bytes
+        subtotal: 1892 bytes
+    XMSS hypertree (5 layers):
+        per layer:
+            R           : 32 bytes
+            ctr         : 4 bytes  
+            chain_values: 16 * 16 = 256 bytes
+            auth_path   : 8 * 16 = 128 bytes
+            per layer subtotal: 420 bytes
+        5 layers: 5 * 420 = 2100 bytes
+  
+    Total: 16 + 1892 + 2100 = 4008 bytes
+
+SHRINCS-L (n=16, R_SIZE=32, c=4, k=6, a=22, d=5, h'=8, l=64):
+    PK.sf       : 16 bytes
+    FORS+C signature:
+        fors_R    : 32 bytes
+        fors_ctr  : 4 bytes
+        fors_sigs : 5 * (16 + 22*16) = 1840 bytes
+        subtotal: 1892 bytes
+    XMSS hypertree (5 layers):
+        per layer:
+            R           : 32 bytes
+            ctr         : 4 bytes
+            chain_values: 64 * 16 = 1024 bytes  
+            auth_path   : 8 * 16 = 128 bytes
+            per layer subtotal: 1188 bytes
+        5 layers: 5 * 1188 = 5940 bytes
+  
+    Total: 16 + 1892 + 5940 = 7848 bytes
+\end{verbatim}
+
+\subsection{Signature Type Indication}
+
+Verifiers distinguish between stateful and stateless signatures by length (Algorithm 10.8):
+\begin{center}
+    \texttt{max\_stateful\_size = n + R\_SIZE + c + l*n + (h\_sf + 1)*n}
+\end{center}
+\begin{itemize}
+    \item For SHRINCS-B: \texttt{max\_stateful\_size = 16 + 32 + 4 + 256 + 227*16 = 3940} bytes
+    \item For SHRINCS-L: \texttt{max\_stateful\_size = 16 + 32 + 4 + 1024 + 419*16 = 7780} bytes
+\end{itemize}
+
+Signatures with length \texttt{<= max\_stateful\_size} are processed as stateful; larger signatures as stateless.

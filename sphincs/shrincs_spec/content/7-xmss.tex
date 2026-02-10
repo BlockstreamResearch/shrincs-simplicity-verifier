@@ -1,13 +1,13 @@
 \section{XMSS}
-SHRINCS employs two distinct Merkle tree constructions: a standard balanced XMSS tree for the stateless hypertree, and an Unbalanced XMSS (UXMSS) tree optimized for the stateful component. We will specify both.
+SHRINCS employs two distinct Merkle tree constructions: a standard balanced XMSS tree for the stateless hypertree, and an Unbalanced XMSS (UXMSS) tree optimized for the stateful component (specified in Section~8).
 
-The stateless signature mode uses a SPHINCS+-style hypertree consisting of \texttt{d} layers, where each layer contains standard balanced XMSS trees. Each XMSS tree authenticates \texttt{pow(2,h\_prime)} WOTS+C key pairs, where \texttt{h\_prime = hsl/d} is the height of trees within each layer.
+The stateless signature mode uses a SPHINCS+-style hypertree consisting of \texttt{d} layers, where each layer contains standard balanced XMSS trees. Each XMSS tree authenticates \texttt{2\string^h'} WOTS+C key pairs, where \texttt{h' = h\_sl / d} is the height of trees within each layer.
 
 \subsection{XMSS Tree Structure}
 An XMSS tree of height \texttt{h'} is a complete binary Merkle tree where:
 \begin{itemize}
-    \item Leaves: The \texttt{pow(2,h\_prime)}leaves are WOTS+C public keys, computed via \texttt{wots\_PKgen}.
-    \item Internal nodes: Each internal node is the tweakable hash of its two children.
+    \item Leaves: The \texttt{2\string^h'} leaves are WOTS+C public keys, computed via \texttt{wots\_PKgen} with mode \texttt{SL}.
+    \item Internal nodes: Each internal node is the tweakable hash of its two children, using address type \texttt{SL\_TREE}.
     \item Root: The tree root serves as either the layer's contribution to the hypertree or (for the top layer) as \texttt{PK.sl}.
 \end{itemize}
 
@@ -18,31 +18,32 @@ Layer indexing within the stateless hypertree is the following:
 \end{itemize}
 
 \subsection{XMSS TreeHash}
-The \texttt{xmss\_treehash} function computes subtree roots within an XMSS tree. It takes a target height and a starting leaf index, then recursively builds the subtree by computing leaves (WOTS+C public keys) at height 0 and hashing pairs of children to form internal nodes. This function is the core building block used both for computing the full tree root (by calling it with \texttt{target\_height = h\_prime} and \texttt{start\_idx = 0}) and for generating individual nodes needed in authentication paths.
-\mknote{I see that you require here that the start idx must be zero, but don't we need a general xmss treehash alg that takes a specific leaf used to sign the message and does the same as your xmss treehash. See Algorithm 9 xmss node in SLH-DSA spec. If we decide to keep this as a function I would propose name change for the variable: leftmost leaf index (smth like this)}
+The \texttt{xmss\_treehash} function computes subtree roots within an XMSS tree. It takes a target height and a leftmost leaf index, then recursively builds the subtree by computing leaves (WOTS+C public keys) at height 0 and hashing pairs of children to form internal nodes. This function is the core building block used both for computing the full tree root (by calling it with \texttt{target\_height = h'} and \texttt{start\_idx = 0}) and for generating individual sibling nodes needed in authentication paths (with arbitrary \texttt{start\_idx}).
 
 \begin{verbatim}
     Algorithm: xmss_treehash(SK.seed, PK.seed, ADRS, target_height, start_idx)
     Input:
         SK.seed: secret seed
         PK.seed: public seed
-        ADRS: address (with layer and tree address already set)
+        ADRS: tweak
         target_height: height of output node (0 = leaf level)
-        start_idx: leftmost leaf index in subtree
+        start_idx: leftmost leaf index in the subtree
     Output:
-        node: hash value (n bytes)
+        node: hash value
 
     1. if target_height == 0:
-        a. pk ← wots_PKgen(SK.seed, PK.seed, ADRS, start_idx)
+        a. pk ← wots_PKgen(SK.seed, PK.seed, ADRS, start_idx, SL)
         b. return pk
     2. left ← xmss_treehash(SK.seed, PK.seed, ADRS, target_height - 1, start_idx)
-    3. right ← xmss_treehash(SK.seed, PK.seed, ADRS, target_height - 1, start_idx + 2^(target_height - 1))
+    3. right ← xmss_treehash(SK.seed, PK.seed, ADRS, target_height - 1, start_idx + 
+                                                            + 2^(target_height - 1))
     4. setTypeAndClear(ADRS, SL_TREE)
-    5. setKeyPairAddress(ADRS, start_idx >> target_height)
-    6. setTreeHeight(ADRS, target_height)
-    7. setTreeIndex(ADRS, start_idx >> target_height)
-    8. return Tw(PK.seed, ADRS, left || right)
+    5. setTreeHeight(ADRS, target_height)
+    6. setTreeIndex(ADRS, start_idx >> target_height)
+    7. return Tw(PK.seed, ADRS, left || right)
 \end{verbatim}
+
+\paragraph{Note:} \texttt{start\_idx} need not be zero. When computing a full tree root, it is called with \texttt{start\_idx = 0}. When computing a sibling node for an authentication path, \texttt{start\_idx} is the leftmost leaf index of that sibling's subtree.
 
 \subsection{XMSS Root Computation}
 The \texttt{xmss\_root} function computes the root of an entire XMSS tree by invoking \texttt{xmss\_treehash} with the full tree height and starting from leaf index 0. The resulting root hash represents the public key for this XMSS tree instance, which either becomes \texttt{PK.sl} (for the top hypertree layer) or is signed by the layer above (for lower layers).
@@ -51,7 +52,7 @@ The \texttt{xmss\_root} function computes the root of an entire XMSS tree by inv
     Input:
         SK.seed: secret seed
         PK.seed: public seed
-        ADRS: address (layer and tree address set)
+        ADRS: tweak
         h_prime: tree height
     Output:
         root: tree root (n bytes)
@@ -60,81 +61,95 @@ The \texttt{xmss\_root} function computes the root of an entire XMSS tree by inv
 \end{verbatim}
 
 \subsection{XMSS Authentication Path Generation}
-For a leaf at index \texttt{idx}, the authentication path consists of the sibling nodes at each level from the leaf up to (but not including) the root. At height \texttt{h}, the sibling is determined by flipping the h-th bit of idx using XOR. The authentication path contains \texttt{h\_prime} nodes, each of size \texttt{n} bytes, allowing a verifier to reconstruct the path from the leaf to the root. The sibling at each level is computed by calling \texttt{xmss\_treehash} on the subtree rooted at that sibling.
-For a leaf at index \texttt{idx}, the authentication path consists of sibling nodes at each level from the leaf to just below the root.
+For a leaf at index \texttt{idx}, the authentication path consists of the sibling nodes at each level from the leaf up to (but not including) the root. The authentication path contains \texttt{h\_prime} nodes, each of size \texttt{n} bytes, allowing a verifier to reconstruct the path from the leaf to the root.
+
+At height \texttt{h}, the sibling subtree's leftmost leaf index is determined by flipping the h-th bit of \texttt{idx} (using XOR) and clearing all lower bits. The sibling node is then computed by calling \texttt{xmss\_treehash} on the subtree rooted at that position.
 \begin{verbatim}
     Algorithm: xmss_auth_path(SK.seed, PK.seed, ADRS, h_prime, idx)
     Input:
         SK.seed, PK.seed: seeds
-        ADRS: address (layer and tree address set)
+        ADRS: tweak
         h_prime: tree height
         idx: leaf index being authenticated
     Output:
-        auth: authentication path (h_prime * n bytes)
+    auth: authentication path (h_prime * n bytes)
 
     1. auth ← []
     2. for h from 0 to h_prime - 1:
-        a. sibling_idx ← idx XOR (1 << h)
-        b. sibling_start ← (sibling_idx >> h) << h
-        c. auth ← auth || xmss_treehash(SK.seed, PK.seed, ADRS, h, sibling_start)
+        a. sibling_start ← (idx XOR (1 << h)) AND (0xFFFFFFFF << h)
+        b. auth ← auth || xmss_treehash(SK.seed, PK.seed, ADRS, h, sibling_start)
     3. return auth
 \end{verbatim}
-\mknote{2.b feels unnecessary if we update the xmss treehash function.}
+\paragraph{Note:} The expression \texttt{(idx XOR (1 << h)) AND (0xFFFFFFFF << h)} flips the \texttt{h}-th bit of \texttt{idx} to identify the sibling, then clears the lower \texttt{h} bits to obtain the leftmost leaf index of the sibling's subtree of height \texttt{h}.
 
 \subsection{XMSS Public Key Recovery from Signature}
-Given a WOTS+C signature and authentication path, this algorithm recovers the XMSS tree root. First, it recovers the WOTS+C public key (the leaf value) from the WOTS+C signature. Then, starting from the leaf, it iteratively combines the current node with the corresponding authentication path node to compute the parent, continuing until reaching the root. At each height \texttt{h}, the \texttt{h}-th bit of \texttt{idx} determines whether the current node is the left child (bit = 0) or right child (bit = 1), which dictates the ordering when hashing the pair.
+Given a WOTS+C signature and authentication path, this algorithm recovers the XMSS tree root. First, it recovers the WOTS+C public key (the leaf value) from the WOTS+C signature. Then, starting from the leaf, it iteratively combines the current node with the corresponding authentication path node to compute the parent, continuing until reaching the root. At each height \texttt{h}, the \texttt{h}-th bit of idx determines whether the current node is the left child \texttt{(bit = 0)} or right child \texttt{(bit = 1)}, which dictates the ordering when hashing the pair.
 
-\mknote{And here we write a different implementation istead of reusing xmss treehash algorithm. Probably mainly because the treehash recuired the starting index to be 0.}
+The message \texttt{m} being verified is either a FORS+C public key (at layer 0) or a lower-layer tree root (at layers \texttt{1...d-1}). In both cases, m is already a hash, so \texttt{wots\_pkFromSig} is called with \texttt{is\_internal = true} (phase 1 of message hashing is skipped; see Section~6.7).
+
 \begin{verbatim}
     Algorithm: xmss_pkFromSig(wots_sig, auth, m, PK.seed, PK.root, ADRS, h_prime, idx)
     Input:
         wots_sig: WOTS+C signature
         auth: authentication path (h_prime * n bytes)
-        m: signed message 
+        m: signed message (FORS+C public key or lower-layer tree root)
         PK.seed: public seed
         PK.root: root public key
-        ADRS: address (layer and tree address set)
+        ADRS: tweak
         h_prime: tree height
         idx: leaf index
     Output:
-        root: computed tree root (n bytes), or $\bot$ if invalid
+        root: computed tree root (n bytes), or "false" if invalid
 
-    1. pk ← wots_pkFromSig(wots_sig, m, PK.seed, PK.root, ADRS, idx)
-    2. if pk == $\bot$:
-        return $\bot$
+    1. pk ← wots_pkFromSig(wots_sig, m, PK.seed, PK.root, ADRS, idx, SL, true)
+    2. if pk == false:
+        return false
     3. node ← pk
     4. for h from 0 to h_prime - 1:
         a. setTypeAndClear(ADRS, SL_TREE)
-        b. setKeyPairAddress(ADRS, idx >> 1)
-        c. setTreeHeight(ADRS, h + 1)
-        d. setTreeIndex(ADRS, idx >> 1)
-        e. auth_node ← auth[h * n : (h + 1) * n]
-        f. if (idx AND 1) == 0:
-            node ← Tw(PK.seed, ADRS, node || auth_node)
-        g. else:
-            node ← Tw(PK.seed, ADRS, auth_node || node)
-        h. idx ← idx >> 1
+        b. setTreeHeight(ADRS, h + 1)
+        c. setTreeIndex(ADRS, idx >> 1)
+        d. auth_node ← auth[h * n : (h + 1) * n]
+        e. if (idx AND 1) == 0:
+                node ← Tw(PK.seed, ADRS, node || auth_node)
+            else:
+                node ← Tw(PK.seed, ADRS, auth_node || node)
+        f. idx ← idx >> 1
     5. return node
 \end{verbatim}
 
 \subsection{XMSS Signature Generation (Stateless Layer)}
-To sign a message within the stateless hypertree, the XMSS signature generation produces a WOTS+C signature on the message followed by the authentication path for the corresponding leaf. The message being signed is typically either a FORS+C public key (at layer 0) or the root of a lower-layer XMSS tree (at layers 1 through d-1). The leaf index \texttt{idx} determines which WOTS+C key pair is used; this index is determined from the message digest during stateless signing.
+To sign a message within the stateless hypertree, the XMSS signature generation produces a WOTS+C signature on the message followed by the authentication path for the corresponding leaf. The message being signed is typically either a FORS+C public key (at layer 0) or the root of a lower-layer XMSS tree (at layers 1 through \texttt{d-1}). In both cases the message is already a hash value, so \texttt{wots\_sign} is called with \texttt{is\_internal = true}.
+
+The leaf index \texttt{idx} determines which WOTS+C key pair is used; this index is determined from the message digest during stateless signing (see Section~10.5).
 
 \begin{verbatim}
     Algorithm: xmss_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS, h_prime, idx)
     Input:
-        m: message to sign (lower layer root or FORS public key)
+        m: message to sign (lower-layer root or FORS public key)
         SK.seed: secret seed
         SK.prf: PRF key
         PK.seed: public seed
         PK.root: root public key
-        ADRS: address
+        ADRS: tweak
         h_prime: tree height
         idx: leaf index to use
+
     Output:
         sig: XMSS signature (WOTS+C signature || authentication path)
 
-    1. wots_sig ← wots_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS, idx)
+    1. wots_sig ← wots_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS, idx, SL, true)
     2. auth ← xmss_auth_path(SK.seed, PK.seed, ADRS, h_prime, idx)
     3. return wots_sig || auth
 \end{verbatim}
+
+\subsection{Contribution to Signature Size and Verification Complexity}
+Each XMSS signature consists of a WOTS+C signature plus an authentication path of \texttt{h'} nodes: \texttt{R\_SIZE + c + (l + h') * n} bytes (420 bytes for SHRINCS-B and 1188 bytes for SHRINCS-L).
+
+The full stateless hypertree consists of \texttt{d = 5} layers, giving:
+\begin{itemize}
+    \item 2100 bytes and 10245 hashes for SHRINCS-B
+    \item 5940 bytes and 305 hashes for SHRINCS-L
+\end{itemize}
+
+\paragraph{Note:} This excludes the FORS+C contribution (see Section~9). The total stateless signature size and verification cost are the sum of FORS+C and hypertree components, as presented in Section~3.2.2.

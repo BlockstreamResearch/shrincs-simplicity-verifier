@@ -29,11 +29,11 @@ The \texttt{SHRINCS.KeyGen} function generates a fresh key pair and initializes 
 \end{verbatim}
 
 \subsection{Recovery from Seed}
-The \texttt{SHRINCS.Restore} function recovers a key pair from a backed-up seed. This enables the standard Bitcoin workflow of restoring a wallet from a seed phrase. However, since the signing state (which q values have been used) cannot be recovered from the seed alone, the stateful path is disabled by setting \texttt{valid=false}. The recovered wallet can only use stateless signatures, which are larger but do not require state tracking. This is the key tradeoff that enables static backups while maintaining security.
+The \texttt{SHRINCS.Restore} function recovers a key pair from a backed-up seed. This enables the standard Bitcoin workflow of restoring a wallet from a seed phrase. However, since the signing state (which \texttt{q} values have been used) cannot be recovered from the seed alone, the stateful path is disabled by setting \texttt{valid=false}. The recovered wallet can only use stateless signatures, which are larger but do not require state tracking. This is the key tradeoff that enables static backups while maintaining security.
 \begin{verbatim}
     Algorithm: SHRINCS.Restore(seed)
     Input:
-        seed: master seed (3n bytes)
+        seed: master seed
     Output:
         SK: secret key
         PK: public key
@@ -46,18 +46,19 @@ The \texttt{SHRINCS.Restore} function recovers a key pair from a backed-up seed.
     5. PK.sf ← uxmss_root(SK.seed, PK.seed, ADRS)
     6. setLayerAddress(ADRS, d - 1)
     7. setTreeAddress(ADRS, 0)
-    8. PK.sl ← xmss_root(SK.seed, PK.seed, ADRS, h')
+    8. PK.sl ← xmss_root(SK.seed, PK.seed, ADRS, h_prime)
     9. setTypeAndClear(ADRS, ROOT)
     10. PK.root ← Tw(PK.seed, ADRS, PK.sf || PK.sl)
     11. SK ← (SK.seed, SK.prf, PK.seed, PK.sf, PK.sl, PK.root)
     12. PK ← (PK.seed, PK.root)
-    13. state ← { q: $\bot$, valid: false }
+    13. state ← { q: false, valid: false }
     14. return (SK, PK, state)
 \end{verbatim}
 
 \subsection{Statefull signing}
-The \texttt{SHRINCS.SignStateful} function signs a message using the efficient stateful (UXMSS) path. It first checks that state is valid and that signature slots remain (\texttt{q <= hsf + 1}). It then increments q, generates a UXMSS signature at position q, and appends PK.sl to enable unified verification. The updated state is returned alongside the signature. This produces minimal signatures (\textcolor{red}{324} bytes for \texttt{q=1}) that grow linearly with q. If state is invalid or exhausted, the function returns $\bot$ and the caller should use stateless signing instead.
-\mknote{We need to first update the state then run signing. Otherwise if the program is iterupted we get a signature, but not the updated state.}
+The \texttt{SHRINCS.SignStateful} function signs a message using the efficient stateful (UXMSS) path. It first checks that state is valid and that signature slots remain (\texttt{q <= h\_sf + 1}). It then increments \texttt{q} and updates the state before generating the signature. This ordering is critical: if the process is interrupted after signing but before state persistence, the one-time key would be consumed without the state reflecting it, risking catastrophic key reuse on retry (see Section~1.2).
+
+The signature includes \texttt{PK.sl} prepended to enable unified verification. This produces minimal signatures (324 bytes for q = 1 in SHRINCS-B) that grow linearly with \texttt{q}. If state is invalid or exhausted, the function returns "false" and the caller should use stateless signing instead.
 \begin{verbatim}
     Algorithm: SHRINCS.SignStateful(m, SK, state)
     Input:
@@ -65,120 +66,121 @@ The \texttt{SHRINCS.SignStateful} function signs a message using the efficient s
         SK: secret key (SK.seed, SK.prf, PK.seed, PK.sf, PK.sl, PK.root)
         state: current signing state { q, valid }
     Output:
-        sig: stateful signature, or $\bot$ if state is corrupted
-        state': updated state
+        sig: stateful signature, or $\bot$ if state is invalid/exhausted
+        state_prime: updated state
 
     1. if not state.valid:
-        return ($\bot$, state)
+        return (false, state)
     2. q ← state.q + 1
-    3. if q > hsf + 1:
-        return ($\bot$, state)
-    4. ADRS ← new_ADRS()
-    5. uxmss_sig ← uxmss_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS, q)
-    6. sig ← PK.sl || uxmss_sig
-    7. state' ← { q: q, valid: true }
-    8. return (sig, state')
+    3. if q > h_sf + 1:
+        return (false, state)
+    4. state_prime ← { q: q, valid: true }
+    5. ADRS ← new_ADRS()
+    6. uxmss_sig ← uxmss_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS, q)
+    7. sig ← PK.sl || uxmss_sig
+    8. return (sig, state_prime)
 \end{verbatim}
 
 \subsection{Stateless signing}
-The \texttt{SHRINCS.SignStateless} function signs a message using the stateless (SPHINCS+C) path. This is used when state is lost, corrupted, or exhausted. It generates a randomized message digest, extracts tree and leaf indices for each hypertree layer, then constructs a signature bottom-up: first a FORS+C signature on the message, then XMSS signatures on each layer's root ascending through the hypertree. The signature includes \texttt{PK.sf} to enable unified verification. Stateless signatures are larger but can be generated without any state management.
-\mknote{It looks like we first compute the digest to determine the index, and then we compute the digest again to determine the revealed leaves in the FORS. I think we should not split that. We should use the same digest computation to determine both the instance of FORS and its leaves. Check here: https://github.com/eyalr0/sphincsplusc. }
+The \texttt{SHRINCS.SignStateless} function signs a message using the stateless (SPHINCS+C) path. This is used when state is lost, corrupted, or exhausted.
+
+SHRINCS uses a unified digest for the stateless path: a single call to \texttt{H\_msg\_fors} produces a digest that encodes both the FORS leaf indices (determining which leaves to reveal in the few-time signature) and the hypertree tree/leaf indices (determining which XMSS trees and WOTS+C key pairs to use at each layer). The grinding counter \texttt{ctr} is iterated until the grinding condition is satisfied on this unified digest.
+
+The digest output length is \texttt{(roundup(k*a + h\_sl) / 8)} bytes. The first \texttt{k*a} bits encode the \texttt{k} FORS leaf indices (with the last a bits required to be zero by grinding). The remaining \texttt{h\_sl} bits encode the hypertree path indices.
+
+The signature is constructed bottom-up: first a FORS+C signature on the message, then \texttt{d} XMSS signatures on successive layer roots ascending through the hypertree. The signature includes \texttt{PK.sf} prepended to enable unified verification.
+
 \begin{verbatim}
     Algorithm: SHRINCS.SignStateless(m, SK)
     Input:
         m: message to sign
-        SK: secret key (SK.seed, SK.prf, PK.seed, PK.sf, PK.sl, PK.root)
+        SK: secret key
     Output:
         sig: stateless signature
 
     1. ADRS ← new_ADRS()
-    2. opt_rand ← random(n) or PK.seed
-    3. R ← PRF_msg(SK.prf, PK.seed, opt_rand, m)
-    4. setTypeAndClear(ADRS, H_MSG)
-    5. digest ← H_msg(ADRS, R, 0, PK.seed, PK.root, m)
-    6. (tree_idx, leaf_idx) ← parse_idx(digest, hsl, d)
-    7. setLayerAddress(ADRS, 0)
-    8. setTreeAddress(ADRS, tree_idx[0])
-    9. fors_sig ← fors_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS)
-    10. fors_pk ← fors_pkFromSig(fors_sig, m, PK.seed, PK.root, ADRS)
-    11. ht_sig ← []
-    12. msg ← fors_pk
-    13. for layer from 0 to d - 1:
+    2. setLayerAddress(ADRS, 0)
+    3. setTreeAddress(ADRS, 0)  
+    4. (fors_sig, digest) ← fors_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS)
+    5. (tree_idx, leaf_idx) ← parse_hypertree_idx(digest)
+    6. fors_pk ← fors_pkFromSig(fors_sig, m, PK.seed, PK.root, ADRS)
+    7. ht_sig ← []
+    8. msg ← fors_pk
+    9. for layer from 0 to d - 1:
         a. setLayerAddress(ADRS, layer)
         b. setTreeAddress(ADRS, tree_idx[layer])
         c. xmss_sig ← xmss_sign(msg, SK.seed, SK.prf, PK.seed, PK.root, ADRS, h', leaf_idx[layer])
         d. ht_sig ← ht_sig || xmss_sig
         e. if layer < d - 1:
             msg ← xmss_root(SK.seed, PK.seed, ADRS, h')
-    14. sig ← PK.sf || fors_sig || ht_sig
-    15. return sig
+    10. sig ← PK.sf || fors_sig || ht_sig
+    11. return sig
 \end{verbatim}
 
 \subsection{Index Parsing}
-The \texttt{parse\_idx} function extracts tree and leaf indices for each hypertree layer from the message digest. The digest is interpreted as a large integer, then partitioned into d pairs of (\texttt{leaf\_idx, tree\_idx}). Each leaf index selects which WOTS+C key pair to use within a tree, while each tree index identifies which tree within the layer. The indices are extracted from least significant (layer 0) to most significant (layer \texttt{d-1}), with h' bits per leaf index and decreasing bits for tree indices at higher layers.
-\mknote{This is a bit confusin, that we extract the indices of the OTS/FTS schemes used, but not the indices of the revealed leaves in FORS. With the Hashing changes, it needs a double-check that everything is computed correctly and the same data is not used for two purposes. }
+The \texttt{parse\_idx} function extracts tree and leaf indices for each hypertree layer from the stateless digest. In the unified digest scheme, these bits follow the \texttt{k*a} bits used for FORS indices. The \texttt{h\_sl} bits are partitioned into \texttt{d} pairs of \texttt{(leaf\_idx, tree\_idx)}, extracted from least significant (layer 0) to most significant (layer \texttt{d-1}), with \texttt{h'} bits per leaf index.
+% \mknote{This is a bit confusin, that we extract the indices of the OTS/FTS schemes used, but not the indices of the revealed leaves in FORS. With the Hashing changes, it needs a double-check that everything is computed correctly and the same data is not used for two purposes. }
 \begin{verbatim}
-    Algorithm: parse_idx(digest, hsl, d)
+    Algorithm: parse_idx(digest)
     Input:
         digest: message digest
-        hsl: total hypertree height
-        d: number of layers
     Output:
         tree_idx: array of d tree indices
         leaf_idx: array of d leaf indices
 
-    1. h_prime ← hsl / d
-    2. tree_idx ← []
-    3. leaf_idx ← []
-    4. idx ← bytes_to_int(digest[0 : (hsl + 7) / 8])
-    5. for layer from 0 to d - 1:
+    1. Extract hypertree bits starting after FORS indices
+    2. ht_offset ← k * a
+    3. ht_bits ← extract_bits(digest, ht_offset, h_sl)
+    4. idx ← ht_bits 
+    5. tree_idx ← []
+    6. leaf_idx ← []
+    7. for layer from 0 to d - 1:
         a. leaf_idx[layer] ← idx AND (2^h_prime - 1)
         b. idx ← idx >> h_prime
-        c. tree_idx[layer] ← idx AND (2^(hsl - (layer + 1) * h_prime) - 1)
-    6. return (tree_idx, leaf_idx)
+        c. tree_idx[layer] ← idx AND (2^(h_sl - (layer + 1) * h_prime) - 1)
+    8. return (tree_idx, leaf_idx)
 \end{verbatim}
+\paragraph{Note:} The total digest must encode \texttt{k*a + h\_sl = 6*22 + 40 = 172} bits. The \texttt{H\_msg\_fors} output length (Section~5.4.2) must be set accordingly: \texttt{roundup((k*a + h\_sl) / 8) = 22} bytes. This is a correction from the original \texttt{roundup((k*a) / 8) = 17} bytes, which was insufficient for the unified digest.
 
 \subsection{Statefull verification}
-\mknote{Needs updates that correspond to updates in message hashing}
-The \texttt{SHRINCS.VerifyStateful} function verifies a stateful signature. It extracts \texttt{PK.sl} from the signature tail, parses the UXMSS signature, and infers q from the authentication path length. It then recovers PK.sf using \texttt{uxmss\_pkFromSig} and verifies that \texttt{H(PK.sf || PK.sl)} equals the expected \texttt{PK.root}. The signature is valid if and only if the WOTS+C verification succeeds and the reconstructed root matches.
+The \texttt{SHRINCS.VerifyStateful} function verifies a stateful signature. It extracts \texttt{PK.sl} from the signature, parses the UXMSS signature, and infers \texttt{q} from the authentication path length. It then uses the two-phase WOTS+C hashing to recover \texttt{PK.sf} via \texttt{uxmss\_pkFromSig} and verifies that \texttt{Tw(PK.seed, ADRS, PK.sf || PK.sl)} equals \texttt{PK.root}.
 \begin{verbatim}
     Algorithm: SHRINCS.VerifyStateful(m, sig, PK)
     Input:
         m: message
         sig: stateful signature
-        PK: public key (PK.seed, PK.root)
+        PK: public key
     Output:
         valid: boolean
 
     1. ADRS ← new_ADRS()
-    2. sig_len ← len(sig)
-    3. PK.sl ← sig[0 : n]
-    4. uxmss_sig ← sig[n : sig_len]
-    5. wots_sig_size ← R_SIZE + c + l * n
-    6. auth_len ← len(uxmss_sig) - wots_sig_size
+    2. PK.sl ← sig[0 : n]
+    3. uxmss_sig ← sig[n : ]
+    4. wots_sig_size ← R_SIZE + c + l * n
+    5. auth_len ← len(uxmss_sig) - wots_sig_size
+    6. if auth_len < 0 or (auth_len mod n) != 0:
+        return false
     7. q ← auth_len / n
-    8. if q < 1 or q > hsf + 1:
+    8. if q < 1 or q > h_sf + 1:
         return false
     9. wots_sig ← uxmss_sig[0 : wots_sig_size]
     10. auth ← uxmss_sig[wots_sig_size : wots_sig_size + q * n]
     11. PK.sf ← uxmss_pkFromSig(wots_sig, auth, m, PK.seed, PK.root, ADRS, q)
-    12. if PK.sf == $\bot$:
+    12. if PK.sf == false:
         return false
-    13. setLayerAddress(ADRS, d - 1)
-    14. setTypeAndClear(ADRS, ROOT)
-    15. expected_root ← Tw(PK.seed, ADRS, PK.sf || PK.sl)
-    16. return (expected_root == PK.root)
+    13. setTypeAndClear(ADRS, ROOT)
+    14. expected_root ← Tw(PK.seed, ADRS, PK.sf || PK.sl)
+    15. return (expected_root == PK.root)
 \end{verbatim}
 
 \subsection{Stateless verification}
-The \texttt{SHRINCS.VerifyStateless} function verifies a stateless signature. It extracts \texttt{PK.sf} from the signature head, parses the FORS+C signature, recomputes the message digest and indices, then verifies bottom-up through the hypertree. Starting with the FORS+C public key recovery, it iteratively verifies each XMSS layer by recovering the tree root and using it as the message for the next layer. The final recovered root becomes \texttt{PK.sl}, which is combined with \texttt{PK.sf} to verify against \texttt{PK.root}.
-\mknote{Here the Hmsg compuations do not match the signing prcedure.}
+The \texttt{SHRINCS.VerifyStateless} function verifies a stateless signature. It extracts \texttt{PK.sf} from the signature, recomputes the unified digest from the FORS+C signature's \texttt{R} and \texttt{ctr}, extracts both FORS indices and hypertree indices from the same digest, then verifies bottom-up through the hypertree.
 \begin{verbatim}
     Algorithm: SHRINCS.VerifyStateless(m, sig, PK)
     Input:
         m: message
         sig: stateless signature
-        PK: public key (PK.seed, PK.root)
+        PK: public key
     Output:
         valid: boolean
 
@@ -190,74 +192,49 @@ The \texttt{SHRINCS.VerifyStateless} function verifies a stateless signature. It
     6. offset ← offset + fors_sig_size
     7. R ← fors_sig[0 : R_SIZE]
     8. ctr ← fors_sig[R_SIZE : R_SIZE + c]
-    9. setTypeAndClear(ADRS, H_MSG)
-    10. digest ← H_msg(ADRS, R, ctr, PK.seed, PK.root, m)
-    11. (tree_idx, leaf_idx) ← parse_idx(digest, hsl, d)
-    12. setLayerAddress(ADRS, 0)
-    13. setTreeAddress(ADRS, tree_idx[0])
-    14. fors_pk ← fors_pkFromSig(fors_sig, m, PK.seed, PK.root, ADRS)
-    15. if fors_pk == $\bot$:
+    9. setTypeAndClear(ADRS, FORS_GRIND)
+    10. digest ← H_msg_fors(ADRS, R, ctr, PK.seed, PK.root, m)
+    11. indices ← fors_msg_to_indices(digest)
+    12. if indices[k-1] != 0:
         return false
-    16. msg ← fors_pk
-    17. xmss_sig_size ← R_SIZE + c + l * n + h' * n
-    18. for layer from 0 to d - 1:
+    13. (tree_idx, leaf_idx) ← parse_idx(digest)
+    14. setLayerAddress(ADRS, 0)
+    15. setTreeAddress(ADRS, 0)
+    16. fors_pk ← fors_pkFromSig(fors_sig, m, PK.seed, PK.root, ADRS)
+    17. if fors_pk == false:
+        return false  
+    18. msg ← fors_pk
+    19. xmss_sig_size ← R_SIZE + c + l * n + h_prime * n
+    20. for layer from 0 to d - 1:
         a. xmss_sig ← sig[offset : offset + xmss_sig_size]
         b. offset ← offset + xmss_sig_size
         c. wots_sig ← xmss_sig[0 : R_SIZE + c + l * n]
-        d. auth ← xmss_sig[R_SIZE + c + l * n : ]
+        d. auth ← xmss_sig[R_SIZE + c + l * n : R_SIZE + c + l * n + h' * n]
         e. setLayerAddress(ADRS, layer)
         f. setTreeAddress(ADRS, tree_idx[layer])
-        g. msg ← xmss_pkFromSig(wots_sig, auth, msg, PK.seed, PK.root, ADRS, h', leaf_idx[layer])
-        h. if msg == $\bot$:
+        g. msg ← xmss_pkFromSig(wots_sig, auth, msg, PK.seed, PK.root, ADRS, h_prime, leaf_idx[layer])
+        h. if msg == false:
             return false
-    19. PK.sl ← msg
-    20. setTypeAndClear(ADRS, ROOT)
-    21. expected_root ← Tw(PK.seed, ADRS, PK.sf || PK.sl)
-    22. return (expected_root == PK.root)
+    21. PK.sl ← msg
+    22. setTypeAndClear(ADRS, ROOT)
+    23. expected_root ← Tw(PK.seed, ADRS, PK.sf || PK.sl)
+    24. return (expected_root == PK.root)
 \end{verbatim}
 
 \subsection{Unified Verification}
-The \texttt{SHRINCS.Verify} function provides a single entry point for verifying either stateful or stateless signatures. It distinguishes between the two types based on signature length: stateful signatures are bounded by \texttt{max\_sf\_size} (the maximum stateful signature size for \texttt{q = hsf + 1}), while stateless signatures exceed this threshold. This allows verifiers to accept both signature types without requiring explicit type indicators, simplifying the verification interface.
+The \texttt{SHRINCS.Verify} function provides a single entry point for verifying either stateful or stateless signatures. It distinguishes between the two types based on signature length: stateful signatures have a maximum size of \texttt{max\_sf\_size = n + R\_SIZE + c + l*n + (h\_sf + 1)*n} bytes, while stateless signatures are strictly larger (see Section~8.7 for the derivation that this bound always holds).
 \begin{verbatim}
     Algorithm: SHRINCS.Verify(m, sig, PK)
     Input:
         m: message
-        sig: signature (stateful or stateless)
-        PK: public key (PK.seed, PK.root)
+        sig: signature
+        PK: public key
     Output:
         valid: boolean
 
-    if len(sig) <= max_sf_size:
-        return SHRINCS.VerifyStateful(m, sig, PK)
-    else:
-        return SHRINCS.VerifyStateless(m, sig, PK)
+    1. max_sf_size ← n + R_SIZE + c + l * n + (h_sf + 1) * n
+    2. if len(sig) <= max_sf_size:
+            return SHRINCS.VerifyStateful(m, sig, PK)
+        else:
+            return SHRINCS.VerifyStateless(m, sig, PK)
 \end{verbatim}
-
-\section{Data structures}
-
-\subsection{Secret Key Format}
-
-\subsection{Public Key Format}
-
-\subsection{Stateful Signature Format}
-\begin{verbatim}
-SHRINCS-B:
-    PK.sl : 16 bytes    //public key of stateless instance
-    c : 4 bytes. // 
-    chain_values : l * 16 = 16 * 16 = 256 bytes
-    merkle_path : q * 16 bytes
-    R : 16 bytes
-\end{verbatim}
-Total size: 292 + q * 16 bytes
-
-\begin{verbatim}
-SHRINCS-L:
-    PK.sl : 16 bytes    //public key of stateless instance
-    c : 4 bytes. // 
-    chain_values : l * 16 = 64 * 16 = 1024 bytes
-    merkle_path : q * 16 bytes
-    R : 16 bytes
-\end{verbatim}
-Total size: 1060 + q * 16 bytes
-
-\subsection{Stateless Signature Format}

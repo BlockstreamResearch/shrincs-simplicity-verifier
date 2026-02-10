@@ -1,19 +1,60 @@
 \section{Motivation}
-Current Bitcoin signature schemes (ECDSA\cite{ecdsa} and Schnorr\cite{bip341} over secp256k1) are vulnerable to quantum attacks via Shor's algorithm\cite{shor}. Hash-based signature schemes offer post-quantum security relying only on the security of cryptographic hash functions, which are believed to resist quantum attacks apart from Grover's quadratic speedup.
+Current Bitcoin signature schemes (ECDSA\cite{ecdsa_fips186}  and Schnorr\cite{bip340} over secp256k1) are vulnerable to quantum attacks via Shor's algorithm\cite{shor1994algorithms, shor1997polynomial}. Hash-based signature schemes offer post-quantum security relying only on the security of cryptographic hash functions, which are believed to resist quantum attacks apart from Grover's quadratic speedup (mitigated by doubling hash output lengths).
 
 The key challenges for deploying hash-based signatures in Bitcoin are:
 \begin{enumerate}
-    \item Signature size: NIST-standardized SLH-DSA signatures range from 7KB to 50KB, significantly larger than current 64-byte Schnorr signatures.
-    \item Stateful vs. Stateless tradeoff: Stateful schemes (XMSS) offer small signatures but require careful state management. Stateless schemes (SLH-DSA) are robust but produce large signatures.
-    \item Backup compatibility: Bitcoin users expect to restore wallets from seed phrases. Pure stateful schemes break this model since state cannot be statically backed up.
+    \item \textbf{Signature size}: NIST-standardized SLH-DSA signatures \cite{slhdsa_fips205} range from 7KB to 50KB, significantly larger than current 64-byte Schnorr signatures. This increases transaction fees and reduces the network's throughput.
+    \item \textbf{Stateful vs. Stateless tradeoff}: Stateful schemes (e.g., XMSS \cite{nist_sp800_208}) offer compact signatures but require careful state management to prevent key reuse. Additionally, Bitcoin users expect to restore wallets from static seed phrases (BIP-39\cite{bip39}). Pure stateful schemes break this model since signing state cannot be recovered from a seed alone, the signer must know which one-time keys have already been used. Stateless schemes (e.g., SLH-DSA) are robust but produce large signatures. 
 \end{enumerate}
 
-SHRINCS addresses these challenges by:
+\subsection{SHRINCS} 
+SHRINCS (Stateful Hash-based Robust Integrated NIST-Compatible Signatures) is a hybrid post-quantum signature scheme that combines the efficiency of stateful signatures with the robustness of stateless ones. It provides with two parameters set depending on what matters for verifier:
+    \begin{itemize}
+        \item SHRINCS-B (Bitcoin-optimized): Minimizes signature size at the cost of more verification hashes.
+        \item SHRINCS-L (Liquid-optimized): Minimizes verification cost at the cost of larger signatures.
+    \end{itemize}
+The advantages of SHRINCS are following: 
 \begin{itemize}
-    \item Using size-efficient stateful signatures (\textcolor{red}{$\approx 300$}\footnote{\mknote{I think we need 32 byte randomness} Jonas mentions 292 + 16q + 16 here: https://delvingbitcoin.org/t/shrincs-324-byte-stateful-post-quantum-signatures-with-static-backups/2158. But actually that's if we have a 32-byte randomness. If we can have 16-byte randomness (it shouldn't affect security), the statefull signature size to be \texttt{ots\_sig(16*16) + R(16) + ctr(4) + q*16 + slPK(16)} = 292 + 16q bytes\mknote{I think it also make sense to include a variable that represents where the stateful or the statelss option is used, and in case of stateful, which index in the stateful scheme is used}} bytes for \texttt{q=1}) during normal operation (SHRINCS-B).
-    \item Using verification-efficient stateful signatures ($\approx 50$ hashes for \texttt{q=1}) during normal operation (SHRINCS-L).
-    \item Falling back to stateless signatures ($\approx 3\text{-}4$ KB) when state is lost or corrupted.
-    \item Allowing static seed backup while maintaining security guarantees.
+    \item \textbf{Efficient stateful path.} During normal operation with intact state, SHRINCS uses an Unbalanced XMSS (UXMSS) tree with WOTS+C one-time signatures. Signature sizes and verification costs are:
+    \begin{itemize}
+        \item SHRINCS-B: \textbf{only} \texttt{308 + 16q} bytes and \texttt{2042 + q} hashes, which makes this setting practical from the \textit{witness size} perspective
+        \item SHRINCS-L: \texttt{1076 + 16q} bytes and \textbf{only} \texttt{54 + q} hashes, which makes this setting practical from the \textit{verification complexity} perspective
+    \end{itemize} 
+    bytes (where \texttt{q >= 1} is the signature counter).
+    \item \textbf{Robust stateless fallback.} When the state is lost, corrupted, or exhausted, SHRINCS falls back to a SPHINCS+-based stateless signature (4008 or 7848 bytes). This is still smaller than standard SLH-DSA.
+    \item \textbf{Static seed backup.} Users can back up their wallet using a standard seed phrase. Upon recovery, the wallet operates in stateless-only mode, preserving funds while accepting larger signatures.
+    \item \textbf{The number of supported signatures}. The construction supports up to 226 (SHRINCS-B) and 418(SHRINCS-L) stateful signatures and up to $2^{20}$ stateless signatures, which should be enough for wallets. 
 \end{itemize}
 
-\mknote{Maybe we can still highlight some drawbacks here as well. We need to bring up the point of state management across devices: You can not share it unless you dedicate certain leaves to one device and other leaves to a different device. If you do so each device will support fewer number of signatures. Next is the memory access, most of the time we can better protect the secret key state. What happens if during the execution and updating the state the electricity goes off? Yes we have a backup, but to use it we need to know that the state is corrupted. (Usually what happens is that you first increase the counter then sign, but that still can go wron.) Another point is the state growth. As soon as you generate a new adress you need to keep its state for the rest of the usage if you still want to keep the option of stateful signing. Even if you don't want to keep the sateful signing, one needs to mark the key as stateless only. The resulting signatures are of variable length.}
+\subsection{Limitations and Practical Considerations} 
+Users and developers should be aware of the following limitations inherent to stateful signature schemes.
+
+\paragraph{State Management Across Devices.} The signing state (specifically, the counter \texttt{q} indicating which one-time keys have been already used) cannot be safely shared across multiple devices without coordination. Two devices signing with the same \texttt{q} value would reuse a one-time signature, which leads to key compromise. Some mitigation strategies can be:
+\begin{itemize}
+    \item Dedicate disjoint ranges of leaf indices to different devices.
+    \item Use a single signing device with secure state storage (other devices are stateless backups).
+    \item Accept stateless-only operation for multi-device wallets.
+\end{itemize}
+
+\paragraph{State Corruption and Power Failure.}
+If a signing operation is interrupted (e.g., due to power failure) after producing a signature but before persisting the updated state, the signer may not know whether the one-time key was used. Subsequent signing attempts risk catastrophic key reuse. Approaches to mitigate:
+\begin{itemize}
+    \item Incrementing the state counter before the signature. If signing fails, a leaf is wasted but security is preserved (we utilize this approach in the specification).
+    \item State corruption detection, to maintain checksums or redundant state copies to detect corruption. If corruption is detected, fall back to stateless mode.
+    \item Other state and backup risks and management techniques are described in \cite{draft-ietf-pquip-hbs-state-03}. 
+\end{itemize}
+
+\paragraph{State Growth with Multiple Addresses.}
+Each SHRINCS-based address requires its own signing state. As users generate new addresses (as recommended for privacy), they must maintain state for each address that may be used for future spending. This state must be preserved for as long as the address holds funds. Mitigation:
+\begin{itemize}
+    \item Wallet backups must include current state for all active addresses, not just the seed.
+    \item Addresses can be marked as "stateless-only" after backup, accepting larger signatures for those addresses.
+\end{itemize}
+
+\paragraph{Variable Stateful Signature Sizes.}
+SHRINCS signatures presume variable signature size and verification complexity depending on: (1) the number of already produced stateful signatures; (2) the signing mode. In decentralized system we need to consider how the cost of the signature verification is calculated to prevent spam attacks.
+\begin{itemize}
+    \item That's basically the reason this specification introduced two modes for SHRINCS. SHRINCS-B is designed for accounting systems, where the user pays for each transaction byte, so the signature size matters. SHRINCS-L is better suited to systems that calculate transaction cost based on the number of computation units consumed.
+    \item If such or a similar post-quantum signature construction is accepted in Bitcoin, it's likely to be done with one (e.g. \texttt{OP\_SHRINCS}) or the set (e.g. \texttt{OP\_WOTS, OP\_FORS, OP\_XMSS}) of opcodes, 1 byte per each. If the signature presumes a dynamic number of hashes to be verified (and the cost of verifying "short" and "long" chains is the same), it can lead to spam with longer verification paths. 
+    \item In the case of systems where the fee additionally is calculated based on the computation complexity of the transaction, we could implement a kind of efficient pre-compiles, but in the case of dynamic signatures, we need to introduce additional parameters. 
+\end{itemize}

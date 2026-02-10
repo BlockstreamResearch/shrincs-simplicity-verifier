@@ -5,7 +5,8 @@ This specification provides with the list of parameters for different SHRINCS in
     \item SHRINCS-L: verification complexity matters (the number of hashes to verify the signature).
 \end{enumerate}
 
-\mike{We can also explore the option of pushing Target Sum value higher (espessilay for smaller SHRINCS-L parameters to make verification even cheaper)}
+\mknote{We can also explore the option of pushing Target Sum value higher (espessilay for smaller SHRINCS-L parameters to make verification even cheaper)}
+\oknote{Yes, I have already found params that correspond to 4m hashes to signature grinding (seems to be practical) for the -L version (to receive only 53 hashes to verify WOTS+C). The complexity is in Appendix B. For the -B version, I left the average target sum because it doesn't affect the signature size. IDK if we need to care about the verification complexity in Bitcoin, but if we do, I'll make a revision}
 \begin{center}
 \begin{tabular}{ c c c c c}
  Parameter & SHRINCS-B & SHRINCS-L & Description \\ 
@@ -16,12 +17,15 @@ This specification provides with the list of parameters for different SHRINCS in
  \texttt{n} & $16$ & $16$ & Security parameter (bytes) \\  
  \texttt{w} & $256$ & $4$ & Winternitz parameter \\
  \texttt{l}  & $16$ & $64$ & The number of WOTS+C chains \\
- \texttt{Swn} & $2040$ & $140$ & Target sum for WOTS+C \\
+ \texttt{S\_wn} & $2040$ & $140$ & Target sum for WOTS+C \\
  \texttt{hsf} & 226 & 418 & Maximum stateful tree height \\
- \texttt{hsl} & $\color{red}40\color{black}$ & $\color{red}40\color{black}$ & Maximum stateless hypertree height \\
- \texttt{d} & $\color{red}5\color{black}$ & $\color{red}5\color{black}$ & Stateless hypertree layers \\
- \texttt{a} & $22$ & $22$ & FORS tree height \\
+ \texttt{hsl} & $40$ & $40$ & Maximum stateless hypertree height \\
+ \texttt{d} & $5$ & $5$ & Stateless hypertree layers \\
+ \texttt{h'} & $8$ & $8$ & XMSS tree height per hypertree layer \texttt{hsl/d = 8} \\
+ \texttt{a} & $22$ & $22$ & FORS tree height \\ 
  \texttt{k} & $6$ & $6$ & Number of FORS+C trees \\
  \texttt{c} & $4$ & $4$ & Counter size for WOTS+C grinding (bytes) \\
 \end{tabular}
 \end{center}
+
+\paragraph{Note:} Parameters for stateless instance is selected in the way to support up to $2^{20}$ signatures \cite{kudinov_nick_2025_hbs_bitcoin}. \texttt{hsf} is chosen in the way that the maximum stateful signature \texttt{(at q = hsf + 1)} remains smaller than a stateless signature: \texttt{n + R\_SIZE + c + l*n + (hsf+1)*n < stateless\_size.}
