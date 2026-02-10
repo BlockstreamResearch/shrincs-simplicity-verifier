@@ -438,6 +438,7 @@ INPUT content/1-motivation.tex
 INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm
 INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/jknappen/ec/tcrm1000.tfm
 INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmtt10.tfm
+INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmti10.tfm
 INPUT /usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc
 INPUT ./content/2-notation.tex
 INPUT ./content/2-notation.tex
@@ -480,7 +481,6 @@ INPUT content/10-shrincs.tex
 INPUT ./content/11-data-structures.tex
 INPUT ./content/11-data-structures.tex
 INPUT content/11-data-structures.tex
-INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmti10.tfm
 INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmcsc10.tfm
 INPUT ./content/a-test-vectors.tex
 INPUT ./content/a-test-vectors.tex

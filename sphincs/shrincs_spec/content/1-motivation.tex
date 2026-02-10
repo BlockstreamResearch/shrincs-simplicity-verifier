@@ -3,8 +3,8 @@ Current Bitcoin signature schemes (ECDSA\cite{ecdsa_fips186}  and Schnorr\cite{b
 
 The key challenges for deploying hash-based signatures in Bitcoin are:
 \begin{enumerate}
-    \item Signature size: NIST-standardized SLH-DSA signatures \cite{slhdsa_fips205} range from 7KB to 50KB, significantly larger than current 64-byte Schnorr signatures. This increases transaction fees and reduces the network's throughput.
-    \item Stateful vs. Stateless tradeoff: Stateful schemes (e.g., XMSS \cite{nist_sp800_208}) offer compact signatures but require careful state management to prevent key reuse. Additionally, Bitcoin users expect to restore wallets from static seed phrases (BIP-39\cite{bip39}). Pure stateful schemes break this model since signing state cannot be recovered from a seed alone, the signer must know which one-time keys have already been used. Stateless schemes (e.g., SLH-DSA) are robust but produce large signatures. 
+    \item \textbf{Signature size}: NIST-standardized SLH-DSA signatures \cite{slhdsa_fips205} range from 7KB to 50KB, significantly larger than current 64-byte Schnorr signatures. This increases transaction fees and reduces the network's throughput.
+    \item \textbf{Stateful vs. Stateless tradeoff}: Stateful schemes (e.g., XMSS \cite{nist_sp800_208}) offer compact signatures but require careful state management to prevent key reuse. Additionally, Bitcoin users expect to restore wallets from static seed phrases (BIP-39\cite{bip39}). Pure stateful schemes break this model since signing state cannot be recovered from a seed alone, the signer must know which one-time keys have already been used. Stateless schemes (e.g., SLH-DSA) are robust but produce large signatures. 
 \end{enumerate}
 
 \subsection{SHRINCS} 
@@ -15,14 +15,15 @@ SHRINCS (Stateful Hash-based Robust Integrated NIST-Compatible Signatures) is a 
     \end{itemize}
 The advantages of SHRINCS are following: 
 \begin{itemize}
-    \item \textbf{Efficient stateful path.} During normal operation with intact state, SHRINCS uses an Unbalanced XMSS (UXMSS) tree with WOTS+C one-time signatures. Signature sizes are:
+    \item \textbf{Efficient stateful path.} During normal operation with intact state, SHRINCS uses an Unbalanced XMSS (UXMSS) tree with WOTS+C one-time signatures. Signature sizes and verification costs are:
     \begin{itemize}
-        \item SHRINCS-B: \texttt{308 + 16q}  
-        \item SHRINCS-L: \texttt{1076 + 16q} 
+        \item SHRINCS-B: \textbf{only} \texttt{308 + 16q} bytes and \texttt{2042 + q} hashes, which makes this setting practical from the \textit{witness size} perspective
+        \item SHRINCS-L: \texttt{1076 + 16q} bytes and \textbf{only} \texttt{54 + q} hashes, which makes this setting practical from the \textit{verification complexity} perspective
     \end{itemize} 
-    bytes (where \texttt{q >= 1}) is the signature counter. So the first SHRINCS-B signature is $\times 20$ smaller than the smallest SLH-DSA variant.
+    bytes (where \texttt{q >= 1} is the signature counter).
     \item \textbf{Robust stateless fallback.} When the state is lost, corrupted, or exhausted, SHRINCS falls back to a SPHINCS+-based stateless signature (4008 or 7848 bytes). This is still smaller than standard SLH-DSA.
     \item \textbf{Static seed backup.} Users can back up their wallet using a standard seed phrase. Upon recovery, the wallet operates in stateless-only mode, preserving funds while accepting larger signatures.
+    \item \textbf{The number of supported signatures}. The construction supports up to 226 (SHRINCS-B) and 418(SHRINCS-L) stateful signatures and up to $2^{20}$ stateless signatures, which should be enough for wallets. 
 \end{itemize}
 
 \subsection{Limitations and Practical Considerations} 

@@ -57,13 +57,14 @@ The \texttt{fors\_grind} function searches for a counter value where the last tr
     Output:
         indices: array of k integers
         ctr: counter value
+        digest: the digest that satisfied the grinding condition
 
     1. setTypeAndClear(ADRS, FORS_GRIND)
     2. for ctr from 0 to 2^32 - 1:
         a. digest ← H_msg_fors(ADRS, R, ctr, PK.seed, PK.root, m)
         b. indices ← fors_msg_to_indices(digest)
         c. if indices[k-1] == 0:
-            return (indices, ctr)
+            return (indices, ctr, digest)
     3. abort with error
 \end{verbatim}
 
@@ -152,16 +153,17 @@ The \texttt{fors\_sign} function produces a FORS+C signature. Due to grinding, t
         ADRS: tweak
     Output:
         sig: FORS+C signature
+        digest: the digest that satisfied the grinding condition
 
     1. opt_rand ← random(n) or PK.seed
     2. R ← PRF_msg(SK.prf, PK.seed, opt_rand, m)
-    3. (indices, ctr) ← fors_grind(m, R, PK.seed, PK.root, ADRS)
+    3. (indices, ctr, digest) ← fors_grind(m, R, PK.seed, PK.root, ADRS)
     4. sig ← R || ctr
     5. for i from 0 to k - 2:
         a. sk_i ← fors_SKgen(SK.seed, PK.seed, ADRS, i, indices[i])
         b. auth_i ← fors_auth_path(SK.seed, PK.seed, ADRS, i, indices[i])
         c. sig ← sig || sk_i || auth_i
-    6. return sig
+    6. return (sig, digest)
 \end{verbatim}
 
 \subsection{Public Key Recovery}
