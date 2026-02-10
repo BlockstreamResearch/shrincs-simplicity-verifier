@@ -199,7 +199,7 @@ The \texttt{SHRINCS.VerifyStateless} function verifies a stateless signature. It
         return false
     13. (tree_idx, leaf_idx) ← parse_idx(digest)
     14. setLayerAddress(ADRS, 0)
-    15. setTreeAddress(ADRS, tree_idx[0])
+    15. setTreeAddress(ADRS, 0)
     16. fors_pk ← fors_pkFromSig(fors_sig, m, PK.seed, PK.root, ADRS)
     17. if fors_pk == false:
         return false  
