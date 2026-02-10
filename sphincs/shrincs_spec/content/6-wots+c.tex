@@ -2,8 +2,9 @@
 The standard Winternitz One-Time Signature (WOTS+) is the building block of most modern hash-based schemes. It works by encoding the message into a series of small integers and using them to iterate hash chains \cite{hulsing2013wotsplus}. A significant portion of a WOTS+ signature size (approx 20\%) is dedicated to "Checksum," which is necessary to prevent a forgery attack where an adversary extends the hash chains forward. WOTS+C (compressed WOTS+) eliminates the transmission of this checksum entirely, achieving a smaller signature size. 
 
 In WOTS+, the checksum $C$ is calculated from the message digest $D$.
-
-$$C = \sum_{i=1}^{l} (w - 1 - d_i)$$
+\begin{align}
+C = \sum_{i=1}^{l} (w - 1 - d_i)
+\end{align}
 
 This checksum is then signed using additional chains. In WOTS+C \cite{wotsc_sphincsc2022}, instead of calculating a checksum for a fixed message digest, the signer modifies the message digest until it possesses a specific, pre-determined checksum property. This is done by hashing the message with a random salt \texttt{R} (phase 1), then iterating over a counter \texttt{ctr} applied to the resulting digest (phase 2) until the output satisfies a global target condition.
 
@@ -11,8 +12,9 @@ This checksum is then signed using additional chains. In WOTS+C \cite{wotsc_sphi
 WOTS utilize a parameter \texttt{w} to define the number of hashchains and correspondingly their length. The message digest length is \texttt{n} bytes so \texttt{l = 8n/(log2(w))}. The values $d_{i\in[l]}$ are treated as integers in \texttt{0...(w-1)}. 
 
 Let \texttt{S\_wn} be a protocol parameter (often near the expected value, but may be chosen larger to trade signing/grinding cost for verification cost). If the hash output is uniform, the expected value of a single digit is \texttt{d\_i = (w-1)/2}. For \texttt{l} digits, the expected \texttt{S\_wn} is: 
-
-$$S_{wn} = \sum_{i=0}^{l-1}d_i$$
+\begin{align}
+S_{wn} = \sum_{i=0}^{l-1}d_i
+\end{align}
 
 By enforcing this condition during signing (including grinding), the verifier can simply assume the checksum is \texttt{S\_wn} without receiving it. If the reconstructed digest does not sum to \texttt{S\_wn}, the signature is invalid. 
 
@@ -168,7 +170,6 @@ The function \texttt{wots\_grind()} takes a pre-computed digest and increments \
             return (msg, ctr)
     3. abort with error  // caller should resample R and retry
 \end{verbatim}
-\oknote{to add expected grinding complexity for different approaches}
 
 Additionally we need to define a func which allows to calculate the digest without grinding (by providing the \texttt{ctr} value directly).
 

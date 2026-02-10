@@ -1,0 +1,133 @@
+\section{Expected Grinding Complexity}
+This section analyzes the computational cost of the grinding operations in WOTS+C and FORS+C for both SHRINCS parameter sets.
+
+\subsection{Probabilistic Analysis}
+
+\subsubsection{WOTS+C Grinding}
+The grinding operation searches for a counter $\texttt{ctr}$ such that the sum of base-$w$ digits equals the target $S_{wn}$. Each digest attempt produces $l$ independent random digits, each uniformly distributed in $[0, w-1]$.
+
+For a single digit:
+\begin{align}
+    \mathbb{E}[d_i] &= \frac{w-1}{2} \\
+    \text{Var}[d_i] &= \frac{w^2-1}{12}
+\end{align}
+
+For the sum of $l$ digits:
+\begin{align}
+    \mathbb{E}\left[\sum d_i\right] &= l \cdot \frac{w-1}{2} \\
+    \text{Var}\left[\sum d_i\right] &= l \cdot \frac{w^2-1}{12} \\
+    \sigma &= \sqrt{l \cdot \frac{w^2-1}{12}}
+\end{align}
+
+By the Central Limit Theorem, for moderate $l$, the sum distribution approximates:
+\begin{align}
+\sum d_i \sim \mathcal{N}\left(\mu = l \cdot \frac{w-1}{2}, \sigma^2\right)
+\end{align}
+
+The probability of hitting exactly $S_{wn}$ can be approximated as:
+\begin{align}
+    P\left(\sum d_i = S_{wn}\right) \approx \frac{1}{\sigma\sqrt{2\pi}} \cdot \exp\left(-\frac{(S_{wn} - \mu)^2}{2\sigma^2}\right)
+\end{align}
+
+Expected grinding iterations:
+\begin{align}
+    \mathbb{E}[\text{iterations}] = \frac{1}{P(\sum d_i = S_{wn})}
+\end{align}
+
+\subsubsection{FORS+C Grinding}
+The grinding operation searches for $\text{indices}[k-1] = 0$, meaning the last $a$ bits of the digest must all be zero. This is a deterministic bit condition with:
+\begin{align}
+    P(\text{indices}[k-1] = 0) &= \frac{1}{2^a} \\
+    \mathbb{E}[\text{iterations}] &= 2^a
+\end{align}
+
+\subsection{Concrete Parameters}
+
+\subsubsection{SHRINCS-B ($w=256$, $l=16$, $S_{wn}=2040$)}
+\paragraph{Statistic calculation:}
+\begin{align}
+    \mu &= 16 \cdot \frac{255}{2} = 2040 \\
+    \sigma^2 &= 16 \cdot \frac{256^2-1}{12} \approx 87381 \\
+    \sigma &\approx 295.6
+\end{align}
+
+\paragraph{Analysis:}
+\begin{itemize}
+    \item $S_{wn} = 2040$ is exactly at the expected value ($\mu = 2040$)
+    \item Distance from mean: $(2040 - 2040)/295.6 = 0$ standard deviations
+\end{itemize}
+
+\paragraph{Approximate probability:}
+\begin{align}
+    P(\sum d_i = 2040) \approx \frac{1}{295.6 \cdot \sqrt{2\pi}} \approx \frac{1}{741}
+\end{align}
+
+\paragraph{Expected grinding cost:}
+\begin{itemize}
+    \item $\mathbb{E}[\text{iterations}] \approx 741$ iterations
+    \item Per iteration: 1 SHA-256 compression (Phase 2 operates on fixed 52-byte input)
+    \item Total: $\approx 741$ SHA-256 compressions
+\end{itemize}
+
+\paragraph{Practical performance:}
+\begin{itemize}
+    \item $\approx$1-2 million SHA-256/sec
+    \item Expected grinding time: $<$1 millisecond
+\end{itemize}
+
+\subsubsection{SHRINCS-L ($w=4$, $l=64$, $S_{wn}=140$)}
+
+\paragraph{Statistic calculation:}
+\begin{align}
+    \mu &= 64 \cdot \frac{3}{2} = 96 \\
+    \sigma^2 &= 64 \cdot \frac{4^2-1}{12} = 80 \\
+    \sigma &\approx 8.94
+\end{align}
+
+\paragraph{Analysis:}
+\begin{itemize}
+    \item $S_{wn} = 140$ is significantly above the expected value
+    \item Distance from mean: $(140 - 96)/8.94 \approx 4.92$ standard deviations
+\end{itemize}
+
+\paragraph{Approximate probability:}
+\begin{align}
+    P(\sum d_i = 140) &\approx \frac{1}{8.94\sqrt{2\pi}} \cdot \exp\left(-\frac{4.92^2}{2}\right) \nonumber \\
+    &\approx \frac{1}{22.4} \cdot \exp(-12.1) \nonumber \\
+    &\approx \frac{1}{22.4} \cdot 5.5 \times 10^{-6} \nonumber \\
+    &\approx 2.45 \times 10^{-7}
+\end{align}
+
+\paragraph{Expected grinding cost:}
+\begin{itemize}
+    \item $\mathbb{E}[\text{iterations}] \approx 4.1$m iterations
+    \item Per iteration: 1 SHA-256 compression
+    \item Total: $\approx 4.1$ million SHA-256 compressions
+\end{itemize}
+
+\paragraph{Practical performance:}
+\begin{itemize}
+    \item  $\approx$1-2 million SHA-256/sec
+    \item Expected grinding time: 2-4 seconds per signature
+\end{itemize}
+
+\subsection{FORS+C Grinding Complexity}
+Both SHRINCS-B and SHRINCS-L use identical FORS+C parameters:
+\begin{itemize}
+    \item $k = 6$ trees
+    \item $a = 22$ (tree height)
+\end{itemize}
+
+Grinding condition: $\text{indices}[k-1] = 0$ (last tree index must be zero)
+
+\paragraph{Expected grinding cost:}
+\begin{itemize}
+    \item $\mathbb{E}[\text{iterations}] = 2^a = 2^{22} = 4.1$m iterations
+    \item Per iteration: 1 SHA-256 call producing $(k \cdot a)/8 = 17$ bytes
+\end{itemize}
+
+\paragraph{Practical performance:}
+\begin{itemize}
+    \item $\sim$1-2 million SHA-256/sec
+    \item Expected grinding time: 2-4 seconds per stateless signature
+\end{itemize}
