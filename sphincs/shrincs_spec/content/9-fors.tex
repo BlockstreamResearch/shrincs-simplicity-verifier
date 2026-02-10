@@ -81,7 +81,7 @@ The \texttt{fors\_SKgen} function derives a secret leaf value for a specific tre
     Output:
         sk: secret value
 
-    1. setTypeAndClear(ADRS, PRF)
+    1. setTypeAndClear(ADRS, FORS_PRF)
     2. setKeyPairAddress(ADRS, tree_idx)
     3. setTreeIndex(ADRS, leaf_idx)
     4. sk ← PRF(PK.seed, ADRS, SK.seed)

@@ -159,7 +159,7 @@ The function \texttt{wots\_grind()} takes a pre-computed digest and increments \
         ctr: final counter value used
 
     1. setTypeAndClear(ADRS, WOTS_GRIND)
-    2. for ctr from 0 to 2^32 - 1:  \\ c = 4 bytes
+    2. for ctr from 0 to 2^32 - 1:  // c = 4 bytes
         a. grind_out ← H_grind(ADRS, digest, ctr, c)
         b. msg ← base_w(grind_out, w, l)
         c. sum ← 0
