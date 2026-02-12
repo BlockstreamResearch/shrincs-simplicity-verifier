@@ -4,9 +4,6 @@
 #include "sphincs/sphincs.simf"
 
 fn main() {
-    // utils
-    test_mgf1_sha_256();
-
     // signatures
     test_lamport_sign_verify();
     test_wots_sign_verify();
