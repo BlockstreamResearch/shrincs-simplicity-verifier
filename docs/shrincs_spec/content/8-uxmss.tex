@@ -70,6 +70,7 @@ The \texttt{uxmss\_root} function computes \texttt{PK.sf}, the root of the state
 For signature number \texttt{1 <= q <= hsf + 1}, the authentication path contains exactly \texttt{q} sibling nodes needed to reconstruct \texttt{PK.sf} from the WOTS+C public key at position \texttt{q}. The structure of the path differs based on whether \texttt{q <= hsf} or \texttt{q = hsf + 1}. For \texttt{q <= hsf}, the first sibling is either a subtree root (if \texttt{q < hsf}) or the rightmost WOTS+C key (if \texttt{q = hsf}), followed by q-1 WOTS+C public keys ascending toward the root. For \texttt{q = hsf + 1} (the rightmost leaf), all hsf siblings are WOTS+C public keys. This asymmetric structure reflects the right-skewed nature of UXMSS.
 \mknote{I think we still can use idx variable, and just use it as a pointer to the leaf, counted from left to right.}
 \oknote{we can, but I think the semantics of \texttt{q} and \texttt{idx} are different. \texttt{idx} is a position in a symmetric tree where all leaves are equivalent, the auth path is always \texttt{h'} nodes regardless of which \texttt{idx} we pick. \texttt{q} is the signature counter that directly determines the auth path length and structure}
+\mknote{Makes sense}
 
 \begin{verbatim}
     Algorithm: uxmss_auth_path(SK.seed, PK.seed, ADRS, q)

@@ -145,6 +145,7 @@ WOTS+C uses a two-phase hashing approach (see Section~5.4.1):
     \item Phase 1 \texttt{(H\_msg)}: Computes a randomized digest of the user message. This is performed once per signature and produces an \texttt{n}-byte digest. For internal XMSS signatures (which sign tree roots that are already hashes), phase 1 is skipped and the tree root is used directly as the digest.
     \item Phase 2 \texttt{(H\_grind)}: Takes the phase 1 digest (or tree root) and a counter, producing a candidate \texttt{n}-byte output. This is iterated during grinding until the target condition is met.
 \end{enumerate}
+\mknote{Needs update to include the PKseed into the grinding hashing.}
 
 
 The function \texttt{wots\_grind()} takes a pre-computed digest and increments \texttt{ctr} until the base-w digits of the Phase 2 output satisfy the target sum \texttt{S\_wn}. It returns the found \texttt{ctr} and the corresponding digit array.
@@ -236,7 +237,7 @@ For internal XMSS signatures (signing tree roots at layers \texttt{1..d-1} of th
         h. sig ← sig || chain(sk_i, 0, msg[i], PK.seed, ADRS)
     7. return sig
 \end{verbatim}
-
+\mknote{PKseed for grinding (in signing and verification)}
 \subsection{Signature Verification (Public Key Recovery)}
 Verification reconstructs the WOTS+C public key implied by the signature. It first recomputes the message digest using the two-phase approach (or directly from the tree root for internal signatures), then verifies the target sum. For each chain element, the verifier continues hashing forward from the signature's provided intermediate value for \texttt{(w - 1 - msg[i])} steps to reach the end-of-chain value. Compressing all end-of-chain values yields the recovered WOTS+C public key.
 \begin{verbatim}

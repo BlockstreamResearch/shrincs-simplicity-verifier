@@ -66,6 +66,7 @@ Stateless signatures consist of:
 \end{enumerate}
 
 Signature size calculation: 
+\mknote{We don't need to include the counter for the FORS, since it is used inside the PRF and the Randomness is resampled. We just include the final sampling of the random value. The counter is hidden from the verifier.}
 \begin{verbatim}
     General formula: size  = PK.sf_SIZE + fors_size(R_SIZE + c + (k-1)*(n + a*n)) 
                            + xmss_layer_size(R_SIZE + c + l*n + h'*n)*d
@@ -100,6 +101,3 @@ The signature verification cost is:
 \end{verbatim}
 
 \paragraph{Note:} \texttt{k} (number of trees) and \texttt{a} (tree height) are parameters of FORS+ (see Section~9). \texttt{h'} is the height of internal tree in HT. One additional hash is required to obtain the root public key after stateless public key recovery. 
-
-\mknote{I am not sure what is the difference between SHRINCS-B and SHRINCS-L. Are these two modes of opertaions? With different parameter sets. If so - I think we should add some more explanation to the text.}
-\oknote{Added to motivation sec, but please check if it's clear from there}

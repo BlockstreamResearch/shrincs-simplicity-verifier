@@ -82,6 +82,7 @@ The signature includes \texttt{PK.sl} prepended to enable unified verification. 
 \end{verbatim}
 
 \subsection{Stateless signing}
+\mknote{The algorithm says: compute a FORS signature for ADDR = 0, then choose  FORS instance based on the hash, then compute PK for the FORS at ADRS = 0. This definetly wrong.}
 The \texttt{SHRINCS.SignStateless} function signs a message using the stateless (SPHINCS+C) path. This is used when state is lost, corrupted, or exhausted.
 
 SHRINCS uses a unified digest for the stateless path: a single call to \texttt{H\_msg\_fors} produces a digest that encodes both the FORS leaf indices (determining which leaves to reveal in the few-time signature) and the hypertree tree/leaf indices (determining which XMSS trees and WOTS+C key pairs to use at each layer). The grinding counter \texttt{ctr} is iterated until the grinding condition is satisfied on this unified digest.
@@ -89,6 +90,8 @@ SHRINCS uses a unified digest for the stateless path: a single call to \texttt{H
 The digest output length is \texttt{(roundup(k*a + h\_sl) / 8)} bytes. The first \texttt{k*a} bits encode the \texttt{k} FORS leaf indices (with the last a bits required to be zero by grinding). The remaining \texttt{h\_sl} bits encode the hypertree path indices.
 
 The signature is constructed bottom-up: first a FORS+C signature on the message, then \texttt{d} XMSS signatures on successive layer roots ascending through the hypertree. The signature includes \texttt{PK.sf} prepended to enable unified verification.
+
+\mknote{parse\_hypertree\_idx is undefined}
 
 \begin{verbatim}
     Algorithm: SHRINCS.SignStateless(m, SK)
@@ -175,6 +178,7 @@ The \texttt{SHRINCS.VerifyStateful} function verifies a stateful signature. It e
 
 \subsection{Stateless verification}
 The \texttt{SHRINCS.VerifyStateless} function verifies a stateless signature. It extracts \texttt{PK.sf} from the signature, recomputes the unified digest from the FORS+C signature's \texttt{R} and \texttt{ctr}, extracts both FORS indices and hypertree indices from the same digest, then verifies bottom-up through the hypertree.
+\mknote{Verification does not take which FORS instance is used as well. Same problems as in signing part.}
 \begin{verbatim}
     Algorithm: SHRINCS.VerifyStateless(m, sig, PK)
     Input:
@@ -222,6 +226,7 @@ The \texttt{SHRINCS.VerifyStateless} function verifies a stateless signature. It
 \end{verbatim}
 
 \subsection{Unified Verification}
+\mknote{Did you test that Verify(Sign(message))=true for both cases?}
 The \texttt{SHRINCS.Verify} function provides a single entry point for verifying either stateful or stateless signatures. It distinguishes between the two types based on signature length: stateful signatures have a maximum size of \texttt{max\_sf\_size = n + R\_SIZE + c + l*n + (h\_sf + 1)*n} bytes, while stateless signatures are strictly larger (see Section~8.7 for the derivation that this bound always holds).
 \begin{verbatim}
     Algorithm: SHRINCS.Verify(m, sig, PK)

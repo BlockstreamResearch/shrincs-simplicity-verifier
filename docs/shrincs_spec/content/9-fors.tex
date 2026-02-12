@@ -16,6 +16,7 @@ FORS consists of \texttt{k} binary trees, each of height \texttt{a}:
     \label{fig:shrincs}
 \end{figure}
 The FORS public key is the tweakable hash of the tree roots. With the +C grinding optimization, the last tree's root is excluded: \texttt{FORS+C PK = Tw(PK.seed, ADRS, root\_0 || ... || root\_{k-2})}, using address type \texttt{FORS\_PK}. This is valid because grinding guarantees \texttt{indices[k-1] == 0}, so the verifier can independently recompute \texttt{root\_{k-1}} if needed (though it is not used in the public key computation).
+\mknote{The verifier can not recompute the last tree. It is just not needed, because we always have to select the leaf 0. Hence, we dont need the last tree at all.}
 
 %\mknote{We put the counter into PRFmsg for the stateless option, and regenerate the randomness each time. PRFmsg(inputcs, counter)= R. Hmsg(inputs, R)= digest, check if good, otherwise restart from PRFmsg with a new counter.}
 \subsection{Grinding Condition}
@@ -26,6 +27,7 @@ FORS+C uses the single-phase message hash \texttt{H\_msg\_fors} (Section~5.4.2):
 \end{verbatim}
 
 Expected grinding cost is $\approx 2^a$ iterations. With a = 22, this is approximately 4 million iterations. Since \texttt{H\_msg\_fors} operates on fixed-size inputs, each iteration is a single SHA-256 call.
+\mknote{If it had variable size inputs would it be multiple SHA calls?}
 
 \subsection{Message to Indices}
 The \texttt{fors\_msg\_to\_indices} function converts a message digest into \texttt{k} leaf indices, one for each FORS tree. Each index is extracted as a consecutive a-bit chunk from the digest. The indices are integers in the range \texttt{[0, 2\string^a - 1]}.
@@ -141,6 +143,7 @@ The \texttt{fors\_auth\_path} function generates the a sibling nodes needed to a
 \end{verbatim}
 
 \subsection{Signature generation}
+\mknote{grinding should be done in PRF\_msg}
 The \texttt{fors\_sign} function produces a FORS+C signature. Due to grinding, the last tree's index is guaranteed to be 0, so tree \texttt{k-1} is entirely excluded from the signature. The signature reveals \texttt{k-1} leaves with their authentication paths. Signature format: \texttt{R || ctr || (sk\_0 || auth\_0) || ... || (sk\_{k-2} || auth\_{k-2})}
 \begin{verbatim}
     Algorithm: fors_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS)
