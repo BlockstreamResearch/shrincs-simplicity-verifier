@@ -36,13 +36,10 @@ fn restore_uxmss_signature(proof: UXMSSSignProof, hash_ctx: Ctx8) -> u128 {
     let (pk, (_, _, checksum, _, _, _, _, _, _)): ([u128; 64], (u128, u32, u8, u32, Ctx8, u32, u32, u64, u32)) = sphincs_restore_wots_tw_signature_map_arr_64(message_signature, (message, 0, 0, key_idx, hash_ctx, 0, 0, 0, 0));
     assert!(jet::eq_8(checksum, 140));
 
-    let leaf: u128 = sphincs_hash_leaf_xmss(pk, (key_idx, hash_ctx, 0, 0, 0, 1));
-
-    // what tree height we will have? hsf + 1
-    let is_right_child: bool = jet::eq_32(key_idx, 206);
+    // hsf + 1
     let (_, tree_height): (bool, u32) = jet::subtract_32(206, key_idx);
 
-    let (root, _, _, _): (u128, bool, Ctx8, u32) = fold::<shrincs_get_root_from_path_iter, 512>(merkle_path, (leaf, is_right_child, hash_ctx, tree_height));
+    let (root, _, _, _): (u128, bool, Ctx8, u32) = fold::<shrincs_get_root_from_path_iter, 512>(merkle_path, (sphincs_hash_leaf_xmss(pk, (key_idx, hash_ctx, 0, 0, 0, 1)), jet::eq_32(key_idx, 206), hash_ctx, tree_height));
     root
 }
 

@@ -8,9 +8,7 @@
 /// * `ID` is an identifier to make the group of functions unique.
 #define DEFINE_ASSERT_EQ_ARR_1(T1, T2, F, ID) \
 fn ID##_assert_eq_arr_1(arr1: [T1; 1], arr2: [T2; 1]) { \
-    let el1: T1 = <[T1; 1]>::into(arr1); \
-    let el2: T2 = <[T2; 1]>::into(arr2); \
-    assert!(F(el1, el2)); \
+    assert!(F(<[T1; 1]>::into(arr1), <[T2; 1]>::into(arr2))); \
 }
 
 /// Assert if arrays are equals.

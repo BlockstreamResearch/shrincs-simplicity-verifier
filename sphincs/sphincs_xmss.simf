@@ -2,7 +2,6 @@
 #define SPHINCS_XMSS_SIGNATURE
 
 #include "sphincs_wots_tw.simf"
-#include "../templates/merkle_root_template.simf"
 
 type SPHINCSMerklePath = [u128; 12];
 // (WOTSSign, MerklePath)

@@ -9,8 +9,7 @@
 /// Returns a tuple of the mapped array and the updated context.
 #define DEFINE_MAP_ARR_1(T1, T2, CTX, F) \
 fn F##_map_arr_1(arr: [T1; 1], ctx: CTX) -> ([T2; 1], CTX) { \
-    let elt: T1 = <[T1; 1]>::into(arr); \
-    let (res, ctx): (T2, CTX) = F(elt, ctx); \
+    let (res, ctx): (T2, CTX) = F(<[T1; 1]>::into(arr), ctx); \
     ([res], ctx) \
 }
 
@@ -26,8 +25,7 @@ fn F##_map_arr_##N(arr: [T1; N], ctx: CTX) -> ([T2; N], CTX) { \
     let (arr1, arr2): ([T1; HALF_N], [T1; HALF_N]) = <[T1; N]>::into(arr); \
     let (res1, ctx): ([T2; HALF_N], CTX) = F##_map_arr_##HALF_N(arr1, ctx); \
     let (res2, ctx): ([T2; HALF_N], CTX) = F##_map_arr_##HALF_N(arr2, ctx); \
-    let res: [T2; N] = <([T2; HALF_N], [T2; HALF_N])>::into((res1, res2)); \
-    (res, ctx) \
+    (<([T2; HALF_N], [T2; HALF_N])>::into((res1, res2)), ctx) \
 }
 
 #endif
