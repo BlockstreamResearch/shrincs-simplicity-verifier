@@ -20,7 +20,7 @@ fn shrincs_get_root_from_path_iter(el: u128, ctx: (u128, bool, Ctx8, u32)) -> (u
 
     let (_, tree_height): (bool, u32) = jet::add_32(tree_height, 1);
 
-    (hash, false, hash_ctx, tree_height)
+    (hash, true, hash_ctx, tree_height)
 }
 
 fn restore_uxmss_signature(proof: UXMSSSignProof, hash_ctx: Ctx8) -> u128 {
