@@ -6,7 +6,7 @@
 // (wots+c signature, merkle path up to 511 elements, signature index)
 type UXMSSSignature = (SPHINCSWOTSTWSignature, List<u128, 512>, u32);
 // (Message, (PK.seed, Root), Signature)
-type UXMSSSignProof = (u128, SPHINCSPK, UXMSSSignature);
+type UXMSSSignProof = (u256, SPHINCSPK, UXMSSSignature);
 
 fn shrincs_get_root_from_path_iter(el: u128, ctx: (u128, bool, Ctx8, u32)) -> (u128, bool, Ctx8, u32) {
     let (node, is_right_child, hash_ctx, tree_height): (u128, bool, Ctx8, u32) = ctx;
@@ -29,7 +29,7 @@ fn restore_uxmss_signature(proof: UXMSSSignProof, hash_ctx: Ctx8) -> u128 {
     let (wots_signature, merkle_path, key_idx): UXMSSSignature = signature;
     let (r, counter, message_signature): SPHINCSWOTSTWSignature = wots_signature;
 
-    let (message, _): (u128, u128) = <u256>::into(jet::sha_256_ctx_8_finalize(jet::sha_256_ctx_8_add_16(jet::sha_256_ctx_8_add_16(jet::sha_256_ctx_8_add_16(jet::sha_256_ctx_8_add_32(jet::sha_256_ctx_8_add_8(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_16(jet::sha_256_ctx_8_init(), 0), 11), 0), 0), r), public_parameter), root), message)));
+    let (message, _): (u128, u128) = <u256>::into(jet::sha_256_ctx_8_finalize(jet::sha_256_ctx_8_add_32(jet::sha_256_ctx_8_add_16(jet::sha_256_ctx_8_add_16(jet::sha_256_ctx_8_add_32(jet::sha_256_ctx_8_add_8(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_16(jet::sha_256_ctx_8_init(), 0), 11), 0), 0), r), public_parameter), root), message)));
 
     let (message, _): (u128, u128) = <u256>::into(jet::sha_256_ctx_8_finalize(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_16(jet::sha_256_ctx_8_add_8(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_16(jet::sha_256_ctx_8_init(), 0), 9), 0), 0), message), counter)));
 
