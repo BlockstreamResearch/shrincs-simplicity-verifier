@@ -41,7 +41,7 @@ For generating the randomizer \texttt{R} used in message hashing:
     \texttt{PRF\_msg(SK.prf, PK.seed, opt\_rand, m) = HMAC-SHA-256(SK.prf, PK.seed || opt\_rand || m)[0:R\_SIZE]},
 \end{center}
 where \texttt{opt\_rand} is an optional randomness (\texttt{n} bytes), can be \texttt{PK.seed} for deterministic signing.
-\mknote{We need to unclude the counter in the PRF\_msg function for the stateless brunch, not in the message hash.}
+%\mknote{We need to unclude the counter in the PRF\_msg function for the stateless brunch, not in the message hash.}
 \subsection{Message Hash Function}
 SHRINCS uses different hashing strategies for WOTS+C and FORS+C, optimized for their respective use cases.
 
@@ -62,7 +62,7 @@ This is computed once per signature, producing an n-byte digest.
 \begin{center}
     \texttt{H\_grind(ADRS, digest, ctr) = SHA-256(ADRS || digest || ctr)[0:n]}
 \end{center}
-\mknote{PKseed is needed as an input.}
+%\mknote{PKseed is needed as an input.}
 This is computed repeatedly during grinding, but operates only on small fixed-size inputs (52 bytes for out parameters), making iterations fast.
 
 \subsubsection{FORS+C: Single-Phase Hashing}
@@ -70,7 +70,7 @@ FORS+C always signs user messages (never tree roots), so it uses a simpler singl
 \begin{center}
     \texttt{H\_msg\_fors(ADRS, R, ctr, PK.seed, PK.root, m) = SHA-256(ADRS || R || ctr || PK.seed || PK.root || m)[0:roundup((k*a)/8])}
 \end{center}
-\mknote{We exlude the counter from here, we iterate the PRF\_msg with the counter, that samples R, and then we check if the sampled R works for the message hash.}
+%\mknote{We exlude the counter from here, we iterate the PRF\_msg with the counter, that samples R, and then we check if the sampled R works for the message hash.}
 
 \subsection{Tweak Structure and Domain Separation}
 Tweaks are structured as follows to ensure uniqueness across all scheme components:
@@ -88,7 +88,7 @@ where:
 A total \texttt{ADRS} size is 32 bytes.
 
 \subsubsection{Address Types}
-\mknote{The grinding of FORS and FORS PRF becomes the same address type i think}
+%\mknote{The grinding of FORS and FORS PRF becomes the same address type i think}
 \begin{verbatim}
 0x00: SF_WOTS_HASH: Stateful WOTS+C chain hashing
 0x01: SF_WOTS_PK:   Stateful WOTS+C public key compression

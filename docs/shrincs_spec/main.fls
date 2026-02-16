@@ -1,8 +1,8 @@
-PWD /Users/oleksandr.kurbatov/mjthatch/HB-Liquid/sphincs/shrincs_spec
+PWD /Users/oleksandr.kurbatov/mjthatch/HB-Liquid/docs/shrincs_spec
 INPUT /usr/local/texlive/2025/texmf.cnf
 INPUT /usr/local/texlive/2025/texmf-dist/web2c/texmf.cnf
 INPUT /usr/local/texlive/2025/texmf-var/web2c/pdftex/pdflatex.fmt
-INPUT /Users/oleksandr.kurbatov/mjthatch/HB-Liquid/sphincs/shrincs_spec/main.tex
+INPUT /Users/oleksandr.kurbatov/mjthatch/HB-Liquid/docs/shrincs_spec/main.tex
 OUTPUT main.log
 INPUT /usr/local/texlive/2025/texmf-dist/tex/latex/base/article.cls
 INPUT /usr/local/texlive/2025/texmf-dist/tex/latex/base/article.cls

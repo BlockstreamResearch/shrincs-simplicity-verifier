@@ -43,14 +43,14 @@ Stateful signatures consist of:
 
 Signature size calculation: 
 \begin{verbatim}
-    General formula: size = PK.sl_SIZE  + R_SIZE + c +  l*n +  q*n  
+    General formula: size = PK.sl_SIZE  + R_SIZE + c + l*n + q*n  
            SHRINCS-B.size = 16 + 32 + 4 + 16*16 + q*16              = 308 + 16q
            SHRINCS-L.size = 16 + 32 + 4 + 64*16 + q*16              = 1076 + 16q
 \end{verbatim}
 
 The signature verification cost is:
 \begin{verbatim}
-    General formula: hash_ops = (w-1)*l -  S_wn + q + 2  
+    General formula: hash_ops = (w-1)*l - S_wn + q + 2  
            SHRINCS-B.hash_ops = 255*16 - 2040 + q + 2               = 2042 + q
            SHRINCS-L.hash_ops = 3*64 - 140  + q + 2                 = 54 + q
 \end{verbatim}
@@ -66,16 +66,16 @@ Stateless signatures consist of:
 \end{enumerate}
 
 Signature size calculation: 
-\mknote{We don't need to include the counter for the FORS, since it is used inside the PRF and the Randomness is resampled. We just include the final sampling of the random value. The counter is hidden from the verifier.}
+%\mknote{We don't need to include the counter for the FORS, since it is used inside the PRF and the Randomness is resampled. We just include the final sampling of the random value. The counter is hidden from the verifier.}
 \begin{verbatim}
     General formula: size  = PK.sf_SIZE + fors_size(R_SIZE + c + (k-1)*(n + a*n)) 
                            + xmss_layer_size(R_SIZE + c + l*n + h'*n)*d
           SHRINCS-B. size  = 16 + fors_size(32 + 4 + 5*(16 + 22*16)) 
-                           + xmss_layer_size(32 + 4 + 16*16 + 8*16) * 5
-                           = 4008
+                           + xmss_layer_size(32 + 4 + 16*16 + 12*16) * 2
+                           = 2860
           SHRINCS-L. size  = 16 + fors_size(32 + 4 + 5*(16 + 22*16)) 
-                           + xmss_layer_size(32 + 4 + 64*16 + 8*16) * 5
-                           = 7848
+                           + xmss_layer_size(32 + 4 + 64*16 + 12*16) * 2
+                           = 4396
 \end{verbatim}
 
 The signature verification cost is:
@@ -89,15 +89,15 @@ The signature verification cost is:
     SHRINCS-B:
         fors_hashes = 5*23 + 1 = 116
         wots_per_layer = (256-1)*16 - 2040 + 1 = 2041
-        xmss_per_layer = 2041 + 8 = 2049
-        total = 116 + 5*2049 + 1 = 10362 hashes
+        xmss_per_layer = 2041 + 12 = 2053
+        total = 116 + 2*2053 + 1 = 4223 hashes
 
     SHRINCS-L:
         fors_hashes = 116
         wots_per_layer = (w-1)*l - S_wn + 1 = 53
-        xmss_per_layer = wots_per_layer + h' = 53 + 8 = 61
+        xmss_per_layer = wots_per_layer + h' = 53 + 12 = 65
         total = fors_hashes + d*xmss_per_layer + 1
-              = 116 + 5*61 + 1 = 422 hashes
+              = 116 + 2*65 + 1 = 247 hashes
 \end{verbatim}
 
 \paragraph{Note:} \texttt{k} (number of trees) and \texttt{a} (tree height) are parameters of FORS+ (see Section~9). \texttt{h'} is the height of internal tree in HT. One additional hash is required to obtain the root public key after stateless public key recovery. 

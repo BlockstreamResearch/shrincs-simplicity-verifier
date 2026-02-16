@@ -144,12 +144,12 @@ The leaf index \texttt{idx} determines which WOTS+C key pair is used; this index
 \end{verbatim}
 
 \subsection{Contribution to Signature Size and Verification Complexity}
-Each XMSS signature consists of a WOTS+C signature plus an authentication path of \texttt{h'} nodes: \texttt{R\_SIZE + c + (l + h') * n} bytes (420 bytes for SHRINCS-B and 1188 bytes for SHRINCS-L).
+Each XMSS signature consists of a WOTS+C signature plus an authentication path of \texttt{h'} nodes: \texttt{R\_SIZE + c + (l + h') * n} bytes (484 bytes for SHRINCS-B and 1252 bytes for SHRINCS-L).
 
-The full stateless hypertree consists of \texttt{d = 5} layers, giving:
+The full stateless hypertree consists of \texttt{d = 2} layers, giving:
 \begin{itemize}
-    \item 2100 bytes and 10245 hashes for SHRINCS-B
-    \item 5940 bytes and 305 hashes for SHRINCS-L
+    \item 968 bytes and 4106 hashes for SHRINCS-B
+    \item 2504 bytes and 130 hashes for SHRINCS-L
 \end{itemize}
 
 \paragraph{Note:} This excludes the FORS+C contribution (see Section~9). The total stateless signature size and verification cost are the sum of FORS+C and hypertree components, as presented in Section~3.2.2.

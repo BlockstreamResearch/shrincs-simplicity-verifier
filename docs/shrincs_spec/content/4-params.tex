@@ -5,9 +5,6 @@ This specification provides with the list of parameters for different SHRINCS in
     \item SHRINCS-L: verification complexity matters (the number of hashes to verify the signature).
 \end{enumerate}
 
-\mknote{We can also explore the option of pushing Target Sum value higher (espessilay for smaller SHRINCS-L parameters to make verification even cheaper)}
-\oknote{Yes, I have already found params that correspond to 4m hashes to signature grinding (seems to be practical) for the -L version (to receive only 53 hashes to verify WOTS+C). The complexity is in Appendix B. For the -B version, I left the average target sum because it doesn't affect the signature size. IDK if we need to care about the verification complexity in Bitcoin, but if we do, I'll make a revision}
-\mknote{Sounds good.}
 \begin{center}
 \begin{tabular}{ c c c c c}
  Parameter & SHRINCS-B & SHRINCS-L & Description \\ 
@@ -19,10 +16,10 @@ This specification provides with the list of parameters for different SHRINCS in
  \texttt{w} & $256$ & $4$ & Winternitz parameter \\
  \texttt{l}  & $16$ & $64$ & The number of WOTS+C chains \\
  \texttt{S\_wn} & $2040$ & $140$ & Target sum for WOTS+C \\
- \texttt{hsf} & 226 & 418 & Maximum stateful tree height \\
- \texttt{hsl} & $40$ & $40$ & Maximum stateless hypertree height \\
- \texttt{d} & $5$ & $5$ & Stateless hypertree layers \\
- \texttt{h'} & $8$ & $8$ & XMSS tree height per hypertree layer \texttt{hsl/d = 8} \\
+ \texttt{hsf} & $159$ & $207$ & Maximum stateful tree height \\
+ \texttt{hsl} & $24$ & $24$ & Maximum stateless hypertree height \\
+ \texttt{d} & $2$ & $2$ & Stateless hypertree layers \\
+ \texttt{h'} & $12$ & $12$ & XMSS tree height per hypertree layer \texttt{hsl/d = 8} \\
  \texttt{a} & $22$ & $22$ & FORS tree height \\ 
  \texttt{k} & $6$ & $6$ & Number of FORS+C trees \\
  \texttt{c} & $4$ & $4$ & Counter size for WOTS+C grinding (bytes) \\
