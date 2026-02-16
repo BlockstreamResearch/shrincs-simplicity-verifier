@@ -1,0 +1,30 @@
+#ifndef SHRINCS
+#define SHRINCS
+
+#include "unbalanced_xmss.simf"
+#include "../sphincs/sphincs.simf"
+
+// (Message, (PK.seed, PK.root), stateless or stateful signature, root of unused signature)
+type SHRINCSSignProof = (u256, SPHINCSPK, Either<UXMSSSignature, SPHINCSSignature>, u128);
+
+fn shrincs_verify(proof: SHRINCSSignProof) {
+    let (message, seed_root, signature, root_part): SHRINCSSignProof = proof;
+    let (public_parameter, expected_root): SPHINCSPK = seed_root;
+
+    let hash_ctx: Ctx8 = jet::sha_256_ctx_8_add_16(jet::sha_256_ctx_8_add_32(jet::sha_256_ctx_8_add_16(jet::sha_256_ctx_8_init(), public_parameter), 0), 0);
+
+    let roots: u256 = match signature {
+        Left(uxmss: UXMSSSignature) => {
+            <(u128, u128)>::into((restore_uxmss_signature((message, seed_root, uxmss), hash_ctx), root_part))
+        },
+        Right(sphincs: SPHINCSSignature) => {
+            <(u128, u128)>::into((root_part, sphincs_verify((message, seed_root, sphincs), hash_ctx)))
+        },
+    };
+
+    let (root, _): (u128, u128) = <u256>::into(jet::sha_256_ctx_8_finalize(jet::sha_256_ctx_8_add_32(jet::sha_256_ctx_8_add_8(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_16(hash_ctx, 0), 14), 0), 0), roots)));
+
+    assert!(eq_128(root, expected_root));
+}
+
+#endif

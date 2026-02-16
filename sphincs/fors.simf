@@ -1,14 +1,13 @@
 #ifndef SPHINCS_FORS
 #define SPHINCS_FORS
 
-#include "sphincs_utils.simf"
 #include "../templates/array_map.simf"
 #include "../utils.simf"
 
 // (SecretValue, MerklePath len a)
 type SPHINCSFORSSignaturePart = (u128, [u128; 22]);
-// fors+c counter || k - 1 len array of sizes 2^x of FORS signature parts
-type SPHINCSFORSSignature = (u32, ([SPHINCSFORSSignaturePart; 4], [SPHINCSFORSSignaturePart; 1]));
+// (R, fors+c counter, k - 1 len array of sizes 2^x of FORS signature parts)
+type SPHINCSFORSSignature = (u256, u32, ([SPHINCSFORSSignaturePart; 4], [SPHINCSFORSSignaturePart; 1]));
 
 fn sphincs_fors_root_from_path_iter(el: u128, ctx: (u128, Ctx8, u32, u32, u32, u64, u32)) -> (u128, Ctx8, u32, u32, u32, u64, u32) {
     let (node, hash_ctx, key_idx, tree_idx, tree_adrs_1, tree_adrs_2, height): (u128, Ctx8, u32, u32, u32, u64, u32) = ctx;
@@ -19,11 +18,7 @@ fn sphincs_fors_root_from_path_iter(el: u128, ctx: (u128, Ctx8, u32, u32, u32, u
         false => (el, node),
     };
 
-    let hash: Ctx8 = hash_ctx;
-    let hash: Ctx8 = add_compressed_adrs_to_ctx8(hash, 0, tree_adrs_2, 3, key_idx, <(u32, u32)>::into((height, tree_idx)));
-    let hash: Ctx8 = jet::sha_256_ctx_8_add_16(hash, left);
-    let hash: Ctx8 = jet::sha_256_ctx_8_add_16(hash, right);
-    let (node, _): (u128, u128) = <u256>::into(jet::sha_256_ctx_8_finalize(hash));
+    let (node, _): (u128, u128) = <u256>::into(jet::sha_256_ctx_8_finalize(jet::sha_256_ctx_8_add_16(jet::sha_256_ctx_8_add_16(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_8(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_4(hash_ctx, 0), tree_adrs_1), tree_adrs_2), 7), key_idx), height), tree_idx), left), right)));
 
     let (_, height): (bool, u32) = jet::add_32(height, 1);
     (node, hash_ctx, key_idx, tree_idx, tree_adrs_1, tree_adrs_2, height)
@@ -38,57 +33,41 @@ fn get_22_bits_at(message: u256, idx: u8) -> u32 {
     jet::and_32(shifted_msg, 0x003FFFFF)
 }
 
-fn sphincs_fors_root_from_path(part: SPHINCSFORSSignaturePart, ctx: (Ctx8, u256, u32, u32, u32, u64)) -> (u128, (Ctx8, u256, u32, u32, u32, u64)) {
-    let (hash_ctx, message, idx_idx, key_pair_idx, tree_adrs_1, tree_adrs_2): (Ctx8, u256, u32, u32, u32, u64) = ctx;
+fn sphincs_fors_root_from_path(part: SPHINCSFORSSignaturePart, ctx: (Ctx8, u256, u32, u32, u64)) -> (u128, (Ctx8, u256, u32, u32, u64)) {
+    let (hash_ctx, message, idx_idx, tree_adrs_1, tree_adrs_2): (Ctx8, u256, u32, u32, u64) = ctx;
     let (sk_value, path): SPHINCSFORSSignaturePart = part;
 
     let (_, (_, idx_idx_8)): (u16, (u8, u8)) = <u32>::into(idx_idx);
     let key_idx: u32 = get_22_bits_at(message, idx_idx_8);
 
-    // 2^a = 4194304
-    let (_, tree_idx): (u32, u32) = <u64>::into(jet::multiply_32(idx_idx, 4194304));
-    let (_, tree_idx): (bool, u32) = jet::add_32(tree_idx, key_idx);
+    let (leaf, _): (u128, u128) = <u256>::into(jet::sha_256_ctx_8_finalize(jet::sha_256_ctx_8_add_16(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_8(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_4(hash_ctx, 0), tree_adrs_1), tree_adrs_2), 6), idx_idx), 0), key_idx), sk_value)));
 
-    let hash: Ctx8 = hash_ctx;
-    let hash: Ctx8 = add_compressed_adrs_to_ctx8(hash, 0, tree_adrs_2, 3, key_pair_idx, <(u32, u32)>::into((0, tree_idx)));
-    let hash: Ctx8 = jet::sha_256_ctx_8_add_16(hash, sk_value);
-    let (leaf, _): (u128, u128) = <u256>::into(jet::sha_256_ctx_8_finalize(hash));
-
-    let (root, _, _, _, _, _, _): (u128, Ctx8, u32, u32, u32, u64, u32) = array_fold::<sphincs_fors_root_from_path_iter, 22>(path, (leaf, hash_ctx, key_pair_idx, tree_idx, tree_adrs_1, tree_adrs_2, 1));
+    let (root, _, _, _, _, _, _): (u128, Ctx8, u32, u32, u32, u64, u32) = array_fold::<sphincs_fors_root_from_path_iter, 22>(path, (leaf, hash_ctx, idx_idx, key_idx, tree_adrs_1, tree_adrs_2, 1));
 
     let (_, new_idx_idx): (bool, u32) = jet::add_32(idx_idx, 1);
-    (root, (hash_ctx, message, new_idx_idx, key_pair_idx, tree_adrs_1, tree_adrs_2))
+    (root, (hash_ctx, message, new_idx_idx, tree_adrs_1, tree_adrs_2))
 }
 
-DEFINE_MAP_ARR_1(SPHINCSFORSSignaturePart, u128, (Ctx8, u256, u32, u32, u32, u64), sphincs_fors_root_from_path)
-DEFINE_MAP_ARR(SPHINCSFORSSignaturePart, u128, (Ctx8, u256, u32, u32, u32, u64), sphincs_fors_root_from_path, 2, 1)
-DEFINE_MAP_ARR(SPHINCSFORSSignaturePart, u128, (Ctx8, u256, u32, u32, u32, u64), sphincs_fors_root_from_path, 4, 2)
+DEFINE_MAP_ARR_1(SPHINCSFORSSignaturePart, u128, (Ctx8, u256, u32, u32, u64), sphincs_fors_root_from_path)
+DEFINE_MAP_ARR(SPHINCSFORSSignaturePart, u128, (Ctx8, u256, u32, u32, u64), sphincs_fors_root_from_path, 2, 1)
+DEFINE_MAP_ARR(SPHINCSFORSSignaturePart, u128, (Ctx8, u256, u32, u32, u64), sphincs_fors_root_from_path, 4, 2)
 
 fn fors_hash_u128_array_iter(el: u128, ctx: Ctx8) -> Ctx8 {
     jet::sha_256_ctx_8_add_16(ctx, el)
 }
 
-fn sphincs_get_fors_pub_key(signature: SPHINCSFORSSignature, hash_ctx: Ctx8, message: u256, key_pair_idx: u32, tree_adrs_1: u32, tree_adrs_2: u64) -> u128 {
-    let (counter, (parts_4, parts_1)): SPHINCSFORSSignature = signature;
+fn sphincs_get_fors_pub_key(signature: SPHINCSFORSSignature, hash_ctx: Ctx8, message: u256, tree_adrs_1: u32, tree_adrs_2: u64) -> u128 {
+    let (_, _, (parts_4, parts_1)): SPHINCSFORSSignature = signature;
 
-    let hash: Ctx8 = jet::sha_256_ctx_8_init();
-    let hash: Ctx8 = jet::sha_256_ctx_8_add_4(hash, counter);
-    let hash: Ctx8 = jet::sha_256_ctx_8_add_32(hash, message);
-    let message: u256 = jet::sha_256_ctx_8_finalize(hash);
+    let last_bits: u32 = get_22_bits_at(message, 5);
+    assert!(jet::eq_32(last_bits, 0));
 
-    let last_byte: u32 = get_22_bits_at(message, 5);
-    // assert!(jet::eq_8(last_byte, 0));
+    let (roots_4, _): ([u128; 4], (Ctx8, u256, u32, u32, u64)) = sphincs_fors_root_from_path_map_arr_4(parts_4, (hash_ctx, message, 0, tree_adrs_1, tree_adrs_2));
+    let (roots_1, _): ([u128; 1], (Ctx8, u256, u32, u32, u64)) = sphincs_fors_root_from_path_map_arr_1(parts_1, (hash_ctx, message, 4, tree_adrs_1, tree_adrs_2));
 
-    let (roots_4, _): ([u128; 4], (Ctx8, u256, u32, u32, u32, u64)) = sphincs_fors_root_from_path_map_arr_4(parts_4, (hash_ctx, message, 0, key_pair_idx, tree_adrs_1, tree_adrs_2));
-    let (roots_1, _): ([u128; 1], (Ctx8, u256, u32, u32, u32, u64)) = sphincs_fors_root_from_path_map_arr_1(parts_1, (hash_ctx, message, 4, key_pair_idx, tree_adrs_1, tree_adrs_2));
-
-    let hash: Ctx8 = hash_ctx;
-    let hash: Ctx8 = add_compressed_adrs_to_ctx8(hash, 0, tree_adrs_2, 4, key_pair_idx, 0);
-    let hash: Ctx8 = array_fold::<fors_hash_u128_array_iter, 4>(roots_4, hash);
     let [el]: [u128; 1] = roots_1;
-    let hash: Ctx8 = jet::sha_256_ctx_8_add_16(hash, el);
 
-    let (pk, _): (u128, u128) = <u256>::into(jet::sha_256_ctx_8_finalize(hash));
+    let (pk, _): (u128, u128) = <u256>::into(jet::sha_256_ctx_8_finalize(jet::sha_256_ctx_8_add_16(array_fold::<fors_hash_u128_array_iter, 4>(roots_4, jet::sha_256_ctx_8_add_8(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_8(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_4(hash_ctx, 0), tree_adrs_1), tree_adrs_2), 8), 0), 0)), el)));
     pk
 }
 

@@ -4,5 +4,7 @@ test:
 lamport_example:
 	bash scripts/example_lamport.sh
 
-sphincs_example:
-	bash scripts/example_sphincs.sh
+MODE ?= stateful
+
+shrincs_example:
+	bash scripts/example_shrincs_$(MODE).sh

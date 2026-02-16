@@ -12,7 +12,7 @@ brew install mcpp
 
 `wots.simf` - contains Winternitz One Time Signature implementation
 
-`sphincs/sphincs.simf` - contains SLH-DSA ([FIPS 205](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.205.pdf)) signature implementation (sphincs_verify only)
+`shrincs/shrincs.simf` - contains SHRINCS implementation
 
 Each signature contains method `X_verify` (where X - signature name) that verifies the validity of the signature for the corresponding message hash and public key
 
@@ -21,7 +21,7 @@ Each signature contains method `X_verify` (where X - signature name) that verifi
 
 `make lamport_example` - running example that verify one-time Lamport signature
 
-`make sphincs_example` - running example that verify slh-dsa signature
+`make shrincs_example MODE={stateful|stateless}` - running example that verify SHRINCS signature
 
 ## Usage
 To execute this code import required signature file using `#include` directive (see [example](./examples/lamport/lamport_main.simf)) and then run:
