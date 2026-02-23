@@ -3,9 +3,7 @@
 
 #include "unbalanced_xmss.simf"
 #include "../sphincs/sphincs.simf"
-
-// (Message, (PK.seed, PK.root), stateless or stateful signature, root of unused signature)
-type SHRINCSSignProof = (u256, SPHINCSPK, Either<UXMSSSignature, SPHINCSSignature>, u128);
+#include "types.simf"
 
 fn shrincs_verify(proof: SHRINCSSignProof) {
     let (message, seed_root, signature, root_part): SHRINCSSignProof = proof;

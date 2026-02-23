@@ -1,15 +1,10 @@
-// Winternitz parameter w = 16
 #ifndef WOTS_SIGNATURE
 #define WOTS_SIGNATURE
 
 #include "templates/array_map.simf"
 #include "templates/assert_arrays.simf"
 #include "utils.simf"
-
-type WOTSSignature = ([u256; 64], [u256; 3]);
-type WOTSKey = ([u256; 64], [u256; 3]);
-// Represent signature proof as (message_hash, signature, public_key)
-type WOTSSignProof = (u256, WOTSSignature, WOTSKey);
+#include "types.simf"
 
 fn wots_hash_n_times_iter(key_hash: u256, n: u8, counter: u8) -> Either<u256, u256> {
     match jet::eq_8(counter, n) {

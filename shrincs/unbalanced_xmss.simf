@@ -2,11 +2,7 @@
 #define UNBALANCED_XMSS
 
 #include "../sphincs/sphincs.simf"
-
-// (wots+c signature, merkle path up to 511 elements, signature index)
-type UXMSSSignature = (SPHINCSWOTSTWSignature, List<u128, 512>, u32);
-// (Message, (PK.seed, Root), Signature)
-type UXMSSSignProof = (u256, SPHINCSPK, UXMSSSignature);
+#include "../types.simf"
 
 fn shrincs_get_root_from_path_iter(el: u128, ctx: (u128, bool, Ctx8, u32)) -> (u128, bool, Ctx8, u32) {
     let (node, is_right_child, hash_ctx, tree_height): (u128, bool, Ctx8, u32) = ctx;

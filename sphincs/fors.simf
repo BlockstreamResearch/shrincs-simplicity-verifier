@@ -3,11 +3,7 @@
 
 #include "../templates/array_map.simf"
 #include "../utils.simf"
-
-// (SecretValue, MerklePath len a)
-type SPHINCSFORSSignaturePart = (u128, [u128; 22]);
-// (R, fors+c counter, k - 1 len array of sizes 2^x of FORS signature parts)
-type SPHINCSFORSSignature = (u256, u32, ([SPHINCSFORSSignaturePart; 4], [SPHINCSFORSSignaturePart; 1]));
+#include "../types.simf"
 
 fn sphincs_fors_root_from_path_iter(el: u128, ctx: (u128, Ctx8, u32, u32, u32, u64, u32)) -> (u128, Ctx8, u32, u32, u32, u64, u32) {
     let (node, hash_ctx, key_idx, tree_idx, tree_adrs_1, tree_adrs_2, height): (u128, Ctx8, u32, u32, u32, u64, u32) = ctx;

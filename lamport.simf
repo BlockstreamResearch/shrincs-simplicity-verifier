@@ -3,10 +3,7 @@
 
 #include "templates/array_map.simf"
 #include "utils.simf"
-
-type KeyPair = (u256, u256);
-// Represent signature proof as (message_hash, signature, public_key)
-type LamportSignProof = (u256, [u256; 256], [KeyPair; 256]);
+#include "types.simf"
 
 fn get_lamport_pub_key(private: KeyPair, ctx: ()) -> (KeyPair, ()) {
     let (key1, key2): KeyPair = private;

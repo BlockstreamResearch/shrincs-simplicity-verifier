@@ -3,6 +3,7 @@
 
 #include "sphincs_xmss.simf"
 #include "fors.simf"
+#include "../types.simf"
 
 // n = 16
 // h = 24
@@ -11,15 +12,6 @@
 // k = 6
 // lg(w) = 2
 // Sw,n = 96
-
-// (PK.seed, root)
-type SPHINCSPK = (u128, u128);
-// d len array of XMSS signatures
-type XMSSHTSignature = [XMSSSignature; 2];
-// (FORSSign, HTSign)
-type SPHINCSSignature = (SPHINCSFORSSignature, XMSSHTSignature);
-// (Message, PK, Signature)
-type SPHINCSSignProof = (u256, SPHINCSPK, SPHINCSSignature);
 
 fn sphincs_root_from_path_iter(el: XMSSSignature, ctx: (u128, u128, u128, u32, Ctx8, u32, u64, u32)) -> (u128, u128, u128, u32, Ctx8, u32, u64, u32) {
     let (pk_seed, pk_root, message, key_index, hash_ctx, layer_adrs, tree_adrs_2, idx): (u128, u128, u128, u32, Ctx8, u32, u64, u32) = ctx;

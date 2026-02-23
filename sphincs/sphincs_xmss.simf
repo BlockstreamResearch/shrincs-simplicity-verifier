@@ -2,11 +2,7 @@
 #define SPHINCS_XMSS_SIGNATURE
 
 #include "sphincs_wots_tw.simf"
-
-type SPHINCSMerklePath = [u128; 12];
-// (WOTSSign, MerklePath)
-type XMSSSignature = (SPHINCSWOTSTWSignature, SPHINCSMerklePath);
-
+#include "../types.simf"
 
 fn sphincs_hash_u128_array_iter(el: u128, ctx: Ctx8) -> Ctx8 {
     jet::sha_256_ctx_8_add_16(ctx, el)
