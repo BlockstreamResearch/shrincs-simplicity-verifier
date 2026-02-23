@@ -13,9 +13,9 @@ brew install mcpp
 ## 🔐 Signatures
 | Signature Scheme | File Path | Description |
 | :--- | :--- | :--- |
-| **Lamport** | `lamport.simf` | Basic Lamport one-time signature implementation. |
+| **Lamport** | `lamport.simf` | Lamport one-time signature implementation. |
 | **WOTS** | `wots.simf` | Winternitz One-Time Signature implementation. |
-| **SHRINCS** | `shrincs/shrincs.simf` | Advanced SHRINCS implementation. |
+| **SHRINCS** | `shrincs/shrincs.simf` | SHRINCS implementation. [📖 Read docs](./docs/shrincs_spec/main.pdf) |
 
 > **Note:** Each signature contains method `X_verify` (where `X` is the scheme name) that verifies the validity of the signature for the corresponding message hash and public key
 
