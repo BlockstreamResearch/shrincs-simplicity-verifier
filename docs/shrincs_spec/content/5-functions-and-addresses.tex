@@ -4,14 +4,14 @@ This section defines the cryptographic primitives and addressing scheme used thr
 
 SHRINCS uses SHA-256 truncated to \texttt{n} bytes for all internal hash operations. 
 \begin{center}
-\texttt{H(m) = SHA-256(m)[0:n]}
+    \texttt{H(m) = SHA-256(m)[0:n]}
 \end{center}
 
 \subsection{Tweakable Hash Function}
 To prevent multi-target attacks and ensure domain separation between the various components, we employ the tweakable hash function construction defined in SPHINCS+ \cite{sphincsplus_paper2019}:
 
 \begin{center}
-\texttt{Tw(PK.seed, ADRS, m) = H(PK.seed || ADRS || m)}
+    \texttt{Tw(PK.seed, ADRS, m) = H(PK.seed || ADRS || m)}
 \end{center}
 
 This usage of tweaked hashing is critical. It ensures that a hash computed at one position in the Merkle tree cannot be substituted for a hash at another position, effectively mitigating generic tree-grafting attacks.
@@ -25,7 +25,7 @@ This usage of tweaked hashing is critical. It ensures that a hash computed at on
 Having the first 64 bytes constant (\texttt{PK.seed || 0\string^48}), we can precompute the compression function state once per key pair. Each tweak call then only needs to process the variable part (\texttt{ADRS || m}), reducing per-call overhead.
 
 \subsection{Pseudorandom Functions}
-SHRINCS uses two pseudorandom functions for different purposes: key derivation and getting the randomizer for the signature. 
+SHRINCS uses two pseudorandom functions for different purposes: key derivation and getting the randomizer for the signature.
 
 For deterministic derivation of secret key material (WOTS+C chain starting values, FORS secret keys):
 
@@ -33,7 +33,7 @@ For deterministic derivation of secret key material (WOTS+C chain starting value
     \texttt{PRF(PK.seed, ADRS, SK.seed) = Tw(PK.seed, ADRS, SK.seed)}
 \end{center}
 
-The address structure ADRS ensures that each derived value is unique and bound to its position in the scheme. 
+The address structure \texttt{ADRS} ensures that each derived value is unique and bound to its position in the scheme.
 
 For generating the randomizer \texttt{R} used in message hashing:
 
@@ -41,7 +41,14 @@ For generating the randomizer \texttt{R} used in message hashing:
     \texttt{PRF\_msg(SK.prf, PK.seed, opt\_rand, m) = HMAC-SHA-256(SK.prf, PK.seed || opt\_rand || m)[0:R\_SIZE]},
 \end{center}
 where \texttt{opt\_rand} is an optional randomness (\texttt{n} bytes), can be \texttt{PK.seed} for deterministic signing.
-%\mknote{We need to unclude the counter in the PRF\_msg function for the stateless brunch, not in the message hash.}
+For the stateless signing path, the FORS+C grinding counter is iterated inside \texttt{PRF\_msg} to produce a fresh \texttt{R} on each attempt. The counter-augmented variant is:
+
+\begin{center}
+    \texttt{PRF\_msg\_ctr(SK.prf, PK.seed, opt\_rand, ctr, m) = HMAC-SHA-256(SK.prf, PK.seed || opt\_rand || ctr || m)[0:R\_SIZE]}
+\end{center}
+
+where \texttt{ctr} is a counter incremented during FORS+C grinding (see Section~9.4). The verifier never sees \texttt{ctr}, it only receives the final \texttt{R} that satisfied the grinding condition. This design keeps the grinding work inside the signer's PRF evaluation while allowing the verifier to check the result using only \texttt{R}  and the message hash.
+
 \subsection{Message Hash Function}
 SHRINCS uses different hashing strategies for WOTS+C and FORS+C, optimized for their respective use cases.
 
@@ -60,17 +67,16 @@ This is computed once per signature, producing an n-byte digest.
 
 \paragraph{Phase 2. Grinding Hash.} Takes the digest and a counter:
 \begin{center}
-    \texttt{H\_grind(ADRS, digest, ctr) = SHA-256(ADRS || digest || ctr)[0:n]}
+    \texttt{H\_grind(ADRS, PK.seed, digest, ctr) = SHA-256(ADRS || PK.seed || digest || ctr)[0:n]}
 \end{center}
-%\mknote{PKseed is needed as an input.}
-This is computed repeatedly during grinding, but operates only on small fixed-size inputs (52 bytes for out parameters), making iterations fast.
 
 \subsubsection{FORS+C: Single-Phase Hashing}
-FORS+C always signs user messages (never tree roots), so it uses a simpler single-phase approach with the counter included directly:
+FORS+C always signs user messages (never tree roots), so it uses a simpler single-phase approach. The grinding counter is not included in the message hash. Instead, it is iterated inside \texttt{PRF\_msg\_ctr} (Section~5.3) to produce a fresh \texttt{R} on each grinding attempt. The verifier only sees the final \texttt{R}:
 \begin{center}
-    \texttt{H\_msg\_fors(ADRS, R, ctr, PK.seed, PK.root, m) = SHA-256(ADRS || R || ctr || PK.seed || PK.root || m)[0:roundup((k*a)/8])}
+    \texttt{H\_msg\_fors(ADRS, R, PK.seed, PK.root, m) = SHA-256(ADRS || R || PK.seed || PK.root || m)[0:roundup((k*a + h\_sl) / 8)]}
 \end{center}
-%\mknote{We exlude the counter from here, we iterate the PRF\_msg with the counter, that samples R, and then we check if the sampled R works for the message hash.}
+
+The output length is roundup((k*a + h\_sl) / 8) = 20 bytes for both parameter sets, encoding both the \texttt{k} FORS leaf indices and the \texttt{h\_sl} hypertree path indices in a unified digest (see Section~10.5).
 
 \subsection{Tweak Structure and Domain Separation}
 Tweaks are structured as follows to ensure uniqueness across all scheme components:
@@ -88,7 +94,6 @@ where:
 A total \texttt{ADRS} size is 32 bytes.
 
 \subsubsection{Address Types}
-%\mknote{The grinding of FORS and FORS PRF becomes the same address type i think}
 \begin{verbatim}
 0x00: SF_WOTS_HASH: Stateful WOTS+C chain hashing
 0x01: SF_WOTS_PK:   Stateful WOTS+C public key compression
@@ -100,11 +105,10 @@ A total \texttt{ADRS} size is 32 bytes.
 0x07: FORS_TREE:    FORS tree internal nodes
 0x08: FORS_PK:      FORS roots compression
 0x09: WOTS_GRIND:   WOTS+C grinding
-0x0A: FORS_GRIND:   FORS+C grinding
+0x0A: FORS_PRF:     PRF for FORS secret key derivation
 0x0B: H_MSG:        Message hash
 0x0C: WOTS_PRF:     PRF for WOTS+C key derivation
-0x0D: FORS_PRF:     PRF for FORS secret key derivation
-0x0E: ROOT:         Root public key computation
+0x0D: ROOT:         Root public key computation
 \end{verbatim}
 Summarizing, \texttt{(0x00, 0x01, 0x02)} are stateful only types, \texttt{(0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x0A)} are stateless only and \texttt{(0x09, 0x0B, 0x0C, 0x0D)} are shared types. 
 
@@ -159,11 +163,10 @@ The list of type-dependent words for address tweaking is the following:
 0x07 & \texttt{FORS\_TREE}      & tree\_idx & height  & index \\
 0x08 & \texttt{FORS\_PK}        & 0         & 0       & 0 \\
 0x09 & \texttt{WOTS\_GRIND}     & keypair   & 0       & 0 \\
-0x0A & \texttt{FORS\_GRIND}     & 0         & 0       & 0 \\
+0x0A & \texttt{FORS\_PRF}       & tree\_idx & 0       & leaf\_idx \\
 0x0B & \texttt{H\_MSG}          & 0         & 0       & 0 \\
 0x0C & \texttt{WOTS\_PRF}       & keypair   & chain   & 0 \\
-0x0D & \texttt{FORS\_PRF}       & tree\_idx & 0       & leaf\_idx \\
-0x0E & \texttt{ROOT}            & 0         & 0       & 0 \\
+0x0D & \texttt{ROOT}            & 0         & 0       & 0 \\
 \hline
 \end{tabular}
 \caption{Type-dependent interpretation of ADRS words \texttt{(bytes [20:32])}}

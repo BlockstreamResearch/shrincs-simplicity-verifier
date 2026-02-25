@@ -21,7 +21,7 @@ The advantages of SHRINCS are following:
         \item SHRINCS-L: \texttt{1076 + 16q} bytes and \textbf{only} \texttt{54 + q} hashes, which makes this setting practical from the \textit{verification complexity} perspective
     \end{itemize} 
     bytes (where \texttt{q >= 1} is the signature counter).
-    \item \textbf{Robust stateless fallback.} When the state is lost, corrupted, or exhausted, SHRINCS falls back to a SPHINCS+-based stateless signature (2860 or 4396 bytes). This is still smaller than standard SLH-DSA.
+    \item \textbf{Robust stateless fallback.} When the state is lost, corrupted, or exhausted, SHRINCS falls back to a SPHINCS+-based stateless signature (2856 or 4392 bytes). This is still smaller than standard SLH-DSA.
     \item \textbf{Static seed backup.} Users can back up their wallet using a standard seed phrase. Upon recovery, the wallet operates in stateless-only mode, preserving funds while accepting larger signatures.
     \item \textbf{The number of supported signatures}. The construction supports up to 159 (SHRINCS-B) and 207 (SHRINCS-L) stateful signatures and up to $2^{20}$ stateless signatures, which should be enough for wallets. 
 \end{itemize}

@@ -22,7 +22,7 @@ The UXMSS tree is constructed as follows:
 This means the tree has \texttt{h\_sf + 1} leaves (one per valid signature index \texttt{q $\in$ \{1, ..., h\_sf + 1\}}), and every internal node has a WOTS+C leaf as its left child and a UXMSS subtree (or a second leaf at the bottom) as its right child.
 
 \subsection{UXMSS TreeHash}
-%\mknote{Should we have a unified API for these functions with similar logic: xmss treehash(SK.seed, PK.seed, ADRS, target height, start idx). Is level the target hash that is output? If Lvl is 1 what do we output: WOTSpk or rightsubtree.}
+\mknote{Should we have a unified API for these functions with similar logic: xmss treehash(SK.seed, PK.seed, ADRS, target height, start idx). Is level the target hash that is output? If Lvl is 1 what do we output: WOTSpk or rightsubtree.}
 The \texttt{uxmss\_treehash} function computes subtree roots within the right-skewed UXMSS tree. Unlike balanced XMSS where treehash recursively computes both subtrees symmetrically, UXMSS treehash follows the right-skewed structure: the left child is always a WOTS+C public key (a leaf), while the right child is either another UXMSS subtree (for internal levels) or a second WOTS+C public key (at the bottom level). The level parameter indicates depth from the root, with level 0 being the root and level \texttt{h\_sf - 1} being the bottom internal node.
 
 All UXMSS operations use the stateful address types (\texttt{SF\_WOTS\_HASH}, \texttt{SF\_WOTS\_PK}, \texttt{SF\_TREE}) and are fixed at \texttt{layer = 0}, \texttt{tree\_address = 0} (since there is exactly one stateful tree per SHRINCS key pair).
@@ -67,9 +67,6 @@ The \texttt{uxmss\_root} function computes \texttt{PK.sf}, the root of the state
 
 \subsection{UXMSS Authentication Path Generation}
 For signature number \texttt{1 <= q <= hsf + 1}, the authentication path contains exactly \texttt{q} sibling nodes needed to reconstruct \texttt{PK.sf} from the WOTS+C public key at position \texttt{q}. The structure of the path differs based on whether \texttt{q <= hsf} or \texttt{q = hsf + 1}. For \texttt{q <= hsf}, the first sibling is either a subtree root (if \texttt{q < hsf}) or the rightmost WOTS+C key (if \texttt{q = hsf}), followed by q-1 WOTS+C public keys ascending toward the root. For \texttt{q = hsf + 1} (the rightmost leaf), all hsf siblings are WOTS+C public keys. This asymmetric structure reflects the right-skewed nature of UXMSS.
-%\mknote{I think we still can use idx variable, and just use it as a pointer to the leaf, counted from left to right.}
-%\oknote{we can, but I think the semantics of \texttt{q} and \texttt{idx} are different. \texttt{idx} is a position in a symmetric tree where all leaves are equivalent, the auth path is always \texttt{h'} nodes regardless of which \texttt{idx} we pick. \texttt{q} is the signature counter that directly determines the auth path length and structure}
-%\mknote{Makes sense}
 
 \begin{verbatim}
     Algorithm: uxmss_auth_path(SK.seed, PK.seed, ADRS, q)
@@ -179,11 +176,11 @@ For concrete instances and signatures' number:
     SHRINCS-B:
         q=1:        32 + 4 + 16*16 + 16 =       308 bytes
         q=10:       32 + 4 + 16*16 + 16*10 =    452 bytes  
-        q_max=159:  32 + 4 + 16*16 + 16*159 =   2836 bytes // < 2860 bytes (stateless)
+        q_max=159: 32 + 4 + 16*16 + 16*159 = 2836 bytes  // < 2856 bytes (stateless)
     SHRINCS-L:
         q=1:        32 + 4 + 64*16 + 16 =       1076 bytes
         q=10:       32 + 4 + 64*16 + 16*10 =    1220 bytes  
-        q_max=207:  32 + 4 + 64*16 + 16*207 =   4372 bytes // < 4396 bytes (stateless)
+        q_max=207: 32 + 4 + 64*16 + 16*207 = 4372 bytes  // < 4392 bytes (stateless)
 \end{verbatim}
 
 Verification cost per UXMSS signature is calculated as WOTS+C verification cost + \texttt{q} hashes.

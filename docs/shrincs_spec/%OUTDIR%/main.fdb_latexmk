@@ -1,12 +1,15 @@
 # Fdb version 4
-["biber main"] 1770658414.70805 "main.bcf" "main.bbl" "main" 1771598955.62994 0
-  "main.bcf" 1771598955.529 109501 5d0f2e84943a7569ab805750a35c2b0a "pdflatex"
-  "main.bib" 1770909609.99892 5264 94f3b1ad7dc4ebbeab2fcc882a49a2e7 ""
+["bibtex main"] 1772019913.14654 "main.aux" "main.bbl" "main" 1772020621.54373 0
+  "main.aux" 1771598955.52497 18901 be476ee789d603d81f3833786da74702 ""
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1771598954.04227 "/Users/oleksandr.kurbatov/mjthatch/HB-Liquid/docs/shrincs_spec/main.tex" "main.pdf" "main" 1771598955.63017 0
+["pdflatex"] 1772020619.93037 "/Users/oleksandr.kurbatov/mjthatch/HB-Liquid/docs/shrincs_spec/main.tex" "main.pdf" "main" 1772020621.54376 0
+  "%OUTDIR%/main.aux" 1772020621.43982 18140 998fe1ae18c6587fcc409ec4fee00551 "pdflatex"
+  "%OUTDIR%/main.out" 1772020621.4417 13838 ce82393f3730083b6968d7e9aba52e23 "pdflatex"
+  "%OUTDIR%/main.run.xml" 1772020621.44452 2305 cd7944b45309a4232ac3da8bf87f1748 "pdflatex"
+  "%OUTDIR%/main.toc" 1772020621.44457 9040 6cb919ecbbfa97c7e39f8bc3132e7d35 "pdflatex"
   "/Users/oleksandr.kurbatov/mjthatch/HB-Liquid/docs/shrincs_spec/main.tex" 1771576698.61552 3373 fc55c001cfe093ba32e09e9218e391e1 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1136849721 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
@@ -271,8 +274,8 @@
   "content/2-notation.tex" 1770909609.995 777 f07a1083600390a58f3bf20b87be95af ""
   "content/3-overview.tex" 1771577839.32622 6118 08834c26796bba2e99741dd8dc984259 ""
   "content/4-params.tex" 1771577839.21143 1733 b3c21f9421e457dacf680f2cbc326139 ""
-  "content/5-functions-and-addresses.tex" 1771598952.11275 7766 84d145ec282a45aee7e6a7bee2a43e0f ""
-  "content/6-wots+c.tex" 1771576698.84708 15010 a03b8d9a0fb2b17f834a5a92affb67a0 ""
+  "content/5-functions-and-addresses.tex" 1772019955.68576 8275 63c5b7cc1cf68733cb7d7199e482ec78 ""
+  "content/6-wots+c.tex" 1772020617.98921 15026 6d67b0ec728bdb5497814344dfb41315 ""
   "content/7-xmss.tex" 1771576094.66352 9210 935d7a9a96b29c522920082106546e71 ""
   "content/8-uxmss.tex" 1771576698.84746 11491 c744f79c24ce16c775b624a0d83a7085 ""
   "content/9-fors.tex" 1771576698.84812 11694 8bc971915686ba67dc7be0e0d7d57f3f ""
@@ -280,18 +283,14 @@
   "content/b-grinding-complexity.tex" 1770909609.9965 4549 807152700f9a6e5f4c0c75e892eecfc5 ""
   "content/img/fors.png" 1770909609.99727 73039 043f0cf01ff3763ec5052b6038615988 ""
   "content/img/general.png" 1770909609.99782 186822 35f81f789621d676a7d91821bc87997c ""
-  "main.aux" 1771598955.52497 18901 be476ee789d603d81f3833786da74702 "pdflatex"
-  "main.bbl" 1770909609.99832 22490 6e19a8fb416f7855b2405d75822543c6 "biber main"
-  "main.out" 1771598955.52663 13838 ce82393f3730083b6968d7e9aba52e23 "pdflatex"
-  "main.run.xml" 1771598955.52993 2305 cd7944b45309a4232ac3da8bf87f1748 "pdflatex"
+  "main.bbl" 1770909609.99832 22490 6e19a8fb416f7855b2405d75822543c6 "bibtex main"
   "main.tex" 1771576698.61552 3373 fc55c001cfe093ba32e09e9218e391e1 ""
-  "main.toc" 1771598955.52997 9040 b019f1ad85c9a6ede6d82417253447dc "pdflatex"
   (generated)
-  "main.aux"
-  "main.bcf"
-  "main.log"
-  "main.out"
+  "%OUTDIR%/main.aux"
+  "%OUTDIR%/main.bcf"
+  "%OUTDIR%/main.log"
+  "%OUTDIR%/main.out"
+  "%OUTDIR%/main.run.xml"
+  "%OUTDIR%/main.toc"
   "main.pdf"
-  "main.run.xml"
-  "main.toc"
   (rewritten before read)
