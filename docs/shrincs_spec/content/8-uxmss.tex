@@ -22,7 +22,7 @@ The UXMSS tree is constructed as follows:
 This means the tree has \texttt{h\_sf + 1} leaves (one per valid signature index \texttt{q $\in$ \{1, ..., h\_sf + 1\}}), and every internal node has a WOTS+C leaf as its left child and a UXMSS subtree (or a second leaf at the bottom) as its right child.
 
 \subsection{UXMSS TreeHash}
-\mknote{Should we have a unified API for these functions with similar logic: xmss treehash(SK.seed, PK.seed, ADRS, target height, start idx). Is level the target hash that is output? If Lvl is 1 what do we output: WOTSpk or rightsubtree.}
+% \mknote{Should we have a unified API for these functions with similar logic: xmss treehash(SK.seed, PK.seed, ADRS, target height, start idx). Is level the target hash that is output? If Lvl is 1 what do we output: WOTSpk or rightsubtree.}
 The \texttt{uxmss\_treehash} function computes subtree roots within the right-skewed UXMSS tree. Unlike balanced XMSS where treehash recursively computes both subtrees symmetrically, UXMSS treehash follows the right-skewed structure: the left child is always a WOTS+C public key (a leaf), while the right child is either another UXMSS subtree (for internal levels) or a second WOTS+C public key (at the bottom level). The level parameter indicates depth from the root, with level 0 being the root and level \texttt{h\_sf - 1} being the bottom internal node.
 
 All UXMSS operations use the stateful address types (\texttt{SF\_WOTS\_HASH}, \texttt{SF\_WOTS\_PK}, \texttt{SF\_TREE}) and are fixed at \texttt{layer = 0}, \texttt{tree\_address = 0} (since there is exactly one stateful tree per SHRINCS key pair).

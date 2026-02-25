@@ -183,7 +183,7 @@ Additionally we need to define a func which allows to calculate the digest witho
         valid: boolean indicating if sum == S_wn
 
     1. setTypeAndClear(ADRS, WOTS_GRIND)
-    2. grind_out ← H_grind(ADRS, digest, ctr)
+    2. grind_out ← H_grind(ADRS, PK.seed, digest, ctr)
     3. msg ← base_w(grind_out, w, l)
     4. sum ← 0
     5. for i from 0 to l - 1:

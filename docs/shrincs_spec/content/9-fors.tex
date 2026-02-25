@@ -15,19 +15,18 @@ FORS consists of \texttt{k} binary trees, each of height \texttt{a}:
     \caption{FORS architecture}
     \label{fig:shrincs}
 \end{figure}
-The FORS public key is the tweakable hash of the tree roots. With the +C grinding optimization, the last tree's root is excluded: \texttt{FORS+C PK = Tw(PK.seed, ADRS, root\_0 || ... || root\_{k-2})}, using address type \texttt{FORS\_PK}. This is valid because grinding guarantees \texttt{indices[k-1] == 0}, so the verifier can independently recompute \texttt{root\_{k-1}} if needed (though it is not used in the public key computation).
-\mknote{The verifier can not recompute the last tree. It is just not needed, because we always have to select the leaf 0. Hence, we dont need the last tree at all.}
+The FORS public key is the tweakable hash of the tree roots. With the +C grinding optimization, the last tree's root is excluded: \texttt{FORS+C PK = Tw(PK.seed, ADRS, root\_0 || ... || root\_{k-2})}, using address type \texttt{FORS\_PK}. The last tree is not needed in the public key computation since grinding guarantees the last index is always 0.
 
-\mknote{We put the counter into PRFmsg for the stateless option, and regenerate the randomness each time. PRFmsg(inputcs, counter)= R. Hmsg(inputs, R)= digest, check if good, otherwise restart from PRFmsg with a new counter.}
 \subsection{Grinding Condition}
 FORS+C uses the single-phase message hash \texttt{H\_msg\_fors} (Section~5.4.2):
 \begin{verbatim}
-    digest = H_msg(ADRS, R, ctr, PK.seed, PK.root, m)
-    condition: digest[last a bits] == 0 
+    digest = H_msg_fors(ADRS, R, PK.seed, PK.root, m)
+    condition: digest[last a bits] == 0
 \end{verbatim}
 
-Expected grinding cost is $\approx 2^a$ iterations. With a = 22, this is approximately 4 million iterations. Since \texttt{H\_msg\_fors} operates on fixed-size inputs, each iteration is a single SHA-256 call.
-\mknote{If it had variable size inputs would it be multiple SHA calls?}
+The signer searches for an \texttt{R} that satisfies this condition by iterating a counter inside \texttt{PRF\_msg\_ctr} (Section~5.3). Each counter value produces a fresh \texttt{R}, which is then evaluated via \texttt{H\_msg\_fors}. The verifier only sees the final \texttt{R} that satisfied the condition.
+
+Expected grinding cost is $\approx 2^a$ iterations. With \texttt{a = 22}, this is approximately 4 million iterations. Each iteration requires one HMAC-SHA-256 (for \texttt{PRF\_msg\_ctr}) plus one SHA-256 (for \texttt{H\_msg\_fors}).
 
 \subsection{Message to Indices}
 The \texttt{fors\_msg\_to\_indices} function converts a message digest into \texttt{k} leaf indices, one for each FORS tree. Each index is extracted as a consecutive a-bit chunk from the digest. The indices are integers in the range \texttt{[0, 2\string^a - 1]}.
@@ -47,26 +46,28 @@ The \texttt{fors\_msg\_to\_indices} function converts a message digest into \tex
 
 \subsection{Grinding}
 The \texttt{fors\_grind} function searches for a counter value where the last tree's index equals 0. This eliminates the need to include the authentication path and leaf for tree \texttt{k-1} in the signature.
-\mknote{This can be variable. we can require one, two, or more indices to be 0. Also need to adapt the message hashing, and indices extraction.}
+%\mknote{This can be variable. we can require one, two, or more indices to be 0. Also need to adapt the message hashing, and indices extraction.}
 \begin{verbatim}
-    Algorithm: fors_grind(m, R, PK.seed, PK.root, ADRS)
+    Algorithm: fors_grind(m, SK.prf, PK.seed, PK.root, ADRS, opt_rand)
     Input:
         m: message
-        R: randomness
+        SK.prf: PRF key for randomness
         PK.seed: public seed
         PK.root: public key root
         ADRS: tweak
+        opt_rand: optional randomness (n bytes)
     Output:
         indices: array of k integers
-        ctr: counter value
+        R: randomness that satisfied the grinding condition
         digest: the digest that satisfied the grinding condition
 
-    1. setTypeAndClear(ADRS, FORS_GRIND)
+    1. setTypeAndClear(ADRS, H_MSG)
     2. for ctr from 0 to 2^32 - 1:
-        a. digest ← H_msg_fors(ADRS, R, ctr, PK.seed, PK.root, m)
-        b. indices ← fors_msg_to_indices(digest)
-        c. if indices[k-1] == 0:
-            return (indices, ctr, digest)
+        a. R ← PRF_msg_ctr(SK.prf, PK.seed, opt_rand, ctr, m)
+        b. digest ← H_msg_fors(ADRS, R, PK.seed, PK.root, m)
+        c. indices ← fors_msg_to_indices(digest)
+        d. if indices[k-1] == 0:
+            return (indices, R, digest)
     3. abort with error
 \end{verbatim}
 
@@ -143,8 +144,7 @@ The \texttt{fors\_auth\_path} function generates the a sibling nodes needed to a
 \end{verbatim}
 
 \subsection{Signature generation}
-\mknote{grinding should be done in PRF\_msg}
-The \texttt{fors\_sign} function produces a FORS+C signature. Due to grinding, the last tree's index is guaranteed to be 0, so tree \texttt{k-1} is entirely excluded from the signature. The signature reveals \texttt{k-1} leaves with their authentication paths. Signature format: \texttt{R || ctr || (sk\_0 || auth\_0) || ... || (sk\_{k-2} || auth\_{k-2})}
+The \texttt{fors\_sign} function produces a FORS+C signature. Due to grinding, the last tree's index is guaranteed to be 0, so tree \texttt{k-1} is entirely excluded from the signature. The signature reveals \texttt{k-1} leaves with their authentication paths. Signature format: \texttt{R || (sk\_0 || auth\_0) || ... || (sk\_{k-2} || auth\_{k-2})}
 \begin{verbatim}
     Algorithm: fors_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS)
     Input:
@@ -159,14 +159,13 @@ The \texttt{fors\_sign} function produces a FORS+C signature. Due to grinding, t
         digest: the digest that satisfied the grinding condition
 
     1. opt_rand ← random(n) or PK.seed
-    2. R ← PRF_msg(SK.prf, PK.seed, opt_rand, m)
-    3. (indices, ctr, digest) ← fors_grind(m, R, PK.seed, PK.root, ADRS)
-    4. sig ← R || ctr
-    5. for i from 0 to k - 2:
+    2. (indices, R, digest) ← fors_grind(m, SK.prf, PK.seed, PK.root, ADRS, opt_rand)
+    3. sig ← R
+    4. for i from 0 to k - 2:
         a. sk_i ← fors_SKgen(SK.seed, PK.seed, ADRS, i, indices[i])
         b. auth_i ← fors_auth_path(SK.seed, PK.seed, ADRS, i, indices[i])
         c. sig ← sig || sk_i || auth_i
-    6. return (sig, digest)
+    5. return (sig, digest)
 \end{verbatim}
 
 \subsection{Public Key Recovery}
@@ -180,18 +179,17 @@ The \texttt{fors\_pkFromSig} function recovers the FORS+C public key from a sign
         PK.root: public key root
         ADRS: tweak
     Output:
-        pk: FORS+C public key or "false"if invalid
+        pk: FORS+C public key or "false" if invalid
 
     1. R ← sig[0 : R_SIZE]
-    2. ctr ← sig[R_SIZE : R_SIZE + c]
-    3. setTypeAndClear(ADRS, FORS_GRIND)
-    4. digest ← H_msg_fors(ADRS, R, ctr, PK.seed, PK.root, m)
-    5. indices ← fors_msg_to_indices(digest)
-    6. if indices[k-1] != 0:
+    2. setTypeAndClear(ADRS, H_MSG)
+    3. digest ← H_msg_fors(ADRS, R, PK.seed, PK.root, m)
+    4. indices ← fors_msg_to_indices(digest)
+    5. if indices[k-1] != 0:
         return false
-    7. roots ← []
-    8. offset ← R_SIZE + c
-    9. for i from 0 to k - 2:
+    6. roots ← []
+    7. offset ← R_SIZE
+    8. for i from 0 to k - 2:
         a. sk_i ← sig[offset : offset + n]
         b. auth_i ← sig[offset + n : offset + n + a * n]
         c. offset ← offset + n + a * n
@@ -212,7 +210,7 @@ The \texttt{fors\_pkFromSig} function recovers the FORS+C public key from a sign
                 node ← Tw(PK.seed, ADRS, auth_i[h * n : (h + 1) * n] || node)
             idx ← idx >> 1
         k. roots[i] ← node
-    10. setTypeAndClear(ADRS, FORS_PK)
-    11. pk ← Tw(PK.seed, ADRS, roots[0] || ... || roots[k-2])
-    12. return pk
+    9. setTypeAndClear(ADRS, FORS_PK)
+    10. pk ← Tw(PK.seed, ADRS, roots[0] || ... || roots[k-2])
+    11. return pk
 \end{verbatim}
