@@ -158,38 +158,34 @@ The \texttt{fors\_sign} function produces a FORS+C signature. Due to grinding, t
         sig: FORS+C signature
         digest: the digest that satisfied the grinding condition
 
-    1. opt_rand ← random(n) or PK.seed
-    2. (indices, R, digest) ← fors_grind(m, SK.prf, PK.seed, PK.root, ADRS, opt_rand)
-    3. sig ← R
-    4. for i from 0 to k - 2:
+    1.  opt_rand ← random(n) or PK.seed
+    2.  (indices, R, digest) ← fors_grind(m, SK.prf, PK.seed, PK.root, ADRS, opt_rand)
+    3.  (tree_idx, leaf_idx) ← parse_idx(digest)
+    4.  setLayerAddress(ADRS, 0)
+    5.  setTreeAddress(ADRS, tree_idx[0] * 2^h_prime + leaf_idx[0])
+    6.  sig ← R
+    7.  for i from 0 to k - 2:
         a. sk_i ← fors_SKgen(SK.seed, PK.seed, ADRS, i, indices[i])
         b. auth_i ← fors_auth_path(SK.seed, PK.seed, ADRS, i, indices[i])
         c. sig ← sig || sk_i || auth_i
-    5. return (sig, digest)
+    8.  return (sig, digest)
 \end{verbatim}
 
 \subsection{Public Key Recovery}
 The \texttt{fors\_pkFromSig} function recovers the FORS+C public key from a signature. For each of the first \texttt{k-1} trees, it hashes the revealed secret key to obtain the leaf, then iteratively combines with authentication path nodes to compute the tree root. The FORS+C public key is the tweakable hash of these \texttt{k-1} roots (tree \texttt{k-1} is excluded entirely due to grinding). The function returns \texttt{"false"} if the grinding condition is not satisfied.
 \begin{verbatim}
-    Algorithm: fors_pkFromSig(sig, m, PK.seed, PK.root, ADRS)
+    Algorithm: fors_pkFromSig(sig, indices, PK.seed, ADRS)
     Input:
-        sig: FORS+C signature
-        m: message
+        sig: FORS+C signature (R || sk/auth pairs)
+        indices: pre-computed array of k FORS leaf indices
         PK.seed: public seed
-        PK.root: public key root
         ADRS: tweak
     Output:
         pk: FORS+C public key or "false" if invalid
-
-    1. R ← sig[0 : R_SIZE]
-    2. setTypeAndClear(ADRS, H_MSG)
-    3. digest ← H_msg_fors(ADRS, R, PK.seed, PK.root, m)
-    4. indices ← fors_msg_to_indices(digest)
-    5. if indices[k-1] != 0:
-        return false
-    6. roots ← []
-    7. offset ← R_SIZE
-    8. for i from 0 to k - 2:
+    
+    1.  roots ← []
+    2.  offset ← R_SIZE     // skip R (already consumed by caller)
+    3.  for i from 0 to k - 2:
         a. sk_i ← sig[offset : offset + n]
         b. auth_i ← sig[offset + n : offset + n + a * n]
         c. offset ← offset + n + a * n
@@ -200,17 +196,17 @@ The \texttt{fors\_pkFromSig} function recovers the FORS+C public key from a sign
         h. node ← Tw(PK.seed, ADRS, sk_i)
         i. idx ← indices[i]
         j. for h from 0 to a - 1:
-            setTypeAndClear(ADRS, FORS_TREE)
-            setKeyPairAddress(ADRS, i)
-            setTreeHeight(ADRS, h + 1)
-            setTreeIndex(ADRS, idx >> 1)
-            if (idx AND 1) == 0:
-                node ← Tw(PK.seed, ADRS, node || auth_i[h * n : (h + 1) * n])
-            else:
-                node ← Tw(PK.seed, ADRS, auth_i[h * n : (h + 1) * n] || node)
-            idx ← idx >> 1
+               setTypeAndClear(ADRS, FORS_TREE)
+               setKeyPairAddress(ADRS, i)
+               setTreeHeight(ADRS, h + 1)
+               setTreeIndex(ADRS, idx >> 1)
+               if (idx AND 1) == 0:
+                   node ← Tw(PK.seed, ADRS, node || auth_i[h * n : (h + 1) * n])
+               else:
+                   node ← Tw(PK.seed, ADRS, auth_i[h * n : (h + 1) * n] || node)
+               idx ← idx >> 1
         k. roots[i] ← node
-    9. setTypeAndClear(ADRS, FORS_PK)
-    10. pk ← Tw(PK.seed, ADRS, roots[0] || ... || roots[k-2])
-    11. return pk
+    4.  setTypeAndClear(ADRS, FORS_PK)
+    5.  pk ← Tw(PK.seed, ADRS, roots[0] || ... || roots[k-2])
+    6.  return pk
 \end{verbatim}

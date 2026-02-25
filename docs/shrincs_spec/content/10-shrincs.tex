@@ -98,23 +98,26 @@ The signature is constructed bottom-up: first a FORS+C signature on the message,
     Output:
         sig: stateless signature
 
-    1. ADRS ← new_ADRS()
-    2. setLayerAddress(ADRS, 0)
-    3. setTreeAddress(ADRS, 0)  
-    4. (fors_sig, digest) ← fors_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS)
-    5. (tree_idx, leaf_idx) ← parse_idx(digest)
-    6. fors_pk ← fors_pkFromSig(fors_sig, m, PK.seed, PK.root, ADRS)
-    7. ht_sig ← []
-    8. msg ← fors_pk
-    9. for layer from 0 to d - 1:
+    1.  ADRS ← new_ADRS()
+    2.  setLayerAddress(ADRS, 0)
+    3.  setTreeAddress(ADRS, 0)
+    4.  (fors_sig, digest) ← fors_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS)
+    5.  (tree_idx, leaf_idx) ← parse_idx(digest)
+    6.  indices ← fors_msg_to_indices(digest)
+    7.  setLayerAddress(ADRS, 0)
+    8.  setTreeAddress(ADRS, tree_idx[0] * 2^h_prime + leaf_idx[0])
+    9. fors_pk ← fors_pkFromSig(fors_sig, indices, PK.seed, ADRS)
+    10. ht_sig ← []
+    11. msg ← fors_pk
+    12. for layer from 0 to d - 1:
         a. setLayerAddress(ADRS, layer)
         b. setTreeAddress(ADRS, tree_idx[layer])
         c. xmss_sig ← xmss_sign(msg, SK.seed, SK.prf, PK.seed, PK.root, ADRS, h', leaf_idx[layer])
         d. ht_sig ← ht_sig || xmss_sig
         e. if layer < d - 1:
-            msg ← xmss_root(SK.seed, PK.seed, ADRS, h')
-    10. sig ← PK.sf || fors_sig || ht_sig
-    11. return sig
+               msg ← xmss_root(SK.seed, PK.seed, ADRS, h')
+    14. sig ← PK.sf || fors_sig || ht_sig
+    15. return sig
 \end{verbatim}
 
 \subsection{Index Parsing}
@@ -184,27 +187,25 @@ The \texttt{SHRINCS.VerifyStateless} function verifies a stateless signature. It
     Output:
         valid: boolean
 
-    1. ADRS ← new_ADRS()
-    2. PK.sf ← sig[0 : n]
-    3. offset ← n
-    4. fors_sig_size ← R_SIZE + (k - 1) * (n + a * n)
-    5. fors_sig ← sig[offset : offset + fors_sig_size]
-    6. offset ← offset + fors_sig_size
-    7. R ← fors_sig[0 : R_SIZE]
-    8. setTypeAndClear(ADRS, H_MSG)
-    9. digest ← H_msg_fors(ADRS, R, PK.seed, PK.root, m)
+    1.  ADRS ← new_ADRS()
+    2.  PK.sf ← sig[0 : n]
+    3.  offset ← n
+    4.  fors_sig_size ← R_SIZE + (k - 1) * (n + a * n)
+    5.  fors_sig ← sig[offset : offset + fors_sig_size]
+    6.  offset ← offset + fors_sig_size
+    7.  R ← fors_sig[0 : R_SIZE]
+    8.  setTypeAndClear(ADRS, H_MSG)
+    9.  digest ← H_msg_fors(ADRS, R, PK.seed, PK.root, m)
     10. indices ← fors_msg_to_indices(digest)
     11. if indices[k-1] != 0:
-        return false
+            return false
     12. (tree_idx, leaf_idx) ← parse_idx(digest)
     13. setLayerAddress(ADRS, 0)
-    14. setTreeAddress(ADRS, 0)
-    15. fors_pk ← fors_pkFromSig(fors_sig, m, PK.seed, PK.root, ADRS)
-    16. if fors_pk == false:
-        return false
-    17. msg ← fors_pk
-    18. xmss_sig_size ← R_SIZE + c + l * n + h_prime * n
-    19. for layer from 0 to d - 1:
+    14. setTreeAddress(ADRS, tree_idx[0] * 2^h_prime + leaf_idx[0])
+    15. fors_pk ← fors_pkFromSig(fors_sig, indices, PK.seed, ADRS)
+    16. msg ← fors_pk
+    17. xmss_sig_size ← R_SIZE + c + l * n + h_prime * n
+    18. for layer from 0 to d - 1:
         a. xmss_sig ← sig[offset : offset + xmss_sig_size]
         b. offset ← offset + xmss_sig_size
         c. wots_sig ← xmss_sig[0 : R_SIZE + c + l * n]
@@ -213,11 +214,11 @@ The \texttt{SHRINCS.VerifyStateless} function verifies a stateless signature. It
         f. setTreeAddress(ADRS, tree_idx[layer])
         g. msg ← xmss_pkFromSig(wots_sig, auth, msg, PK.seed, PK.root, ADRS, h_prime, leaf_idx[layer])
         h. if msg == false:
-            return false
-    20. PK.sl ← msg
-    21. setTypeAndClear(ADRS, ROOT)
-    22. expected_root ← Tw(PK.seed, ADRS, PK.sf || PK.sl)
-    23. return (expected_root == PK.root)
+               return false
+    19. PK.sl ← msg
+    20. setTypeAndClear(ADRS, ROOT)
+    21. expected_root ← Tw(PK.seed, ADRS, PK.sf || PK.sl)
+    22. return (expected_root == PK.root)
 \end{verbatim}
 
 \subsection{Unified Verification}

@@ -1,15 +1,15 @@
 # Fdb version 4
-["bibtex main"] 1772019913.14654 "main.aux" "main.bbl" "main" 1772023785.72844 0
+["bibtex main"] 1772019913.14654 "main.aux" "main.bbl" "main" 1772038470.38779 0
   "main.aux" 1771598955.52497 18901 be476ee789d603d81f3833786da74702 ""
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1772023784.0255 "/Users/oleksandr.kurbatov/mjthatch/HB-Liquid/docs/shrincs_spec/main.tex" "main.pdf" "main" 1772023785.72847 0
-  "%OUTDIR%/main.aux" 1772023785.62456 16753 761d408f72a1a6d25ffadd757967f00e "pdflatex"
-  "%OUTDIR%/main.out" 1772023785.62616 13838 ce82393f3730083b6968d7e9aba52e23 "pdflatex"
-  "%OUTDIR%/main.run.xml" 1772023785.62885 2305 cd7944b45309a4232ac3da8bf87f1748 "pdflatex"
-  "%OUTDIR%/main.toc" 1772023785.6289 9040 0c9b1616e3c5920965975d865be9e14c "pdflatex"
+["pdflatex"] 1772038468.86921 "/Users/oleksandr.kurbatov/mjthatch/HB-Liquid/docs/shrincs_spec/main.tex" "main.pdf" "main" 1772038470.38783 0
+  "%OUTDIR%/main.aux" 1772038470.28732 16753 02e54b112e77c7c405cc67f24acab7ed "pdflatex"
+  "%OUTDIR%/main.out" 1772038470.28889 13838 ce82393f3730083b6968d7e9aba52e23 "pdflatex"
+  "%OUTDIR%/main.run.xml" 1772038470.29165 2305 cd7944b45309a4232ac3da8bf87f1748 "pdflatex"
+  "%OUTDIR%/main.toc" 1772038470.2917 9040 fa99c4e8e6d403666259845804e6d8ac "pdflatex"
   "/Users/oleksandr.kurbatov/mjthatch/HB-Liquid/docs/shrincs_spec/main.tex" 1771576698.61552 3373 fc55c001cfe093ba32e09e9218e391e1 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1136849721 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
@@ -269,7 +269,7 @@
   "/usr/local/texlive/2025/texmf-var/web2c/pdftex/pdflatex.fmt" 1765988636 3345743 2925fcb55b15ad5e52d27034b6700ef2 ""
   "/usr/local/texlive/2025/texmf.cnf" 1741450484 577 418a7058ec8e006d8704f60ecd22c938 ""
   "content/1-motivation.tex" 1772021724.72291 6910 eb720b71e168befacd7ad2bee13466fc ""
-  "content/10-shrincs.tex" 1772023782.03179 12456 9216d9bfd4c7ec3bdee902df37d49c6a ""
+  "content/10-shrincs.tex" 1772038466.99743 12610 e887562daf022b35b8155fd4099a0c8b ""
   "content/11-data-structures.tex" 1772023570.78476 4125 d7e0c40b2750e389c25c8bf78b89ed93 ""
   "content/2-notation.tex" 1770909609.995 777 f07a1083600390a58f3bf20b87be95af ""
   "content/3-overview.tex" 1771577839.32622 6118 08834c26796bba2e99741dd8dc984259 ""
@@ -278,7 +278,7 @@
   "content/6-wots+c.tex" 1772023229.65744 15044 91af0806678b3a407314fe316aa97f65 ""
   "content/7-xmss.tex" 1771576094.66352 9210 935d7a9a96b29c522920082106546e71 ""
   "content/8-uxmss.tex" 1772023617.18068 11489 c1b825f01438c321273490be202a629d ""
-  "content/9-fors.tex" 1772023229.65745 11492 cd033ac748dd77670ecbe8f00880166f ""
+  "content/9-fors.tex" 1772038297.8559 11531 10ee10c3cf18ea163043749d684efa4c ""
   "content/a-test-vectors.tex" 1770909609.99624 35 3ecbe418fdb743191b112c8d52726170 ""
   "content/b-grinding-complexity.tex" 1772023570.67558 4555 ba5ad43176be077f971cf143adcdc2ed ""
   "content/img/fors.png" 1770909609.99727 73039 043f0cf01ff3763ec5052b6038615988 ""
