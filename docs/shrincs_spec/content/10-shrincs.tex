@@ -82,7 +82,6 @@ The signature includes \texttt{PK.sl} prepended to enable unified verification. 
 \end{verbatim}
 
 \subsection{Stateless signing}
-%\mknote{The algorithm says: compute a FORS signature for ADDR = 0, then choose  FORS instance based on the hash, then compute PK for the FORS at ADRS = 0. This definetly wrong.}
 The \texttt{SHRINCS.SignStateless} function signs a message using the stateless (SPHINCS+C) path. This is used when state is lost, corrupted, or exhausted.
 
 SHRINCS uses a unified digest for the stateless path: a single call to \texttt{H\_msg\_fors} produces a digest that encodes both the FORS leaf indices (determining which leaves to reveal in the few-time signature) and the hypertree tree/leaf indices (determining which XMSS trees and WOTS+C key pairs to use at each layer). The grinding counter \texttt{ctr} is iterated until the grinding condition is satisfied on this unified digest.
@@ -90,8 +89,6 @@ SHRINCS uses a unified digest for the stateless path: a single call to \texttt{H
 The digest output length is \texttt{(roundup(k*a + h\_sl) / 8)} bytes. The first \texttt{k*a} bits encode the \texttt{k} FORS leaf indices (with the last a bits required to be zero by grinding). The remaining \texttt{h\_sl} bits encode the hypertree path indices.
 
 The signature is constructed bottom-up: first a FORS+C signature on the message, then \texttt{d} XMSS signatures on successive layer roots ascending through the hypertree. The signature includes \texttt{PK.sf} prepended to enable unified verification.
-
-%\mknote{parse\_hypertree\_idx is undefined}
 
 \begin{verbatim}
     Algorithm: SHRINCS.SignStateless(m, SK)
@@ -101,28 +98,31 @@ The signature is constructed bottom-up: first a FORS+C signature on the message,
     Output:
         sig: stateless signature
 
-    1. ADRS ← new_ADRS()
-    2. setLayerAddress(ADRS, 0)
-    3. setTreeAddress(ADRS, 0)  
-    4. (fors_sig, digest) ← fors_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS)
-    5. (tree_idx, leaf_idx) ← parse_hypertree_idx(digest)
-    6. fors_pk ← fors_pkFromSig(fors_sig, m, PK.seed, PK.root, ADRS)
-    7. ht_sig ← []
-    8. msg ← fors_pk
-    9. for layer from 0 to d - 1:
+    1.  ADRS ← new_ADRS()
+    2.  setLayerAddress(ADRS, 0)
+    3.  setTreeAddress(ADRS, 0)
+    4.  (fors_sig, digest) ← fors_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS)
+    5.  (tree_idx, leaf_idx) ← parse_idx(digest)
+    6.  indices ← fors_msg_to_indices(digest)
+    7.  setLayerAddress(ADRS, 0)
+    8.  setTreeAddress(ADRS, tree_idx[0] * 2^h_prime + leaf_idx[0])
+    9. fors_pk ← fors_pkFromSig(fors_sig, indices, PK.seed, ADRS)
+    10. ht_sig ← []
+    11. msg ← fors_pk
+    12. for layer from 0 to d - 1:
         a. setLayerAddress(ADRS, layer)
         b. setTreeAddress(ADRS, tree_idx[layer])
         c. xmss_sig ← xmss_sign(msg, SK.seed, SK.prf, PK.seed, PK.root, ADRS, h', leaf_idx[layer])
         d. ht_sig ← ht_sig || xmss_sig
         e. if layer < d - 1:
-            msg ← xmss_root(SK.seed, PK.seed, ADRS, h')
-    10. sig ← PK.sf || fors_sig || ht_sig
-    11. return sig
+               msg ← xmss_root(SK.seed, PK.seed, ADRS, h')
+    14. sig ← PK.sf || fors_sig || ht_sig
+    15. return sig
 \end{verbatim}
 
 \subsection{Index Parsing}
 The \texttt{parse\_idx} function extracts tree and leaf indices for each hypertree layer from the stateless digest. In the unified digest scheme, these bits follow the \texttt{k*a} bits used for FORS indices. The \texttt{h\_sl} bits are partitioned into \texttt{d} pairs of \texttt{(leaf\_idx, tree\_idx)}, extracted from least significant (layer 0) to most significant (layer \texttt{d-1}), with \texttt{h'} bits per leaf index.
-% \mknote{This is a bit confusin, that we extract the indices of the OTS/FTS schemes used, but not the indices of the revealed leaves in FORS. With the Hashing changes, it needs a double-check that everything is computed correctly and the same data is not used for two purposes. }
+%\mknote{This is a bit confusin, that we extract the indices of the OTS/FTS schemes used, but not the indices of the revealed leaves in FORS. With the Hashing changes, it needs a double-check that everything is computed correctly and the same data is not used for two purposes. }
 \begin{verbatim}
     Algorithm: parse_idx(digest)
     Input:
@@ -178,7 +178,6 @@ The \texttt{SHRINCS.VerifyStateful} function verifies a stateful signature. It e
 
 \subsection{Stateless verification}
 The \texttt{SHRINCS.VerifyStateless} function verifies a stateless signature. It extracts \texttt{PK.sf} from the signature, recomputes the unified digest from the FORS+C signature's \texttt{R} and \texttt{ctr}, extracts both FORS indices and hypertree indices from the same digest, then verifies bottom-up through the hypertree.
-%\mknote{Verification does not take which FORS instance is used as well. Same problems as in signing part.}
 \begin{verbatim}
     Algorithm: SHRINCS.VerifyStateless(m, sig, PK)
     Input:
@@ -188,28 +187,25 @@ The \texttt{SHRINCS.VerifyStateless} function verifies a stateless signature. It
     Output:
         valid: boolean
 
-    1. ADRS ← new_ADRS()
-    2. PK.sf ← sig[0 : n]
-    3. offset ← n
-    4. fors_sig_size ← R_SIZE + c + (k - 1) * (n + a * n)
-    5. fors_sig ← sig[offset : offset + fors_sig_size]
-    6. offset ← offset + fors_sig_size
-    7. R ← fors_sig[0 : R_SIZE]
-    8. ctr ← fors_sig[R_SIZE : R_SIZE + c]
-    9. setTypeAndClear(ADRS, FORS_GRIND)
-    10. digest ← H_msg_fors(ADRS, R, ctr, PK.seed, PK.root, m)
-    11. indices ← fors_msg_to_indices(digest)
-    12. if indices[k-1] != 0:
-        return false
-    13. (tree_idx, leaf_idx) ← parse_idx(digest)
-    14. setLayerAddress(ADRS, 0)
-    15. setTreeAddress(ADRS, 0)
-    16. fors_pk ← fors_pkFromSig(fors_sig, m, PK.seed, PK.root, ADRS)
-    17. if fors_pk == false:
-        return false  
-    18. msg ← fors_pk
-    19. xmss_sig_size ← R_SIZE + c + l * n + h_prime * n
-    20. for layer from 0 to d - 1:
+    1.  ADRS ← new_ADRS()
+    2.  PK.sf ← sig[0 : n]
+    3.  offset ← n
+    4.  fors_sig_size ← R_SIZE + (k - 1) * (n + a * n)
+    5.  fors_sig ← sig[offset : offset + fors_sig_size]
+    6.  offset ← offset + fors_sig_size
+    7.  R ← fors_sig[0 : R_SIZE]
+    8.  setTypeAndClear(ADRS, H_MSG)
+    9.  digest ← H_msg_fors(ADRS, R, PK.seed, PK.root, m)
+    10. indices ← fors_msg_to_indices(digest)
+    11. if indices[k-1] != 0:
+            return false
+    12. (tree_idx, leaf_idx) ← parse_idx(digest)
+    13. setLayerAddress(ADRS, 0)
+    14. setTreeAddress(ADRS, tree_idx[0] * 2^h_prime + leaf_idx[0])
+    15. fors_pk ← fors_pkFromSig(fors_sig, indices, PK.seed, ADRS)
+    16. msg ← fors_pk
+    17. xmss_sig_size ← R_SIZE + c + l * n + h_prime * n
+    18. for layer from 0 to d - 1:
         a. xmss_sig ← sig[offset : offset + xmss_sig_size]
         b. offset ← offset + xmss_sig_size
         c. wots_sig ← xmss_sig[0 : R_SIZE + c + l * n]
@@ -218,15 +214,14 @@ The \texttt{SHRINCS.VerifyStateless} function verifies a stateless signature. It
         f. setTreeAddress(ADRS, tree_idx[layer])
         g. msg ← xmss_pkFromSig(wots_sig, auth, msg, PK.seed, PK.root, ADRS, h_prime, leaf_idx[layer])
         h. if msg == false:
-            return false
-    21. PK.sl ← msg
-    22. setTypeAndClear(ADRS, ROOT)
-    23. expected_root ← Tw(PK.seed, ADRS, PK.sf || PK.sl)
-    24. return (expected_root == PK.root)
+               return false
+    19. PK.sl ← msg
+    20. setTypeAndClear(ADRS, ROOT)
+    21. expected_root ← Tw(PK.seed, ADRS, PK.sf || PK.sl)
+    22. return (expected_root == PK.root)
 \end{verbatim}
 
 \subsection{Unified Verification}
-%\mknote{Did you test that Verify(Sign(message))=true for both cases?}
 The \texttt{SHRINCS.Verify} function provides a single entry point for verifying either stateful or stateless signatures. It distinguishes between the two types based on signature length: stateful signatures have a maximum size of \texttt{max\_sf\_size = n + R\_SIZE + c + l*n + (h\_sf + 1)*n} bytes, while stateless signatures are strictly larger (see Section~8.7 for the derivation that this bound always holds).
 \begin{verbatim}
     Algorithm: SHRINCS.Verify(m, sig, PK)

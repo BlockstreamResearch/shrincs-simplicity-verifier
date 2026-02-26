@@ -55,52 +55,37 @@ SHRINCS-L (n=16, R_SIZE=32, c=4, l=64):
 \subsection{Stateless Signature Format}
 A stateless signature consists of the stateful public key, a FORS+C signature, and \texttt{d} XMSS signatures forming the hypertree:
 \begin{verbatim}
-PK.sf       : n bytes                       // Stateful public key 
+PK.sf    : n bytes                    // Stateful public key
 FORS+C signature:
-    fors_R      : R_SIZE bytes              // Randomness
-    fors_ctr    : c bytes                   // Grinding counter  
-    fors_sigs   : (k-1) * (n + a*n) bytes   // k-1 trees
+  fors_R   : R_SIZE bytes             // Randomness (encodes grinding result)
+  fors_sigs: (k-1) * (n + a*n) bytes  // k-1 trees
 Hypertree: d XMSS signatures. For each layer i:
-    xmss_R[i]     : R_SIZE bytes            // Randomness for WOTS+C
-    xmss_ctr[i]   : c bytes                 // Grinding counter for WOTS+C
-    xmss_chains[i]: l * n bytes             // WOTS+C chain values
-    xmss_auth[i]  : h_prime * n bytes       // XMSS authentication path
+  xmss_R[i]     : R_SIZE bytes        // Randomness for WOTS+C
+  xmss_ctr[i]   : c bytes             // Grinding counter for WOTS+C
+  xmss_chains[i]: l * n bytes         // WOTS+C chain values
+  xmss_auth[i]  : h_prime * n bytes   // XMSS authentication path
 
 SHRINCS-B (n=16, R_SIZE=32, c=4, k=6, a=22, d=2, h'=12, l=16):
-    PK.sf       : 16 bytes
-    FORS+C signature:
-        fors_R    : 32 bytes
-        fors_ctr  : 4 bytes
-        fors_sigs : 5 * (16 + 22*16) = 5 * 368 = 1840 bytes
-        subtotal: 1876 bytes
-    XMSS hypertree (2 layers):
-        per layer:
-            R           : 32 bytes
-            ctr         : 4 bytes  
-            chain_values: 16 * 16 = 256 bytes
-            auth_path   : 12 * 16 = 192 bytes
-            per layer subtotal: 484 bytes
-        2 layers: 2 * 484 = 968 bytes
-  
-    Total: 16 + 1876 + 968 = 2860 bytes
+  PK.sf          :   16 bytes
+  FORS+C signature:
+    fors_R       :   32 bytes
+    fors_sigs    : 5 * (16 + 22*16) = 5 * 368 = 1840 bytes
+    subtotal     : 1872 bytes
+  XMSS hypertree (2 layers):
+    per layer    : 32 + 4 + 256 + 192 = 484 bytes
+    2 layers     : 968 bytes
+  Total: 16 + 1872 + 968 = 2856 bytes
 
 SHRINCS-L (n=16, R_SIZE=32, c=4, k=6, a=22, d=2, h'=12, l=64):
-    PK.sf       : 16 bytes
-    FORS+C signature:
-        fors_R    : 32 bytes
-        fors_ctr  : 4 bytes
-        fors_sigs : 5 * (16 + 22*16) = 1840 bytes
-        subtotal: 1876 bytes
-    XMSS hypertree (2 layers):
-        per layer:
-            R           : 32 bytes
-            ctr         : 4 bytes
-            chain_values: 64 * 16 = 1024 bytes  
-            auth_path   : 12 * 16 = 192 bytes
-            per layer subtotal: 1252 bytes
-        2 layers: 2 * 1252 = 2504 bytes
-  
-    Total: 16 + 1876 + 2504 = 4396 bytes
+  PK.sf          :   16 bytes
+  FORS+C signature:
+    fors_R       :   32 bytes
+    fors_sigs    : 5 * (16 + 22*16) = 1840 bytes
+    subtotal     : 1872 bytes
+  XMSS hypertree (2 layers):
+    per layer    : 32 + 4 + 1024 + 192 = 1252 bytes
+    2 layers     : 2504 bytes
+  Total: 16 + 1872 + 2504 = 4392 bytes
 \end{verbatim}
 
 \subsection{Signature Type Indication}
@@ -110,8 +95,8 @@ Verifiers distinguish between stateful and stateless signatures by length (Algor
     \texttt{max\_stateful\_size = n + R\_SIZE + c + l*n + (h\_sf + 1)*n}
 \end{center}
 \begin{itemize}
-    \item For SHRINCS-B: \texttt{max\_stateful\_size = 16 + 32 + 4 + 256 + 159*16 = 2836} bytes
-    \item For SHRINCS-L: \texttt{max\_stateful\_size = 16 + 32 + 4 + 1024 + 207*16 = 4372} bytes
+    \item For SHRINCS-B: \texttt{max\_stateful\_size = 16 + 32 + 4 + 256 + 159*16 = 2852} bytes
+    \item For SHRINCS-L: \texttt{max\_stateful\_size = 16 + 32 + 4 + 1024 + 207*16 = 4388} bytes
 \end{itemize}
 
 Signatures with length \texttt{<= max\_stateful\_size} are processed as stateful; larger signatures as stateless.

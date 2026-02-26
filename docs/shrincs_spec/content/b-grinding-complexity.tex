@@ -65,7 +65,7 @@ The grinding operation searches for $\text{indices}[k-1] = 0$, meaning the last 
 \paragraph{Expected grinding cost:}
 \begin{itemize}
     \item $\mathbb{E}[\text{iterations}] \approx 741$ iterations
-    \item Per iteration: 1 SHA-256 compression (Phase 2 operates on fixed 52-byte input)
+    \item Per iteration: 2 SHA-256 compression (Phase 2 operates on 68-byte input
     \item Total: $\approx 741$ SHA-256 compressions
 \end{itemize}
 
@@ -123,11 +123,11 @@ Grinding condition: $\text{indices}[k-1] = 0$ (last tree index must be zero)
 \paragraph{Expected grinding cost:}
 \begin{itemize}
     \item $\mathbb{E}[\text{iterations}] = 2^a = 2^{22} = 4.1$m iterations
-    \item Per iteration: 1 SHA-256 call
+    \item Per iteration: 1 HMAC-SHA-256 + 1 SHA-256 
 \end{itemize}
 
 \paragraph{Practical performance:}
 \begin{itemize}
     \item $\sim$1-2 million SHA-256/sec
-    \item Expected grinding time: 2-4 seconds per stateless signature
+    \item Expected grinding time: 4-8 seconds per stateless signature
 \end{itemize}

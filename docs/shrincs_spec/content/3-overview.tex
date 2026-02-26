@@ -66,16 +66,19 @@ Stateless signatures consist of:
 \end{enumerate}
 
 Signature size calculation: 
-%\mknote{We don't need to include the counter for the FORS, since it is used inside the PRF and the Randomness is resampled. We just include the final sampling of the random value. The counter is hidden from the verifier.}
 \begin{verbatim}
-    General formula: size  = PK.sf_SIZE + fors_size(R_SIZE + c + (k-1)*(n + a*n)) 
-                           + xmss_layer_size(R_SIZE + c + l*n + h'*n)*d
-          SHRINCS-B. size  = 16 + fors_size(32 + 4 + 5*(16 + 22*16)) 
-                           + xmss_layer_size(32 + 4 + 16*16 + 12*16) * 2
-                           = 2860
-          SHRINCS-L. size  = 16 + fors_size(32 + 4 + 5*(16 + 22*16)) 
-                           + xmss_layer_size(32 + 4 + 64*16 + 12*16) * 2
-                           = 4396
+    General formula: size = PK.sf_SIZE + fors_size(R_SIZE + (k-1)*(n + a*n))
+                      + xmss_layer_size(R_SIZE + c + l*n + h'*n) * d
+
+    SHRINCS-B.size = 16 + fors_size(32 + 5*(16 + 22*16))
+                    + xmss_layer_size(32 + 4 + 16*16 + 12*16) * 2
+                    = 16 + (32 + 1840) + (32 + 4 + 256 + 192) * 2
+                    = 16 + 1872 + 968 = 2856
+
+    SHRINCS-L.size = 16 + fors_size(32 + 5*(16 + 22*16))
+                    + xmss_layer_size(32 + 4 + 64*16 + 12*16) * 2
+                    = 16 + (32 + 1840) + (32 + 4 + 1024 + 192) * 2
+                    = 16 + 1872 + 2504 = 4392
 \end{verbatim}
 
 The signature verification cost is:
