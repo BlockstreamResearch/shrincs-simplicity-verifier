@@ -53,7 +53,7 @@ fn fors_hash_u128_array_iter(el: u128, ctx: Ctx8) -> Ctx8 {
 }
 
 fn sphincs_get_fors_pub_key(signature: SPHINCSFORSSignature, hash_ctx: Ctx8, message: u256, tree_adrs_1: u32, tree_adrs_2: u64) -> u128 {
-    let (_, _, (parts_4, parts_1)): SPHINCSFORSSignature = signature;
+    let (_, (parts_4, parts_1)): SPHINCSFORSSignature = signature;
 
     let last_bits: u32 = get_22_bits_at(message, 5);
     assert!(jet::eq_32(last_bits, 0));
