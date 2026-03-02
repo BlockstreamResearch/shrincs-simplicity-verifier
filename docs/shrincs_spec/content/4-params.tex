@@ -23,7 +23,8 @@ This specification provides with the list of parameters for different SHRINCS in
  \texttt{a} & $22$ & $22$ & FORS tree height \\ 
  \texttt{k} & $6$ & $6$ & Number of FORS+C trees \\
  \texttt{c} & $4$ & $4$ & Counter size for WOTS+C grinding (bytes) \\
+ \texttt{R\_SIZE} & $32$ & $32$ & The size (bytes) of the randomness in the signature \\
 \end{tabular}
 \end{center}
 
-\paragraph{Note:} Parameters for stateless instance is selected in the way to support up to $2^{20}$ signatures \cite{kudinov_nick_2025_hbs_bitcoin}. \texttt{hsf} is chosen in the way that the maximum stateful signature \texttt{(at q = hsf + 1)} remains smaller than a stateless signature: \texttt{n + R\_SIZE + c + l*n + (hsf+1)*n < stateless\_size.}
+\paragraph{Note:} Parameters for stateless instance is selected in the way to support up to $2^{20}$ signatures \cite{kudinov_nick_2025_hbs_bitcoin}. \texttt{hsf} is chosen in the way that the maximum stateful signature remains smaller than a stateless signature: \texttt{n + R\_SIZE + c + l*n + hsf*n < stateless\_size}.

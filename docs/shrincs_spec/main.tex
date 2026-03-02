@@ -60,7 +60,7 @@
 \maketitle
 
 \begin{abstract}
-  This document specifies \textbf{SHRINCS} (Stateful Hash-based Robust Integrated NIST-Compatible Signatures), a post-quantum signature scheme optimized for Bitcoin and Liquid. SHRINCS combines efficient stateful hash-based signatures (unbalanced XMSS with WOTS+C) for normal operation with a stateless fallback (an SPHINCS+ variant) for scenarios where state management is corrupted or unavailable. This specification provides with two parameter sets optimized for different deployment scenarios: (1) SHRINCS-B (Bitcoin-optimized) minimizes signature size for byte-based fee systems (\textbf{324}-byte signature with 2043 hashes for verification for the first use, growing by 16 bytes and one hashing per subsequent signature); (2) SHRINCS-L (Liquid-optimized) reduces verification cost for computation-based fee systems (only \textbf{55} hash operations with 1092-byte signature for the first use). Both variants support "stateless-only after recovery" mode to preserve funds while accepting larger and more expensive from the verification perspective signatures. 
+  This document specifies \textbf{SHRINCS} (Stateful Hash-based Robust Integrated NIST-Compatible Signatures), a post-quantum signature scheme optimized for Bitcoin and Liquid. SHRINCS combines efficient stateful hash-based signatures (unbalanced XMSS with WOTS+C) for normal operation with a stateless fallback (an SPHINCS+ variant) for scenarios where state management is corrupted or unavailable. This specification provides with two parameter sets optimized for different deployment scenarios: (1) SHRINCS-B (Bitcoin-optimized) minimizes signature size for byte-based fee systems (\textbf{324}-byte signature with 2043 hashes for verification for the first use, growing by 16 bytes and one hash per subsequent signature, except that the last two stateful signatures (\texttt{q = h\_sf} and \texttt{q = h\_sf + 1}) have identical size and verification cost); (2) SHRINCS-L (Liquid-optimized) reduces verification cost for computation-based fee systems (only \textbf{55} hash operations with 1092-byte signature for the first use). Both variants support "stateless-only after recovery" mode to preserve funds while accepting larger and more expensive from the verification perspective signatures. 
 \end{abstract}
 
 \tableofcontents
@@ -104,8 +104,6 @@
 
 \appendix
 
-\input{content/a-test-vectors.tex}
-
-\input{content/b-grinding-complexity.tex}
+\input{content/a-grinding-complexity.tex}
 
 \end{document}

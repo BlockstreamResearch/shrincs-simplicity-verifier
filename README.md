@@ -1,6 +1,8 @@
 # simplicity-pq-signature
 This repo contains hash-based signatures that can protect bitcoin against quantum computers
 
+> *⚠️ This project is a work in progress and is provided as-is for research, learning, and experimentation. It is not production-ready and has not undergone a formal security audit, code review, or verification process. This library may be incorrect, incomplete, or insecure.*
+
 ## Requirements
 We use `#include` and `#define` directives so you may need to install `mcpp`:
 ```shell
