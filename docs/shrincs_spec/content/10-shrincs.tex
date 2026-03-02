@@ -19,13 +19,15 @@ The \texttt{SHRINCS.KeyGen} function generates a fresh key pair and initializes 
     6. PK.sf ← uxmss_root(SK.seed, PK.seed, ADRS)
     7. setLayerAddress(ADRS, d - 1)
     8. setTreeAddress(ADRS, 0)
-    9. PK.sl ← xmss_root(SK.seed, PK.seed, ADRS, h_prime)
-    10. setTypeAndClear(ADRS, ROOT)
-    11. PK.root ← Tw(PK.seed, ADRS, PK.sf || PK.sl)
-    12. SK ← (SK.seed, SK.prf, PK.seed, PK.sf, PK.sl, PK.root)
-    13. PK ← (PK.seed, PK.root)
-    14. state ← { q: 0, valid: true }
-    15. return (SK, PK, state)
+    9.  PK.sl ← xmss_root(SK.seed, PK.seed, ADRS, h_prime)
+    10. setLayerAddress(ADRS, 0)
+    11. setTreeAddress(ADRS, 0)
+    12. setTypeAndClear(ADRS, ROOT)
+    13. PK.root ← Tw(PK.seed, ADRS, PK.sf || PK.sl)
+    14. SK ← (SK.seed, SK.prf, PK.seed, PK.sf, PK.sl, PK.root)
+    15. PK ← (PK.seed, PK.root)
+    16. state ← { q: 0, valid: true }
+    17. return (SK, PK, state)
 \end{verbatim}
 
 \subsection{Recovery from Seed}
@@ -46,13 +48,15 @@ The \texttt{SHRINCS.Restore} function recovers a key pair from a backed-up seed.
     5. PK.sf ← uxmss_root(SK.seed, PK.seed, ADRS)
     6. setLayerAddress(ADRS, d - 1)
     7. setTreeAddress(ADRS, 0)
-    8. PK.sl ← xmss_root(SK.seed, PK.seed, ADRS, h_prime)
-    9. setTypeAndClear(ADRS, ROOT)
-    10. PK.root ← Tw(PK.seed, ADRS, PK.sf || PK.sl)
-    11. SK ← (SK.seed, SK.prf, PK.seed, PK.sf, PK.sl, PK.root)
-    12. PK ← (PK.seed, PK.root)
-    13. state ← { q: false, valid: false }
-    14. return (SK, PK, state)
+    8.  PK.sl ← xmss_root(SK.seed, PK.seed, ADRS, h_prime)
+    9.  setLayerAddress(ADRS, 0)
+    10. setTreeAddress(ADRS, 0)
+    11. setTypeAndClear(ADRS, ROOT)
+    12. PK.root ← Tw(PK.seed, ADRS, PK.sf || PK.sl)
+    13. SK ← (SK.seed, SK.prf, PK.seed, PK.sf, PK.sl, PK.root)
+    14. PK ← (PK.seed, PK.root)
+    15. state ← { q: false, valid: false }
+    16. return (SK, PK, state)
 \end{verbatim}
 
 \subsection{Statefull signing}
@@ -169,11 +173,13 @@ The \texttt{SHRINCS.VerifyStateful} function verifies a stateful signature. It e
     9. wots_sig ← uxmss_sig[0 : wots_sig_size]
     10. auth ← uxmss_sig[wots_sig_size : wots_sig_size + q * n]
     11. PK.sf ← uxmss_pkFromSig(wots_sig, auth, m, PK.seed, PK.root, ADRS, q)
-    12. if PK.sf == false:
+    12. if PK.sf == false: 
         return false
-    13. setTypeAndClear(ADRS, ROOT)
-    14. expected_root ← Tw(PK.seed, ADRS, PK.sf || PK.sl)
-    15. return (expected_root == PK.root)
+    13. setLayerAddress(ADRS, 0)
+    14. setTreeAddress(ADRS, 0)
+    15. setTypeAndClear(ADRS, ROOT)
+    16. expected_root ← Tw(PK.seed, ADRS, PK.sf || PK.sl)
+    17. return (expected_root == PK.root)
 \end{verbatim}
 
 \subsection{Stateless verification}
@@ -216,9 +222,11 @@ The \texttt{SHRINCS.VerifyStateless} function verifies a stateless signature. It
         h. if msg == false:
                return false
     19. PK.sl ← msg
-    20. setTypeAndClear(ADRS, ROOT)
-    21. expected_root ← Tw(PK.seed, ADRS, PK.sf || PK.sl)
-    22. return (expected_root == PK.root)
+    20. setLayerAddress(ADRS, 0)
+    21. setTreeAddress(ADRS, 0)
+    22. setTypeAndClear(ADRS, ROOT)
+    23. expected_root ← Tw(PK.seed, ADRS, PK.sf || PK.sl)
+    24. return (expected_root == PK.root)
 \end{verbatim}
 
 \subsection{Unified Verification}

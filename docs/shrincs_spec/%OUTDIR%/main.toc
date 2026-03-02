@@ -77,11 +77,11 @@
 \contentsline {subsection}{\numberline {10.2}Recovery from Seed}{31}{subsection.10.2}%
 \contentsline {subsection}{\numberline {10.3}Statefull signing}{31}{subsection.10.3}%
 \contentsline {subsection}{\numberline {10.4}Stateless signing}{32}{subsection.10.4}%
-\contentsline {subsection}{\numberline {10.5}Index Parsing}{32}{subsection.10.5}%
+\contentsline {subsection}{\numberline {10.5}Index Parsing}{33}{subsection.10.5}%
 \contentsline {paragraph}{Note:}{33}{section*.20}%
 \contentsline {subsection}{\numberline {10.6}Statefull verification}{33}{subsection.10.6}%
 \contentsline {subsection}{\numberline {10.7}Stateless verification}{34}{subsection.10.7}%
-\contentsline {subsection}{\numberline {10.8}Unified Verification}{34}{subsection.10.8}%
+\contentsline {subsection}{\numberline {10.8}Unified Verification}{35}{subsection.10.8}%
 \contentsline {section}{\numberline {11}Data structures}{35}{section.11}%
 \contentsline {subsection}{\numberline {11.1}Secret Key Format}{35}{subsection.11.1}%
 \contentsline {subsection}{\numberline {11.2}Public Key Format}{35}{subsection.11.2}%
