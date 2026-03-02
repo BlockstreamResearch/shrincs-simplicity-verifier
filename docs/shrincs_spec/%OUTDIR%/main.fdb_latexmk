@@ -1,15 +1,15 @@
 # Fdb version 4
-["bibtex main"] 1772019913.14654 "main.aux" "main.bbl" "main" 1772486016.30366 0
+["bibtex main"] 1772019913.14654 "main.aux" "main.bbl" "main" 1772487554.31271 0
   "main.aux" 1771598955.52497 18901 be476ee789d603d81f3833786da74702 ""
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1772486014.68755 "/Users/oleksandr.kurbatov/mjthatch/HB-Liquid/docs/shrincs_spec/main.tex" "main.pdf" "main" 1772486016.30369 0
-  "%OUTDIR%/main.aux" 1772486016.19481 16510 a25744749f7483be257d9e3374fd16cd "pdflatex"
-  "%OUTDIR%/main.out" 1772486016.19632 13730 fa6bafea3de709ba930629751b618f8c "pdflatex"
-  "%OUTDIR%/main.run.xml" 1772486016.19907 2305 cd7944b45309a4232ac3da8bf87f1748 "pdflatex"
-  "%OUTDIR%/main.toc" 1772486016.19912 9021 5a1659806ba97d849237fc737bfeae93 "pdflatex"
+["pdflatex"] 1772487552.71849 "/Users/oleksandr.kurbatov/mjthatch/HB-Liquid/docs/shrincs_spec/main.tex" "main.pdf" "main" 1772487554.31274 0
+  "%OUTDIR%/main.aux" 1772487554.20404 16507 bba1958eb96bcd8fcc88da969d3cf6d6 "pdflatex"
+  "%OUTDIR%/main.out" 1772487554.20566 13715 870de4d44f0b08e51627b5ab5964e455 "pdflatex"
+  "%OUTDIR%/main.run.xml" 1772487554.20851 2305 cd7944b45309a4232ac3da8bf87f1748 "pdflatex"
+  "%OUTDIR%/main.toc" 1772487554.20855 9018 e889e060663b92a1bbe0c1e5aba92c5a "pdflatex"
   "/Users/oleksandr.kurbatov/mjthatch/HB-Liquid/docs/shrincs_spec/main.tex" 1772486014.22767 3470 2c33465960dbbc5ecda15abe8597408f ""
   "/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1136849721 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
@@ -271,15 +271,15 @@
   "/usr/local/texlive/2025/texmf-var/web2c/pdftex/pdflatex.fmt" 1765988636 3345743 2925fcb55b15ad5e52d27034b6700ef2 ""
   "/usr/local/texlive/2025/texmf.cnf" 1741450484 577 418a7058ec8e006d8704f60ecd22c938 ""
   "content/1-motivation.tex" 1772021724.72291 6910 eb720b71e168befacd7ad2bee13466fc ""
-  "content/10-shrincs.tex" 1772486014.53791 13150 ba8bc902adcf60b4138af05152d131b5 ""
+  "content/10-shrincs.tex" 1772487550.65874 13127 e0ae4987f10e178e28a346fa77c58c6a ""
   "content/11-data-structures.tex" 1772485592.88057 4186 9fb8a35fc70f8ba97df4c27dd06e7eb5 ""
   "content/2-notation.tex" 1772485772.77384 777 f07a1083600390a58f3bf20b87be95af ""
   "content/3-overview.tex" 1772485154.45574 6259 51c0368a26259e399d4b274feb5eba66 ""
   "content/4-params.tex" 1772485154.45572 1793 832e4be1b9fba4147add1b5cc908bae1 ""
   "content/5-functions-and-addresses.tex" 1772486014.53408 8269 e2b49af2846a1215be8233cbe83be2d4 ""
-  "content/6-wots+c.tex" 1772125538.71692 14975 98bc191592c0d65d00120cbf7c08aff6 ""
+  "content/6-wots+c.tex" 1772487550.65876 14974 4676317cbb556bf37d3fe250478ffa8b ""
   "content/7-xmss.tex" 1772486014.53793 9208 117ce7a5c194198d08e0d1f96491308e ""
-  "content/8-uxmss.tex" 1772485592.88058 12187 7f0ce52ae2efc4e2a3558b08e8130b25 ""
+  "content/8-uxmss.tex" 1772487550.65875 12186 6509e4493e9714ef5a269aff279ecfe9 ""
   "content/9-fors.tex" 1772485772.46629 11812 ee1650b5387f79efa6218454ac1834f4 ""
   "content/a-grinding-complexity.tex" 1772456852.42422 4555 ba5ad43176be077f971cf143adcdc2ed ""
   "content/img/fors.png" 1770909609.99727 73039 043f0cf01ff3763ec5052b6038615988 ""
