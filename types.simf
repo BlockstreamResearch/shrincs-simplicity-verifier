@@ -19,8 +19,8 @@ type LamportSignProof = (u256, [u256; 256], [KeyPair; 256]);
 // FORS
 // (SecretValue, MerklePath len a)
 type SPHINCSFORSSignaturePart = (u128, [u128; 22]);
-// (R, fors+c counter, k - 1 len array of sizes 2^x of FORS signature parts)
-type SPHINCSFORSSignature = (u256, u32, ([SPHINCSFORSSignaturePart; 4], [SPHINCSFORSSignaturePart; 1]));
+// (R, k - 1 len array of sizes 2^x of FORS signature parts)
+type SPHINCSFORSSignature = (u256, ([SPHINCSFORSSignaturePart; 4], [SPHINCSFORSSignaturePart; 1]));
 
 // SPHINCS WOTS
 type SPHINCSWOTSTWKey = [u128; 64];
