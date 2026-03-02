@@ -157,7 +157,8 @@ The function \texttt{wots\_grind()} takes a pre-computed digest and increments \
         ctr: final counter value used
 
     1. setTypeAndClear(ADRS, WOTS_GRIND)
-    2. for ctr from 0 to 2^32 - 1:  // c = 4 bytes
+    2. setKeyPairAddress(ADRS, keypair)
+    3. for ctr from 0 to 2^32 - 1:  // c = 4 bytes
         a. grind_out ← H_grind(ADRS, PK.seed, digest, ctr)
         b. msg ← base_w(grind_out, w, l)
         c. sum ← 0
@@ -165,7 +166,7 @@ The function \texttt{wots\_grind()} takes a pre-computed digest and increments \
             sum ← sum + msg[i]
         e. if sum == S_wn:
             return (msg, ctr)
-    3. abort with error  // caller should resample R and retry
+    4. abort with error  // caller should resample R and retry
 \end{verbatim}
 
 Additionally we need to define a func which allows to calculate the digest without grinding (by providing the \texttt{ctr} value directly).
@@ -181,13 +182,14 @@ Additionally we need to define a func which allows to calculate the digest witho
         valid: boolean indicating if sum == S_wn
 
     1. setTypeAndClear(ADRS, WOTS_GRIND)
-    2. grind_out ← H_grind(ADRS, PK.seed, digest, ctr)
-    3. msg ← base_w(grind_out, w, l)
-    4. sum ← 0
-    5. for i from 0 to l - 1:
+    2. setKeyPairAddress(ADRS, keypair)
+    3. grind_out ← H_grind(ADRS, PK.seed, digest, ctr)
+    4. msg ← base_w(grind_out, w, l)
+    5. sum ← 0
+    6. for i from 0 to l - 1:
         sum ← sum + msg[i]
-    6. valid ← (sum == S_wn)
-    7. return (msg, valid)
+    7. valid ← (sum == S_wn)
+    8. return (msg, valid)
 \end{verbatim}
 
 \subsection{Signature Generation}

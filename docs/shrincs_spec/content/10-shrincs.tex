@@ -135,16 +135,16 @@ The \texttt{parse\_idx} function extracts tree and leaf indices for each hypertr
         tree_idx: array of d tree indices
         leaf_idx: array of d leaf indices
 
-    1. Extract hypertree bits starting after FORS indices
-    2. ht_offset ← k * a
-    3. ht_bits ← extract_bits(digest, ht_offset, hsl)
-    4. idx ← ht_bits 
-    5. tree_idx ← []
-    6. leaf_idx ← []
-    7. for layer from 0 to d - 1:
-        leaf_idx[layer] ← idx AND (2^h_prime - 1)
-        idx ← idx >> h_prime
-    8. return (tree_idx, leaf_idx)
+    1. ht_offset ← k * a
+    2. ht_bits ← extract_bits(digest, ht_offset, hsl)
+    3. idx ← ht_bits
+    4. tree_idx ← []
+    5. leaf_idx ← []
+    6. for layer from 0 to d - 1:
+        a. leaf_idx[layer] ← idx AND (2^h_prime - 1)
+        b. idx ← idx >> h_prime
+        c. tree_idx[layer] ← idx
+    7. return (tree_idx, leaf_idx)
 \end{verbatim}
 \paragraph{Note:} The total digest must encode \texttt{k*a + hsl = 6*22 + 24 = 156} bits. The \texttt{H\_msg\_fors} output length (Section~5.4.2) must be set accordingly: \texttt{roundup((k*a + hsl) / 8) = 20} bytes. This is a correction from the original \texttt{roundup((k*a) / 8) = 17} bytes, which was insufficient for the unified digest.
 

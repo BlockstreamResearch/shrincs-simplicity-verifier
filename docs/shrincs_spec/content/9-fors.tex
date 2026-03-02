@@ -186,8 +186,10 @@ The \texttt{fors\_pkFromSig} function recovers the FORS+C public key from a sign
         pk: FORS+C public key or "false" if invalid
     
     1.  roots ← []
-    2.  offset ← R_SIZE     // skip R (already consumed by caller)
-    3.  for i from 0 to k - 2:
+    2. if indices[k-1] != 0:
+        return false
+    3.  offset ← R_SIZE     // skip R (already consumed by caller)
+    4.  for i from 0 to k - 2:
         a. sk_i ← sig[offset : offset + n]
         b. auth_i ← sig[offset + n : offset + n + a * n]
         c. offset ← offset + n + a * n
@@ -208,7 +210,7 @@ The \texttt{fors\_pkFromSig} function recovers the FORS+C public key from a sign
                    node ← Tw(PK.seed, ADRS, auth_i[h * n : (h + 1) * n] || node)
                idx ← idx >> 1
         k. roots[i] ← node
-    4.  setTypeAndClear(ADRS, FORS_PK)
-    5.  pk ← Tw(PK.seed, ADRS, roots[0] || ... || roots[k-2])
-    6.  return pk
+    5.  setTypeAndClear(ADRS, FORS_PK)
+    6.  pk ← Tw(PK.seed, ADRS, roots[0] || ... || roots[k-2])
+    7.  return pk
 \end{verbatim}
