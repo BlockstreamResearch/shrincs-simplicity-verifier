@@ -1,13 +1,13 @@
 # Fdb version 4
-["biber main"] 1770658414.70805 "main.bcf" "main.bbl" "main" 1772491731.50278 0
-  "main.bcf" 1772491731.39841 109501 5d0f2e84943a7569ab805750a35c2b0a "pdflatex"
+["biber main"] 1770658414.70805 "main.bcf" "main.bbl" "main" 1772492470.3939 0
+  "main.bcf" 1772492470.28701 109501 5d0f2e84943a7569ab805750a35c2b0a "pdflatex"
   "main.bib" 1772490079.07032 5264 94f3b1ad7dc4ebbeab2fcc882a49a2e7 ""
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1772491729.85059 "/Users/oleksandr.kurbatov/mjthatch/HB-Liquid/docs/shrincs_spec/main.tex" "main.pdf" "main" 1772491731.50302 0
-  "/Users/oleksandr.kurbatov/mjthatch/HB-Liquid/docs/shrincs_spec/main.tex" 1772490079.07312 3470 2c33465960dbbc5ecda15abe8597408f ""
+["pdflatex"] 1772492468.77998 "/Users/oleksandr.kurbatov/mjthatch/HB-Liquid/docs/shrincs_spec/main.tex" "main.pdf" "main" 1772492470.39416 0
+  "/Users/oleksandr.kurbatov/mjthatch/HB-Liquid/docs/shrincs_spec/main.tex" 1772491861.21248 3470 2c33465960dbbc5ecda15abe8597408f ""
   "/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1136849721 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/tfm/jknappen/ec/tcrm1000.tfm" 1136768653 1536 e07581a4bb3136ece9eeb4c3ffab8233 ""
@@ -274,19 +274,19 @@
   "content/3-overview.tex" 1772490079.06809 6259 51c0368a26259e399d4b274feb5eba66 ""
   "content/4-params.tex" 1772490079.06814 1793 832e4be1b9fba4147add1b5cc908bae1 ""
   "content/5-functions-and-addresses.tex" 1772490079.06829 8269 e2b49af2846a1215be8233cbe83be2d4 ""
-  "content/6-wots+c.tex" 1772491729.71574 15054 a520a545125aa83539b89df72a65cf01 ""
+  "content/6-wots+c.tex" 1772492468.53662 15140 1b2f2d2de772c750814ebca5821b717e ""
   "content/7-xmss.tex" 1772490079.06851 9208 117ce7a5c194198d08e0d1f96491308e ""
   "content/8-uxmss.tex" 1772490079.06867 12186 6509e4493e9714ef5a269aff279ecfe9 ""
   "content/9-fors.tex" 1772491729.71573 11862 a5503ca431ee660d8afc90d0c4b9b428 ""
   "content/a-grinding-complexity.tex" 1772491729.60452 4555 ba5ad43176be077f971cf143adcdc2ed ""
   "content/img/fors.png" 1772490079.06931 73039 043f0cf01ff3763ec5052b6038615988 ""
   "content/img/general.png" 1772490079.07005 186822 35f81f789621d676a7d91821bc87997c ""
-  "main.aux" 1772491731.39479 16507 bba1958eb96bcd8fcc88da969d3cf6d6 "pdflatex"
+  "main.aux" 1772492470.28327 16507 bba1958eb96bcd8fcc88da969d3cf6d6 "pdflatex"
   "main.bbl" 1772490079.07015 22490 6e19a8fb416f7855b2405d75822543c6 "biber main"
-  "main.out" 1772491731.39626 13715 870de4d44f0b08e51627b5ab5964e455 "pdflatex"
-  "main.run.xml" 1772491731.39906 2305 cd7944b45309a4232ac3da8bf87f1748 "pdflatex"
-  "main.tex" 1772490079.07312 3470 2c33465960dbbc5ecda15abe8597408f ""
-  "main.toc" 1772491731.3991 9018 e889e060663b92a1bbe0c1e5aba92c5a "pdflatex"
+  "main.out" 1772492470.2848 13715 870de4d44f0b08e51627b5ab5964e455 "pdflatex"
+  "main.run.xml" 1772492470.28754 2305 cd7944b45309a4232ac3da8bf87f1748 "pdflatex"
+  "main.tex" 1772491861.21248 3470 2c33465960dbbc5ecda15abe8597408f ""
+  "main.toc" 1772492470.28759 9018 e889e060663b92a1bbe0c1e5aba92c5a "pdflatex"
   (generated)
   "main.aux"
   "main.bcf"

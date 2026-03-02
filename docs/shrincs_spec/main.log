@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.12.17)  3 MAR 2026 00:48
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.12.17)  3 MAR 2026 01:01
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1125,21 +1125,21 @@ Underfull \hbox (badness 10000) in paragraph at lines 28--29
 [14]
 
 [15]
-Overfull \hbox (51.02771pt too wide) in paragraph at lines 200--200
+Overfull \hbox (51.02771pt too wide) in paragraph at lines 202--202
 []    \OT1/cmtt/m/n/10 Algorithm: wots_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS, keypair, mode, is_internal)[] 
  []
 
 
 
 [16]
-Overfull \hbox (14.27803pt too wide) in paragraph at lines 243--243
+Overfull \hbox (14.27803pt too wide) in paragraph at lines 245--245
 []    \OT1/cmtt/m/n/10 Algorithm: wots_pkFromSig(sig, m, PK.seed, PK.root, ADRS, keypair, mode, is_internal)[] 
  []
 
 
 
 [17])
-Overfull \hbox (7.0607pt too wide) in paragraph at lines 296--87
+Overfull \hbox (7.0607pt too wide) in paragraph at lines 298--87
 []\OT1/cmr/m/n/10 The ver-i-fi-ca-tion cost is \OT1/cmtt/m/n/10 (w-1)*l - S[]wn + 1 \OT1/cmr/m/n/10 hashes per WOTS+C in-stance (2041 hashes for SHRINCS-
  []
 
@@ -1325,13 +1325,13 @@ Package logreq Info: Writing requests to 'main.run.xml'.
 Here is how much of TeX's memory you used:
  54834 strings out of 473190
  1295778 string characters out of 5715799
- 2378875 words of memory out of 5000000
+ 2378876 words of memory out of 5000000
  77216 multiletter control sequences out of 15000+600000
  569257 words of font info for 77 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  84i,10n,96p,1300b,1496s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmcsc10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb>
-Output written on main.pdf (41 pages, 484774 bytes).
+Output written on main.pdf (41 pages, 484725 bytes).
 PDF statistics:
  890 PDF objects out of 1000 (max. 8388607)
  771 compressed objects within 8 object streams

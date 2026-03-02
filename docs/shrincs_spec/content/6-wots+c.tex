@@ -147,11 +147,12 @@ WOTS+C uses a two-phase hashing approach (see Section~5.4.1):
 The function \texttt{wots\_grind()} takes a pre-computed digest and increments \texttt{ctr} until the base-w digits of the Phase 2 output satisfy the target sum \texttt{S\_wn}. It returns the found \texttt{ctr} and the corresponding digit array.
 
 \begin{verbatim}
-    Algorithm: wots_grind(PK.seed, digest, ADRS)
+    Algorithm: wots_grind(PK.seed, digest, ADRS, keypair)
     Input:
         PK.seed: public seed
         digest: a digest from phase 1 H_msg, or a tree root for internal signatures
         ADRS: tweak
+        keypair: keypair
     Output:
         msg: array of l integers in [0, w-1]
         ctr: final counter value used
@@ -172,11 +173,12 @@ The function \texttt{wots\_grind()} takes a pre-computed digest and increments \
 Additionally we need to define a func which allows to calculate the digest without grinding (by providing the \texttt{ctr} value directly).
 
 \begin{verbatim}
-    Algorithm: wots_digest(PK.seed, digest, ctr, ADRS)
+    Algorithm: wots_digest(PK.seed, digest, ctr, ADRS, keypair)
     Input:
         digest: digest from phase 1 H_msg, or a tree root
         ctr: counter value
         ADRS: tweak
+        keypair: keypair
     Output:
         msg: array of l integers in [0, w-1]
         valid: boolean indicating if sum == S_wn
@@ -223,7 +225,7 @@ For internal XMSS signatures (signing tree roots at layers \texttt{1..d-1} of th
         else:
             setTypeAndClear(ADRS, H_MSG)
             digest ← H_msg(ADRS, R, PK.seed, PK.root, m)
-    4. (msg, ctr) ← wots_grind(PK.seed, digest, ADRS)
+    4. (msg, ctr) ← wots_grind(PK.seed, digest, ADRS, keypair)
     5. sig ← R || ctr
     6. for i from 0 to (l - 1):
         a. setTypeAndClear(ADRS, WOTS_PRF)
@@ -268,7 +270,7 @@ Verification reconstructs the WOTS+C public key implied by the signature. It fir
         else:
             setTypeAndClear(ADRS, H_MSG)
             digest ← H_msg(ADRS, R, PK.seed, PK.root, m)
-    5. (msg, valid) ← wots_digest(PK.seed, digest, ctr, ADRS)
+    5. (msg, valid) ← wots_digest(PK.seed, digest, ctr, ADRS, keypair)
     6. if not valid:
         return false
     7. tmp ← []
