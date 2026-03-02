@@ -1,29 +1,30 @@
+\contentsline {paragraph}{SHRINCS Team and Contributors:}{1}{section*.1}%
 \contentsline {section}{\numberline {1}Motivation}{4}{section.1}%
 \contentsline {subsection}{\numberline {1.1}SHRINCS}{4}{subsection.1.1}%
 \contentsline {subsection}{\numberline {1.2}Limitations and Practical Considerations}{4}{subsection.1.2}%
-\contentsline {paragraph}{State Management Across Devices.}{5}{section*.2}%
-\contentsline {paragraph}{State Corruption and Power Failure.}{5}{section*.3}%
-\contentsline {paragraph}{State Growth with Multiple Addresses.}{5}{section*.4}%
-\contentsline {paragraph}{Variable Stateful Signature Sizes.}{5}{section*.5}%
+\contentsline {paragraph}{State Management Across Devices.}{5}{section*.3}%
+\contentsline {paragraph}{State Corruption and Power Failure.}{5}{section*.4}%
+\contentsline {paragraph}{State Growth with Multiple Addresses.}{5}{section*.5}%
+\contentsline {paragraph}{Variable Stateful Signature Sizes.}{5}{section*.6}%
 \contentsline {section}{\numberline {2}Notation}{5}{section.2}%
 \contentsline {section}{\numberline {3}Overview}{6}{section.3}%
 \contentsline {subsection}{\numberline {3.1}Key Pair Derivation and Size}{6}{subsection.3.1}%
 \contentsline {subsection}{\numberline {3.2}Signature Size and Verification Cost}{6}{subsection.3.2}%
 \contentsline {subsubsection}{\numberline {3.2.1}Stateful}{7}{subsubsection.3.2.1}%
-\contentsline {paragraph}{Note:}{8}{section*.6}%
-\contentsline {subsubsection}{\numberline {3.2.2}Stateless}{8}{subsubsection.3.2.2}%
 \contentsline {paragraph}{Note:}{8}{section*.7}%
+\contentsline {subsubsection}{\numberline {3.2.2}Stateless}{8}{subsubsection.3.2.2}%
+\contentsline {paragraph}{Note:}{8}{section*.8}%
 \contentsline {section}{\numberline {4}Parameters}{8}{section.4}%
-\contentsline {paragraph}{Note:}{9}{section*.8}%
+\contentsline {paragraph}{Note:}{9}{section*.9}%
 \contentsline {section}{\numberline {5}Underlying Functions and Addresses}{9}{section.5}%
 \contentsline {subsection}{\numberline {5.1}Hash Function}{9}{subsection.5.1}%
 \contentsline {subsection}{\numberline {5.2}Tweakable Hash Function}{9}{subsection.5.2}%
-\contentsline {paragraph}{Note:}{9}{section*.9}%
+\contentsline {paragraph}{Note:}{9}{section*.10}%
 \contentsline {subsection}{\numberline {5.3}Pseudorandom Functions}{10}{subsection.5.3}%
 \contentsline {subsection}{\numberline {5.4}Message Hash Function}{10}{subsection.5.4}%
 \contentsline {subsubsection}{\numberline {5.4.1}WOTS+C: Two-Phase Hashing}{10}{subsubsection.5.4.1}%
-\contentsline {paragraph}{Phase 1. Message Digest.}{10}{section*.10}%
-\contentsline {paragraph}{Phase 2. Grinding Hash.}{10}{section*.11}%
+\contentsline {paragraph}{Phase 1. Message Digest.}{10}{section*.11}%
+\contentsline {paragraph}{Phase 2. Grinding Hash.}{10}{section*.12}%
 \contentsline {subsubsection}{\numberline {5.4.2}FORS+C: Single-Phase Hashing}{10}{subsubsection.5.4.2}%
 \contentsline {subsection}{\numberline {5.5}Tweak Structure and Domain Separation}{11}{subsection.5.5}%
 \contentsline {subsubsection}{\numberline {5.5.1}Address Types}{11}{subsubsection.5.5.1}%
@@ -41,35 +42,35 @@
 \contentsline {section}{\numberline {7}XMSS}{18}{section.7}%
 \contentsline {subsection}{\numberline {7.1}XMSS Tree Structure}{18}{subsection.7.1}%
 \contentsline {subsection}{\numberline {7.2}XMSS TreeHash}{19}{subsection.7.2}%
-\contentsline {paragraph}{Note:}{19}{section*.12}%
+\contentsline {paragraph}{Note:}{19}{section*.13}%
 \contentsline {subsection}{\numberline {7.3}XMSS Root Computation}{19}{subsection.7.3}%
 \contentsline {subsection}{\numberline {7.4}XMSS Authentication Path Generation}{20}{subsection.7.4}%
-\contentsline {paragraph}{Note:}{20}{section*.13}%
+\contentsline {paragraph}{Note:}{20}{section*.14}%
 \contentsline {subsection}{\numberline {7.5}XMSS Public Key Recovery from Signature}{20}{subsection.7.5}%
 \contentsline {subsection}{\numberline {7.6}XMSS Signature Generation (Stateless Layer)}{21}{subsection.7.6}%
 \contentsline {subsection}{\numberline {7.7}Contribution to Signature Size and Verification Complexity}{21}{subsection.7.7}%
-\contentsline {paragraph}{Note:}{21}{section*.14}%
+\contentsline {paragraph}{Note:}{21}{section*.15}%
 \contentsline {section}{\numberline {8}UXMSS. The Stateful Tree}{21}{section.8}%
 \contentsline {subsection}{\numberline {8.1}UXMSS Tree Structure}{22}{subsection.8.1}%
 \contentsline {subsection}{\numberline {8.2}UXMSS TreeHash}{22}{subsection.8.2}%
-\contentsline {paragraph}{Note:}{23}{section*.15}%
+\contentsline {paragraph}{Note:}{23}{section*.16}%
 \contentsline {subsection}{\numberline {8.3}UXMSS Root Computation}{23}{subsection.8.3}%
 \contentsline {subsection}{\numberline {8.4}UXMSS Authentication Path Generation}{23}{subsection.8.4}%
-\contentsline {paragraph}{Note:}{24}{section*.16}%
+\contentsline {paragraph}{Note:}{24}{section*.17}%
 \contentsline {subsection}{\numberline {8.5}UXMSS Public Key Recovery from Signature}{24}{subsection.8.5}%
-\contentsline {paragraph}{Note:}{25}{section*.17}%
+\contentsline {paragraph}{Note:}{25}{section*.18}%
 \contentsline {subsection}{\numberline {8.6}UXMSS Signature Generation}{25}{subsection.8.6}%
 \contentsline {subsection}{\numberline {8.7}Contribution to Signature Size and Verification Complexity}{25}{subsection.8.7}%
 \contentsline {section}{\numberline {9}FORS+C}{26}{section.9}%
 \contentsline {subsection}{\numberline {9.1}FORS Structure}{26}{subsection.9.1}%
 \contentsline {subsection}{\numberline {9.2}Grinding Condition}{26}{subsection.9.2}%
 \contentsline {subsection}{\numberline {9.3}Message to Indices}{27}{subsection.9.3}%
-\contentsline {paragraph}{Note:}{27}{section*.18}%
 \contentsline {paragraph}{Note:}{27}{section*.19}%
+\contentsline {paragraph}{Note:}{27}{section*.20}%
 \contentsline {subsection}{\numberline {9.4}Grinding}{27}{subsection.9.4}%
 \contentsline {subsection}{\numberline {9.5}Secret Key Generation}{27}{subsection.9.5}%
 \contentsline {subsection}{\numberline {9.6}TreeHash}{28}{subsection.9.6}%
-\contentsline {paragraph}{Note:}{28}{section*.20}%
+\contentsline {paragraph}{Note:}{28}{section*.21}%
 \contentsline {subsection}{\numberline {9.7}FORS Authentication path}{29}{subsection.9.7}%
 \contentsline {subsection}{\numberline {9.8}Signature generation}{29}{subsection.9.8}%
 \contentsline {subsection}{\numberline {9.9}Public Key Recovery}{29}{subsection.9.9}%
@@ -79,7 +80,7 @@
 \contentsline {subsection}{\numberline {10.3}Stateful signing}{32}{subsection.10.3}%
 \contentsline {subsection}{\numberline {10.4}Stateless signing}{32}{subsection.10.4}%
 \contentsline {subsection}{\numberline {10.5}Index Parsing}{33}{subsection.10.5}%
-\contentsline {paragraph}{Note:}{33}{section*.21}%
+\contentsline {paragraph}{Note:}{33}{section*.22}%
 \contentsline {subsection}{\numberline {10.6}Stateful verification}{33}{subsection.10.6}%
 \contentsline {subsection}{\numberline {10.7}Stateless verification}{34}{subsection.10.7}%
 \contentsline {subsection}{\numberline {10.8}Unified Verification}{35}{subsection.10.8}%
@@ -95,17 +96,17 @@
 \contentsline {subsubsection}{\numberline {A.1.2}FORS+C Grinding}{39}{subsubsection.A.1.2}%
 \contentsline {subsection}{\numberline {A.2}Concrete Parameters}{39}{subsection.A.2}%
 \contentsline {subsubsection}{\numberline {A.2.1}SHRINCS-B ($w=256$, $l=16$, $S_{wn}=2040$)}{39}{subsubsection.A.2.1}%
-\contentsline {paragraph}{Statistic calculation:}{39}{section*.23}%
-\contentsline {paragraph}{Analysis:}{39}{section*.24}%
-\contentsline {paragraph}{Approximate probability:}{39}{section*.25}%
-\contentsline {paragraph}{Expected grinding cost:}{39}{section*.26}%
-\contentsline {paragraph}{Practical performance:}{40}{section*.27}%
+\contentsline {paragraph}{Statistic calculation:}{39}{section*.24}%
+\contentsline {paragraph}{Analysis:}{39}{section*.25}%
+\contentsline {paragraph}{Approximate probability:}{39}{section*.26}%
+\contentsline {paragraph}{Expected grinding cost:}{39}{section*.27}%
+\contentsline {paragraph}{Practical performance:}{40}{section*.28}%
 \contentsline {subsubsection}{\numberline {A.2.2}SHRINCS-L ($w=4$, $l=64$, $S_{wn}=140$)}{40}{subsubsection.A.2.2}%
-\contentsline {paragraph}{Statistic calculation:}{40}{section*.28}%
-\contentsline {paragraph}{Analysis:}{40}{section*.29}%
-\contentsline {paragraph}{Approximate probability:}{40}{section*.30}%
-\contentsline {paragraph}{Expected grinding cost:}{40}{section*.31}%
-\contentsline {paragraph}{Practical performance:}{40}{section*.32}%
+\contentsline {paragraph}{Statistic calculation:}{40}{section*.29}%
+\contentsline {paragraph}{Analysis:}{40}{section*.30}%
+\contentsline {paragraph}{Approximate probability:}{40}{section*.31}%
+\contentsline {paragraph}{Expected grinding cost:}{40}{section*.32}%
+\contentsline {paragraph}{Practical performance:}{40}{section*.33}%
 \contentsline {subsection}{\numberline {A.3}FORS+C Grinding Complexity}{40}{subsection.A.3}%
-\contentsline {paragraph}{Expected grinding cost:}{40}{section*.33}%
-\contentsline {paragraph}{Practical performance:}{41}{section*.34}%
+\contentsline {paragraph}{Expected grinding cost:}{40}{section*.34}%
+\contentsline {paragraph}{Practical performance:}{41}{section*.35}%

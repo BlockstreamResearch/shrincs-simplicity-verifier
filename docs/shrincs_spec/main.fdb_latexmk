@@ -1,13 +1,13 @@
 # Fdb version 4
-["biber main"] 1770658414.70805 "main.bcf" "main.bbl" "main" 1772492470.3939 0
-  "main.bcf" 1772492470.28701 109501 5d0f2e84943a7569ab805750a35c2b0a "pdflatex"
+["biber main"] 1770658414.70805 "main.bcf" "main.bbl" "main" 1772493743.62327 0
+  "main.bcf" 1772493743.52601 109501 5d0f2e84943a7569ab805750a35c2b0a "pdflatex"
   "main.bib" 1772490079.07032 5264 94f3b1ad7dc4ebbeab2fcc882a49a2e7 ""
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1772492468.77998 "/Users/oleksandr.kurbatov/mjthatch/HB-Liquid/docs/shrincs_spec/main.tex" "main.pdf" "main" 1772492470.39416 0
-  "/Users/oleksandr.kurbatov/mjthatch/HB-Liquid/docs/shrincs_spec/main.tex" 1772491861.21248 3470 2c33465960dbbc5ecda15abe8597408f ""
+["pdflatex"] 1772493742.11324 "/Users/oleksandr.kurbatov/mjthatch/HB-Liquid/docs/shrincs_spec/main.tex" "main.pdf" "main" 1772493743.6235 0
+  "/Users/oleksandr.kurbatov/mjthatch/HB-Liquid/docs/shrincs_spec/main.tex" 1772493740.29402 3589 a61830b85145aa45f4e513f8ed016c20 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1136849721 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/tfm/jknappen/ec/tcrm1000.tfm" 1136768653 1536 e07581a4bb3136ece9eeb4c3ffab8233 ""
@@ -281,12 +281,12 @@
   "content/a-grinding-complexity.tex" 1772491729.60452 4555 ba5ad43176be077f971cf143adcdc2ed ""
   "content/img/fors.png" 1772490079.06931 73039 043f0cf01ff3763ec5052b6038615988 ""
   "content/img/general.png" 1772490079.07005 186822 35f81f789621d676a7d91821bc87997c ""
-  "main.aux" 1772492470.28327 16507 bba1958eb96bcd8fcc88da969d3cf6d6 "pdflatex"
+  "main.aux" 1772493743.52233 16623 c5f6117337bc72ce864ac2d2664c3aa0 "pdflatex"
   "main.bbl" 1772490079.07015 22490 6e19a8fb416f7855b2405d75822543c6 "biber main"
-  "main.out" 1772492470.2848 13715 870de4d44f0b08e51627b5ab5964e455 "pdflatex"
-  "main.run.xml" 1772492470.28754 2305 cd7944b45309a4232ac3da8bf87f1748 "pdflatex"
-  "main.tex" 1772491861.21248 3470 2c33465960dbbc5ecda15abe8597408f ""
-  "main.toc" 1772492470.28759 9018 e889e060663b92a1bbe0c1e5aba92c5a "pdflatex"
+  "main.out" 1772493743.52383 13715 870de4d44f0b08e51627b5ab5964e455 "pdflatex"
+  "main.run.xml" 1772493743.52655 2305 cd7944b45309a4232ac3da8bf87f1748 "pdflatex"
+  "main.tex" 1772493740.29402 3589 a61830b85145aa45f4e513f8ed016c20 ""
+  "main.toc" 1772493743.52659 9093 ad7065b910f9808f7064bde32e825b09 "pdflatex"
   (generated)
   "main.aux"
   "main.bcf"
