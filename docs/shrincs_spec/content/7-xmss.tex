@@ -1,7 +1,7 @@
 \section{XMSS}
 SHRINCS employs two distinct Merkle tree constructions: a standard balanced XMSS tree for the stateless hypertree, and an Unbalanced XMSS (UXMSS) tree optimized for the stateful component (specified in Section~8).
 
-The stateless signature mode uses a SPHINCS+-style hypertree consisting of \texttt{d} layers, where each layer contains standard balanced XMSS trees. Each XMSS tree authenticates \texttt{2\string^h'} WOTS+C key pairs, where \texttt{h' = h\_sl / d} is the height of trees within each layer.
+The stateless signature mode uses a SPHINCS+-style hypertree consisting of \texttt{d} layers, where each layer contains standard balanced XMSS trees. Each XMSS tree authenticates \texttt{2\string^h'} WOTS+C key pairs, where \texttt{h' = hsl / d} is the height of trees within each layer.
 
 \subsection{XMSS Tree Structure}
 An XMSS tree of height \texttt{h'} is a complete binary Merkle tree where:

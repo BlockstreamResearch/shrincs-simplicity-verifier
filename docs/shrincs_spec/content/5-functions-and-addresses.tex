@@ -73,10 +73,10 @@ This is computed once per signature, producing an n-byte digest.
 \subsubsection{FORS+C: Single-Phase Hashing}
 FORS+C always signs user messages (never tree roots), so it uses a simpler single-phase approach. The grinding counter is not included in the message hash. Instead, it is iterated inside \texttt{PRF\_msg\_ctr} (Section~5.3) to produce a fresh \texttt{R} on each grinding attempt. The verifier only sees the final \texttt{R}:
 \begin{center}
-    \texttt{H\_msg\_fors(ADRS, R, PK.seed, PK.root, m) = SHA-256(ADRS || R || PK.seed || PK.root || m)[0:roundup((k*a + h\_sl) / 8)]}
+    \texttt{H\_msg\_fors(ADRS, R, PK.seed, PK.root, m) = SHA-256(ADRS || R || PK.seed || PK.root || m)[0:roundup((k*a + hsl) / 8)]}
 \end{center}
 
-The output length is roundup((k*a + h\_sl) / 8) = 20 bytes for both parameter sets, encoding both the \texttt{k} FORS leaf indices and the \texttt{h\_sl} hypertree path indices in a unified digest (see Section~10.5).
+The output length is roundup((k*a + hsl) / 8) = 20 bytes for both parameter sets, encoding both the \texttt{k} FORS leaf indices and the \texttt{hsl} hypertree path indices in a unified digest (see Section~10.5).
 
 \subsection{Tweak Structure and Domain Separation}
 Tweaks are structured as follows to ensure uniqueness across all scheme components:

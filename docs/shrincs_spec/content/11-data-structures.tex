@@ -25,11 +25,11 @@ Total size: \texttt{2n = 32 bytes}.
 \subsection{Stateful Signature Format}
 A stateful signature consists of the stateless public key followed by a UXMSS signature:
 \begin{verbatim}
-PK.sl       : n bytes          // Stateless public key
-R           : R_SIZE bytes     // Randomness for message hashing  
-ctr         : c bytes          // Grinding counter
-chain_values: l * n bytes      // WOTS+C signature
-auth_path   : q * n bytes      // UXMSS authentication path
+PK.sl       : n bytes                 // Stateless public key
+R           : R_SIZE bytes            // Randomness for message hashing  
+ctr         : c bytes                 // Grinding counter
+chain_values: l * n bytes             // WOTS+C signature
+auth_path   : min(q, hsf) * n bytes   // UXMSS authentication path
 \end{verbatim}
 The signature size depends on the signature index \texttt{q}:
 \begin{verbatim}
@@ -38,18 +38,18 @@ SHRINCS-B (n=16, R_SIZE=32, c=4, l=16):
     R           : 32 bytes
     ctr         : 4 bytes
     chain_values: 256 bytes  
-    auth_path   : q * 16 bytes
+    auth_path   : min(q, hsf) * 16 bytes
   
-    Total: 308 + 16*q bytes
+    Total: 308 + 16*min(q, hsf) bytes
 
 SHRINCS-L (n=16, R_SIZE=32, c=4, l=64):
     PK.sl       : 16 bytes
     R           : 32 bytes  
     ctr         : 4 bytes
     chain_values: 1024 bytes   
-    auth_path   : q * 16 bytes
+    auth_path   : min(q, hsf) * 16 bytes
   
-    Total: 1076 + 16*q bytes
+    Total: 1076 + 16*min(q, hsf)
 \end{verbatim}
 
 \subsection{Stateless Signature Format}
@@ -92,11 +92,11 @@ SHRINCS-L (n=16, R_SIZE=32, c=4, k=6, a=22, d=2, h'=12, l=64):
 
 Verifiers distinguish between stateful and stateless signatures by length (Algorithm 10.8):
 \begin{center}
-    \texttt{max\_stateful\_size = n + R\_SIZE + c + l*n + (h\_sf + 1)*n}
+    \texttt{max\_stateful\_size = n + R\_SIZE + c + l*n + hsf*n}
 \end{center}
 \begin{itemize}
-    \item For SHRINCS-B: \texttt{max\_stateful\_size = 16 + 32 + 4 + 256 + 159*16 = 2852} bytes
-    \item For SHRINCS-L: \texttt{max\_stateful\_size = 16 + 32 + 4 + 1024 + 207*16 = 4388} bytes
+    \item For SHRINCS-B: \texttt{max\_stateful\_size = 16 + 32 + 4 + 256 + 158*16 = 2836} bytes
+    \item For SHRINCS-L: \texttt{max\_stateful\_size = 16 + 32 + 4 + 1024 + 206*16 = 4372} bytes
 \end{itemize}
 
 Signatures with length \texttt{<= max\_stateful\_size} are processed as stateful; larger signatures as stateless.

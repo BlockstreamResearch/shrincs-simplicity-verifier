@@ -117,11 +117,9 @@ To create a WOTS public key for a given \texttt{keypair} index, we derive one se
         if mode == SF: 
             WOTS_HASH ← SF_WOTS_HASH
             WOTS_PK   ← SF_WOTS_PK
-            TREE      ← SF_TREE 
         else:
             WOTS_HASH ← SL_WOTS_HASH
             WOTS_PK   ← SL_WOTS_PK
-            TREE      ← SL_TREE
 
     1. tmp ← []
     2. for i from 0 to l - 1:
@@ -139,7 +137,7 @@ To create a WOTS public key for a given \texttt{keypair} index, we derive one se
     6. return pk
 \end{verbatim}
 
-\subsection{Messsage Digest Grinding}
+\subsection{Message Digest Grinding}
 WOTS+C uses a two-phase hashing approach (see Section~5.4.1):
 \begin{enumerate}
     \item Phase 1 \texttt{(H\_msg)}: Computes a randomized digest of the user message. This is performed once per signature and produces an \texttt{n}-byte digest. For internal XMSS signatures (which sign tree roots that are already hashes), phase 1 is skipped and the tree root is used directly as the digest.

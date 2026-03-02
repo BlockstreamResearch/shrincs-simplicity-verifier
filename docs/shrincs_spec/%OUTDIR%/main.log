@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.12.17)  25 FEB 2026 18:54
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.12.17)  2 MAR 2026 23:39
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1090,7 +1090,7 @@ Overfull \hbox (6.05965pt too wide) in paragraph at lines 11--12
 [4{/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}]) (./content/2-notation.tex
 
 [5]) (./content/3-overview.tex
-<content/img/general.png, id=502, 936.49875pt x 753.81625pt>
+<content/img/general.png, id=498, 936.49875pt x 753.81625pt>
 File: content/img/general.png Graphic file (type png)
 <use content/img/general.png>
 Package pdftex.def Info: content/img/general.png  used on input line 9.
@@ -1125,21 +1125,21 @@ Underfull \hbox (badness 10000) in paragraph at lines 28--29
 [14]
 
 [15]
-Overfull \hbox (51.02771pt too wide) in paragraph at lines 200--200
+Overfull \hbox (51.02771pt too wide) in paragraph at lines 198--198
 []    \OT1/cmtt/m/n/10 Algorithm: wots_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS, keypair, mode, is_internal)[] 
  []
 
 
 
 [16]
-Overfull \hbox (14.27803pt too wide) in paragraph at lines 243--243
+Overfull \hbox (14.27803pt too wide) in paragraph at lines 241--241
 []    \OT1/cmtt/m/n/10 Algorithm: wots_pkFromSig(sig, m, PK.seed, PK.root, ADRS, keypair, mode, is_internal)[] 
  []
 
 
 
 [17])
-Overfull \hbox (7.0607pt too wide) in paragraph at lines 296--87
+Overfull \hbox (7.0607pt too wide) in paragraph at lines 294--87
 []\OT1/cmr/m/n/10 The ver-i-fi-ca-tion cost is \OT1/cmtt/m/n/10 (w-1)*l - S[]wn + 1 \OT1/cmr/m/n/10 hashes per WOTS+C in-stance (2041 hashes for SHRINCS-
  []
 
@@ -1166,10 +1166,20 @@ LaTeX Font Warning: Font shape `OMS/cmtt/m/n' undefined
 
 [23]
 
-[24]) (./content/9-fors.tex
+[24]
+Overfull \hbox (40.5278pt too wide) in paragraph at lines 180--180
+[]        \OT1/cmtt/m/n/10 q=159(max): 32 + 4 + 16*16 + 16*158 =  2820 bytes // same as q=158; < 2856 (stateless)[] 
+ []
+
+
+Overfull \hbox (45.77776pt too wide) in paragraph at lines 185--185
+[]        \OT1/cmtt/m/n/10 q=207(max): 32 + 4 + 64*16 + 16*206 =   4356 bytes // same as q=206; < 4392 (stateless)[] 
+ []
+
+) (./content/9-fors.tex
 
 [25]
-<content/img/fors.png, id=633, 756.8275pt x 359.3425pt>
+<content/img/fors.png, id=629, 756.8275pt x 359.3425pt>
 File: content/img/fors.png Graphic file (type png)
 <use content/img/fors.png>
 Package pdftex.def Info: content/img/fors.png  used on input line 14.
@@ -1179,14 +1189,14 @@ Package pdftex.def Info: content/img/fors.png  used on input line 14.
 [26 <./content/img/fors.png>]
 
 [27]
-Overfull \hbox (9.02808pt too wide) in paragraph at lines 99--99
+Overfull \hbox (9.02808pt too wide) in paragraph at lines 101--101
 []    \OT1/cmtt/m/n/10 Algorithm: fors_treehash(SK.seed, PK.seed, ADRS, tree_idx, target_height, start_idx)[] 
  []
 
 
 
 [28]
-Overfull \hbox (24.7767pt too wide) in paragraph at lines 142--142
+Overfull \hbox (24.7767pt too wide) in paragraph at lines 144--144
 []        \OT1/cmtt/m/n/10 b. auth \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 auth || fors_treehash(SK.seed, PK.seed, ADRS, tree_idx, h, sibling_start)[] 
  []
 
@@ -1197,35 +1207,40 @@ Overfull \hbox (24.7767pt too wide) in paragraph at lines 142--142
 [30]
 
 [31]
-Overfull \hbox (61.52638pt too wide) in paragraph at lines 115--115
+
+[32]
+Overfull \hbox (61.52638pt too wide) in paragraph at lines 119--119
 []        \OT1/cmtt/m/n/10 c. xmss_sig \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 xmss_sign(msg, SK.seed, SK.prf, PK.seed, PK.root, ADRS, h', leaf_idx[layer])[] 
  []
 
 
-
-[32]
-
-[33]
-Overfull \hbox (82.5262pt too wide) in paragraph at lines 215--215
-[]        \OT1/cmtt/m/n/10 g. msg \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 xmss_pkFromSig(wots_sig, auth, msg, PK.seed, PK.root, ADRS, h_prime, leaf_idx[layer])[] 
+Overfull \hbox (166.52547pt too wide) in paragraph at lines 122--122
+[]               \OT1/cmtt/m/n/10 msg \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 xmss_root(SK.seed, PK.seed, ADRS, h') // we may cache or reuse the root computed during xmss_sign[] 
  []
 
 
 
-[34]) (./content/11-data-structures.tex
+[33]
+
+[34]
+Overfull \hbox (82.5262pt too wide) in paragraph at lines 228--228
+[]        \OT1/cmtt/m/n/10 g. msg \TS1/cmtt/m/n/10 ^^X \OT1/cmtt/m/n/10 xmss_pkFromSig(wots_sig, auth, msg, PK.seed, PK.root, ADRS, h_prime, leaf_idx[layer])[] 
+ []
+
+) (./content/11-data-structures.tex
 
 [35]
 
 [36])
+
+[37]
 Overfull \hbox (21.46461pt too wide) in paragraph at lines 103--103
 \OT1/cmr/m/n/10 1509. \OT1/cmr/m/sc/10 doi\OT1/cmr/m/n/10 : []$\OT1/cmtt/m/n/10 10 . 1137 / S0097539795293172$[]\OT1/cmr/m/n/10 . \OT1/cmr/m/sc/10 url\OT1/cmr/m/n/10 : []$\OT1/cmtt/m/n/10 https : / / doi . org / 10 . 1137 / S0097539795293172$[]\OT1/cmr/m/n/10 . 
  []
 
-(./content/a-test-vectors.tex
-Package hyperref Info: bookmark level for unknown todo defaults to 0 on input line 2.
+(./content/a-grinding-complexity.tex
 
-
-[37]) (./content/b-grinding-complexity.tex
+[38]
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 (hyperref)                removing `math shift' on input line 46.
@@ -1256,7 +1271,7 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 
 
 
-[38]
+[39]
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 (hyperref)                removing `math shift' on input line 78.
@@ -1287,9 +1302,9 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 
 
 
-[39])
+[40])
 
-[40] (%OUTDIR%/main.aux)
+[41] (%OUTDIR%/main.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
@@ -1302,24 +1317,24 @@ LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 LaTeX Warning: There were multiply-defined labels.
 
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: CE82393F3730083B6968D7E9ABA52E23;13838.
+(rerunfilecheck)             Checksum: 870DE4D44F0B08E51627B5AB5964E455;13715.
 Package logreq Info: Writing requests to 'main.run.xml'.
 \openout1 = `main.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 54940 strings out of 473190
- 1298383 string characters out of 5715799
- 2379022 words of memory out of 5000000
- 77319 multiletter control sequences out of 15000+600000
- 569090 words of font info for 76 fonts, out of 8000000 for 9000
+ 54835 strings out of 473190
+ 1295885 string characters out of 5715799
+ 2378877 words of memory out of 5000000
+ 77216 multiletter control sequences out of 15000+600000
+ 569257 words of font info for 77 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 84i,10n,96p,1167b,1360s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmcsc10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb>
-Output written on %OUTDIR%/main.pdf (40 pages, 476000 bytes).
+ 84i,10n,96p,1300b,1496s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmcsc10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb>
+Output written on %OUTDIR%/main.pdf (41 pages, 484617 bytes).
 PDF statistics:
- 886 PDF objects out of 1000 (max. 8388607)
- 770 compressed objects within 8 object streams
+ 890 PDF objects out of 1000 (max. 8388607)
+ 771 compressed objects within 8 object streams
  204 named destinations out of 1000 (max. 500000)
- 807 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 799 words of extra memory for PDF output out of 10000 (max. 10000000)
 

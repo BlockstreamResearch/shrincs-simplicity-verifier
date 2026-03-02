@@ -42,6 +42,8 @@ The \texttt{fors\_msg\_to\_indices} function converts a message digest into \tex
         a. indices[i] ← extract_bits(digest, i * a, a)
     3. return indices
 \end{verbatim}
+
+\paragraph{Note:} \texttt{extract\_bits(x, offset, length)} extracts length bits from byte string \texttt{x} starting at bit position offset, returned as an unsigned integer. Bits are numbered in big-endian order: bit \texttt{0} is the most significant bit of byte \texttt{x[0]}.
 \paragraph{Note:} The message digest also encodes which FORS instance is used, as determined by the tree and leaf indices parsed from the stateless signature digest (Section~10.5). The output size of \texttt{H\_msg\_fors} must be sufficient to encode all \texttt{k} indices: at least \texttt{roundup((k*a) / 8)} bytes.
 
 \subsection{Grinding}

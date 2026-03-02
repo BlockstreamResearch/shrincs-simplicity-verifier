@@ -1,7 +1,7 @@
 \section{Overview}
 SHRINCS is designed in the way it can operate in two modes: \textbf{stateful} and \textbf{stateless}. Stateful mode is represented by the instance of Unbalanced XMSS (UXMSS) with a root public key \texttt{PK.sf}. An optimized variant of SPHINCS+ is used to support the stateless operating mode (which is represented by the public key \texttt{PK.sl}). The root public key is a hashed concatenation of (\texttt{PK.sf}, \texttt{PK.sl}), which is being converted to the Bitcoin address. 
 
-During normal operation with intact state, the user generates signatures according to efficient stateful path. Each leaf of the UXMSS is represented by WOTS+C one time signature instance. UXMSS is right-skewed, which makes the first stateful signature (\texttt{q=1}) the cheapest from the verification and size perspective and adds the constant size (16 bytes) and one additional hashing operation for each next stateful signature. A right-skewed UXMSS is a tree construction in which every internal node has a one-time signature leaf as its left child and a UXMSS subtree as its right child, yielding a recursively right-branching authentication tree (as shown on the Figure~1).
+During normal operation with intact state, the user generates signatures according to efficient stateful path. Each leaf of the UXMSS is represented by WOTS+C one time signature instance. UXMSS is right-skewed, which makes the first stateful signature (\texttt{q=1}) the cheapest from the verification and size perspective and adds 16 bytes and one additional hash operation for each next stateful signature, up to \texttt{q = hsf}. The final signature (\texttt{q = hsf + 1}) has the same size and verification cost as \texttt{q = hsf}. A right-skewed UXMSS is a tree construction in which every internal node has a one-time signature leaf as its left child and a UXMSS subtree as its right child, yielding a recursively right-branching authentication tree (as shown on the Figure~1).
 
 If the state is corrupted (or the limit for stateful operations is met), the scheme can continue operating with stateless mode. Stateless mode utilizes an optimized SPHINCS+ variant with WOTS+C signatures in regular XMSS trees on each layer in the hypertree and FORS+C for few-time signature scheme. The general construction of SHRINCS signature is presented on the Figure~1.
 \begin{figure}[h!]
@@ -38,19 +38,19 @@ Stateful signatures consist of:
     \item \texttt{R}: randomness for message hashing (with the size \texttt{R\_SIZE})
     \item \texttt{ctr}: grinding counter of the size \texttt{c}
     \item \texttt{chain\_values}: WOTS+C signature (\texttt{l} chains)
-    \item \texttt{auth\_path}: UXMSS authentication path (q nodes)
+    \item \texttt{auth\_path}: UXMSS authentication path (\texttt{min(q, hsf)} nodes)
 \end{enumerate}
 
 Signature size calculation: 
 \begin{verbatim}
-    General formula: size = PK.sl_SIZE  + R_SIZE + c + l*n + q*n  
+    General formula: size = PK.sl_SIZE + R_SIZE + c + l*n + min(q, hsf)*n 
            SHRINCS-B.size = 16 + 32 + 4 + 16*16 + q*16              = 308 + 16q
            SHRINCS-L.size = 16 + 32 + 4 + 64*16 + q*16              = 1076 + 16q
 \end{verbatim}
 
 The signature verification cost is:
 \begin{verbatim}
-    General formula: hash_ops = (w-1)*l - S_wn + q + 2  
+    General formula: hash_ops = (w-1)*l - S_wn + min(q, hsf) + 2 
            SHRINCS-B.hash_ops = 255*16 - 2040 + q + 2               = 2042 + q
            SHRINCS-L.hash_ops = 3*64 - 140  + q + 2                 = 54 + q
 \end{verbatim}
