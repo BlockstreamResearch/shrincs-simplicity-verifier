@@ -4,7 +4,6 @@
 #include "sphincs/sphincs.simf"
 
 fn main() {
-    // signatures
     test_lamport_sign_verify();
     test_wots_sign_verify();
 }

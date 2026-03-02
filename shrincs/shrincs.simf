@@ -3,9 +3,7 @@
 
 #include "unbalanced_xmss.simf"
 #include "../sphincs/sphincs.simf"
-
-// (Message, (PK.seed, PK.root), stateless or stateful signature, root of unused signature)
-type SHRINCSSignProof = (u256, SPHINCSPK, Either<UXMSSSignature, SPHINCSSignature>, u128);
+#include "types.simf"
 
 fn shrincs_verify(proof: SHRINCSSignProof) {
     let (message, seed_root, signature, root_part): SHRINCSSignProof = proof;
@@ -22,7 +20,7 @@ fn shrincs_verify(proof: SHRINCSSignProof) {
         },
     };
 
-    let (root, _): (u128, u128) = <u256>::into(jet::sha_256_ctx_8_finalize(jet::sha_256_ctx_8_add_32(jet::sha_256_ctx_8_add_8(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_16(hash_ctx, 0), 14), 0), 0), roots)));
+    let (root, _): (u128, u128) = <u256>::into(jet::sha_256_ctx_8_finalize(jet::sha_256_ctx_8_add_32(jet::sha_256_ctx_8_add_8(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_16(hash_ctx, 0), 13), 0), 0), roots)));
 
     assert!(eq_128(root, expected_root));
 }

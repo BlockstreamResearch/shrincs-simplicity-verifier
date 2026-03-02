@@ -5,11 +5,7 @@
 #include "../templates/array_map.simf"
 #include "../templates/assert_arrays.simf"
 #include "../utils.simf"
-
-type SPHINCSWOTSTWKey = [u128; 64];
-type SPHINCSWOTSTWSignature = (u256, u32, [u128; 64]);
-// Represent signature proof as (message_hash, signature, public_key, key_index, public_parameter)
-type SPHINCSWOTSTWSignProof = (u128, SPHINCSWOTSTWSignature, SPHINCSWOTSTWKey, u32, u128);
+#include "../types.simf"
 
 fn sphincs_wots_tw_hash_n_times_iter(key_hash: u128, ctx: (u8, u32, u32, Ctx8, u8, u32, u32, u64, u32), counter: u8) -> Either<u128, u128> {
     let (n, chain_idx, key_index, hash_ctx, from_idx, layer_adrs, tree_adrs_1, tree_adrs_2, wots_type): (u8, u32, u32, Ctx8, u8, u32, u32, u64, u32) = ctx;

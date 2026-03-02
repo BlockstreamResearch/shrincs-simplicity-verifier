@@ -1,0 +1,57 @@
+#ifndef TYPES_H
+#define TYPES_H
+
+// WOTS
+type WOTSSignature = ([u256; 64], [u256; 3]);
+type WOTSKey = ([u256; 64], [u256; 3]);
+// Represent signature proof as (message_hash, signature, public_key)
+type WOTSSignProof = (u256, WOTSSignature, WOTSKey);
+
+
+// Lamport
+type KeyPair = (u256, u256);
+// Represent signature proof as (message_hash, signature, public_key)
+type LamportSignProof = (u256, [u256; 256], [KeyPair; 256]);
+
+
+// SPHINCS
+
+// FORS
+// (SecretValue, MerklePath len a)
+type SPHINCSFORSSignaturePart = (u128, [u128; 22]);
+// (R, k - 1 len array of sizes 2^x of FORS signature parts)
+type SPHINCSFORSSignature = (u256, ([SPHINCSFORSSignaturePart; 4], [SPHINCSFORSSignaturePart; 1]));
+
+// SPHINCS WOTS
+type SPHINCSWOTSTWKey = [u128; 64];
+type SPHINCSWOTSTWSignature = (u256, u32, [u128; 64]);
+// Represent signature proof as (message_hash, signature, public_key, key_index, public_parameter)
+type SPHINCSWOTSTWSignProof = (u128, SPHINCSWOTSTWSignature, SPHINCSWOTSTWKey, u32, u128);
+
+// XMSS
+type SPHINCSMerklePath = [u128; 12];
+// (WOTSSign, MerklePath)
+type XMSSSignature = (SPHINCSWOTSTWSignature, SPHINCSMerklePath);
+
+// (PK.seed, root)
+type SPHINCSPK = (u128, u128);
+// d len array of XMSS signatures
+type XMSSHTSignature = [XMSSSignature; 2];
+// (FORSSign, HTSign)
+type SPHINCSSignature = (SPHINCSFORSSignature, XMSSHTSignature);
+// (Message, PK, Signature)
+type SPHINCSSignProof = (u256, SPHINCSPK, SPHINCSSignature);
+
+
+// SHRINCS
+
+// UXMSS
+// (wots+c signature, merkle path up to 511 elements, signature index)
+type UXMSSSignature = (SPHINCSWOTSTWSignature, List<u128, 512>, u32);
+// (Message, (PK.seed, Root), Signature)
+type UXMSSSignProof = (u256, SPHINCSPK, UXMSSSignature);
+
+// (Message, (PK.seed, PK.root), stateless or stateful signature, root of unused signature)
+type SHRINCSSignProof = (u256, SPHINCSPK, Either<UXMSSSignature, SPHINCSSignature>, u128);
+
+#endif
