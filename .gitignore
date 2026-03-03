@@ -5,6 +5,7 @@ latexmk.out/
 target/
 wots_tw.simf
 xmss.simf
+.DS_Store
 *.aux
 *.log
 *.out
@@ -31,4 +32,4 @@ xmss.simf
 *.idx
 *.ilg
 *.ind
-*.pdf
+# *.pdf
