@@ -1,10 +1,10 @@
-# simplicity-pq-signature
-This repo contains hash-based signatures that can protect bitcoin against quantum computers
+# SHRINCS Simplicity Verifier
+This repo contains hash-based signatures that can protect Bitcoin against quantum computers
 
 > *⚠️ This project is a work in progress and is provided as-is for research, learning, and experimentation. It is not production-ready and has not undergone a formal security audit, code review, or verification process. This library may be incorrect, incomplete, or insecure.*
 
 ## 🛠 Requirements
-We use `#include` and `#define` directives so you may need to install `mcpp`:
+We use `#include` and `#define` directives, so you may need to install `mcpp`:
 ```shell
 brew install mcpp
 ```
@@ -30,13 +30,13 @@ brew install mcpp
     * *Use `MODE=stateful` for XMSS-based stateful trees or `MODE=stateless` for SPHINCS-like stateless verification.*
 
 ## 🚀 Usage
-To execute this code import required signature file using `#include` directive and then run:
+To execute this code, import the required signature file using `#include` directive and then run:
 ```bash
 mkdir -p target
 mcpp -P -I . your-file.simf -o target/your-file.simf
 ```
 
-To run preprocessed file, run:
+To run the preprocessed file, run:
 ```bash
 ./simfony run --witness your-witness.wit target/your-file.simf
 ```
