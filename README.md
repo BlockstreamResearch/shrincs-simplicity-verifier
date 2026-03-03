@@ -17,7 +17,7 @@ brew install mcpp
 | :--- | :--- | :--- |
 | **Lamport** | `lamport.simf` | Lamport one-time signature implementation. |
 | **WOTS** | `wots.simf` | Winternitz One-Time Signature implementation. |
-| **SHRINCS** | `shrincs/shrincs.simf` | SHRINCS implementation [C++](https://github.com/BlockstreamResearch/shrincs-cpp/tree/main). [📖 Read docs](./docs/shrincs_spec/main.pdf) |
+| **SHRINCS** | `shrincs/shrincs.simf` | SHRINCS implementation. [C++](https://github.com/BlockstreamResearch/shrincs-cpp/tree/main). [📖 Read docs](./docs/shrincs_spec/main.pdf) |
 
 > **Note:** Each signature contains method `X_verify` (where `X` is the scheme name) that verifies the validity of the signature for the corresponding message hash and public key
 
