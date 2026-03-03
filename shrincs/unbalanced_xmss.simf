@@ -27,13 +27,16 @@ fn restore_uxmss_signature(proof: UXMSSSignProof, hash_ctx: Ctx8) -> u128 {
 
     let (message, _): (u128, u128) = <u256>::into(jet::sha_256_ctx_8_finalize(jet::sha_256_ctx_8_add_32(jet::sha_256_ctx_8_add_16(jet::sha_256_ctx_8_add_16(jet::sha_256_ctx_8_add_32(jet::sha_256_ctx_8_add_8(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_16(jet::sha_256_ctx_8_init(), 0), 11), 0), 0), r), pk_seed), root), message)));
 
-    let (message, _): (u128, u128) = <u256>::into(jet::sha_256_ctx_8_finalize(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_16(jet::sha_256_ctx_8_add_16(jet::sha_256_ctx_8_add_8(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_16(jet::sha_256_ctx_8_init(), 0), 9), 0), 0), pk_seed), message), counter)));
+    let (message, _): (u128, u128) = <u256>::into(jet::sha_256_ctx_8_finalize(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_16(jet::sha_256_ctx_8_add_16(jet::sha_256_ctx_8_add_8(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_16(jet::sha_256_ctx_8_init(), 0), 9), key_idx), 0), pk_seed), message), counter)));
 
     let (pk, (_, _, checksum, _, _, _, _, _, _)): ([u128; 64], (u128, u32, u8, u32, Ctx8, u32, u32, u64, u32)) = sphincs_restore_wots_tw_signature_map_arr_64(message_signature, (message, 0, 0, key_idx, hash_ctx, 0, 0, 0, 0));
     assert!(jet::eq_8(checksum, 140));
 
     // hsf + 1
-    let (_, tree_height): (bool, u32) = jet::subtract_32(207, key_idx);
+    let (_, tree_height): (bool, u32) = match jet::eq_32(key_idx, 207) {
+        true => (false, 1),
+        false => jet::subtract_32(207, key_idx),
+    };
 
     let (root, _, _, _): (u128, bool, Ctx8, u32) = fold::<shrincs_get_root_from_path_iter, 512>(merkle_path, (sphincs_hash_leaf_xmss(pk, (key_idx, hash_ctx, 0, 0, 0, 1)), jet::eq_32(key_idx, 207), hash_ctx, tree_height));
     root
