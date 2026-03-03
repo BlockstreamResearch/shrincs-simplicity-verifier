@@ -207,7 +207,7 @@ The \texttt{SHRINCS.VerifyStateless} function verifies a stateless signature. It
     5.  fors_sig ← sig[offset : offset + fors_sig_size]
     6.  offset ← offset + fors_sig_size
     7.  R ← fors_sig[0 : R_SIZE]
-    8.  setTypeAndClear(ADRS, H_MSG)
+    8.  setTypeAndClear(ADRS, SL_H_MSG)
     9.  digest ← H_msg_fors(ADRS, R, PK.seed, PK.root, m)
     10. indices ← fors_msg_to_indices(digest)
     11. if indices[k-1] != 0:
