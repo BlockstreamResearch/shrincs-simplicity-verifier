@@ -82,7 +82,7 @@ For \texttt{w=4}:
 \subsection{Chain Function}
 WOTS derives signature components and public key material by iteratively applying the tweakable hash function along a Winternitz chain. The function \texttt{chain()} takes an n-byte input value \texttt{m} and applies \texttt{Tw(PK.seed, ADRS, ·)} exactly \texttt{steps} times, beginning at chain position \texttt{start}. For each iteration, the address field hash inside \texttt{ADRS} is set to the current chain position \texttt{i} (from \texttt{start} to \texttt{start + steps - 1}) to ensure domain separation between different chain steps. The output is the resulting n-byte value after advancing the chain by steps, which is used both for producing signature chain values (advancing from \texttt{0} to \texttt{msg[i]}) and for reconstructing end-of-chain values during verification (advancing from \texttt{msg[i]} to \texttt{w-1}).
 
-The \texttt{mode} parameter determines which address types are used: \texttt{SF} for the stateful tree instance \texttt{(SF\_WOTS\_HASH, SF\_WOTS\_PK, SF\_TREE)} or \texttt{SL} for the stateless instance \texttt{(SL\_WOTS\_HASH, SL\_WOTS\_PK, SL\_TREE)}.
+The \texttt{mode} parameter determines which address types are used: \texttt{SF} for the stateful tree instance or \texttt{SL} for the stateless instance.
 \begin{verbatim}
     Algorithm: chain(m, start, steps, PK.seed, ADRS)
     Input:
@@ -115,15 +115,17 @@ To create a WOTS public key for a given \texttt{keypair} index, we derive one se
         pk: compressed WOTS+C public key
 
         if mode == SF: 
-            WOTS_HASH ← SF_WOTS_HASH
-            WOTS_PK   ← SF_WOTS_PK
+            WOTS_HASH       ← SF_WOTS_HASH
+            WOTS_PK         ← SF_WOTS_PK
+            WOTS_PRF_TYPE   ← SF_WOTS_PRF
         else:
-            WOTS_HASH ← SL_WOTS_HASH
-            WOTS_PK   ← SL_WOTS_PK
+            WOTS_HASH       ← SL_WOTS_HASH
+            WOTS_PK         ← SL_WOTS_PK
+            WOTS_PRF_TYPE   ← SL_WOTS_PRF
 
     1. tmp ← []
     2. for i from 0 to l - 1:
-        a. setTypeAndClear(ADRS, WOTS_PRF)
+        a. setTypeAndClear(ADRS, WOTS_PRF_TYPE)
         b. setKeyPairAddress(ADRS, keypair)
         c. setChainAddress(ADRS, i)
         d. sk_i ← PRF(PK.seed, ADRS, SK.seed)
@@ -147,17 +149,21 @@ WOTS+C uses a two-phase hashing approach (see Section~5.4.1):
 The function \texttt{wots\_grind()} takes a pre-computed digest and increments \texttt{ctr} until the base-w digits of the Phase 2 output satisfy the target sum \texttt{S\_wn}. It returns the found \texttt{ctr} and the corresponding digit array.
 
 \begin{verbatim}
-    Algorithm: wots_grind(PK.seed, digest, ADRS, keypair)
+    Algorithm: wots_grind(PK.seed, digest, ADRS, keypair, mode)
     Input:
         PK.seed: public seed
         digest: a digest from phase 1 H_msg, or a tree root for internal signatures
         ADRS: tweak
         keypair: keypair
+        mode: SF or SL
     Output:
         msg: array of l integers in [0, w-1]
         ctr: final counter value used
 
-    1. setTypeAndClear(ADRS, WOTS_GRIND)
+    1. if mode == SF:
+            setTypeAndClear(ADRS, SF_WOTS_GRIND)
+        else:
+            setTypeAndClear(ADRS, SL_WOTS_GRIND)
     2. setKeyPairAddress(ADRS, keypair)
     3. for ctr from 0 to 2^32 - 1:  // c = 4 bytes
         a. grind_out ← H_grind(ADRS, PK.seed, digest, ctr)
@@ -173,17 +179,21 @@ The function \texttt{wots\_grind()} takes a pre-computed digest and increments \
 Additionally we need to define a func which allows to calculate the digest without grinding (by providing the \texttt{ctr} value directly).
 
 \begin{verbatim}
-    Algorithm: wots_digest(PK.seed, digest, ctr, ADRS, keypair)
+    Algorithm: wots_digest(PK.seed, digest, ctr, ADRS, keypair, mode)
     Input:
         digest: digest from phase 1 H_msg, or a tree root
         ctr: counter value
         ADRS: tweak
         keypair: keypair
+        mode: SF or SL
     Output:
         msg: array of l integers in [0, w-1]
         valid: boolean indicating if sum == S_wn
 
-    1. setTypeAndClear(ADRS, WOTS_GRIND)
+    1. if mode == SF:
+            setTypeAndClear(ADRS, SF_WOTS_GRIND)
+        else:
+            setTypeAndClear(ADRS, SL_WOTS_GRIND)
     2. setKeyPairAddress(ADRS, keypair)
     3. grind_out ← H_grind(ADRS, PK.seed, digest, ctr)
     4. msg ← base_w(grind_out, w, l)
@@ -214,21 +224,25 @@ For internal XMSS signatures (signing tree roots at layers \texttt{1..d-1} of th
         sig: WOTS+C signature (R || ctr || chain_values)
 
         if mode == SF:
-            WOTS_HASH ← SF_WOTS_HASH
+            WOTS_HASH     ← SF_WOTS_HASH
+            WOTS_PRF_TYPE ← SF_WOTS_PRF
+            H_MSG_TYPE    ← SF_H_MSG
         else:
-            WOTS_HASH ← SL_WOTS_HASH
+            WOTS_HASH     ← SL_WOTS_HASH
+            WOTS_PRF_TYPE ← SL_WOTS_PRF
+            H_MSG_TYPE    ← SL_H_MSG
 
     1. opt_rand ← random(n) or PK.seed     // randomized or deterministic
     2. R ← PRF_msg(SK.prf, PK.seed, opt_rand, m)
     3. if is_internal:
             digest ← m
         else:
-            setTypeAndClear(ADRS, H_MSG)
+            setTypeAndClear(ADRS, H_MSG_TYPE)
             digest ← H_msg(ADRS, R, PK.seed, PK.root, m)
-    4. (msg, ctr) ← wots_grind(PK.seed, digest, ADRS, keypair)
+    4. (msg, ctr) ← wots_grind(PK.seed, digest, ADRS, keypair, mode)
     5. sig ← R || ctr
     6. for i from 0 to (l - 1):
-        a. setTypeAndClear(ADRS, WOTS_PRF)
+        a. setTypeAndClear(ADRS, WOTS_PRF_TYPE)
         b. setKeyPairAddress(ADRS, keypair)
         c. setChainAddress(ADRS, i)
         d. sk_i ← PRF(PK.seed, ADRS, SK.seed)
@@ -256,11 +270,13 @@ Verification reconstructs the WOTS+C public key implied by the signature. It fir
         pk: recovered public key (n bytes), or "false" if invalid
 
         if mode == SF:
-            WOTS_HASH ← SF_WOTS_HASH
-            WOTS_PK   ← SF_WOTS_PK 
+            WOTS_HASH  ← SF_WOTS_HASH
+            WOTS_PK    ← SF_WOTS_PK
+            H_MSG_TYPE ← SF_H_MSG
         else:
-            WOTS_HASH ← SL_WOTS_HASH
-            WOTS_PK   ← SL_WOTS_PK
+            WOTS_HASH  ← SL_WOTS_HASH
+            WOTS_PK    ← SL_WOTS_PK
+            H_MSG_TYPE ← SL_H_MSG
 
     1. R ← sig[0 : R_SIZE]
     2. ctr ← sig[R_SIZE : R_SIZE + c]
@@ -268,9 +284,9 @@ Verification reconstructs the WOTS+C public key implied by the signature. It fir
     4. if is_internal:
             digest ← m
         else:
-            setTypeAndClear(ADRS, H_MSG)
+            setTypeAndClear(ADRS, H_MSG_TYPE)
             digest ← H_msg(ADRS, R, PK.seed, PK.root, m)
-    5. (msg, valid) ← wots_digest(PK.seed, digest, ctr, ADRS, keypair)
+    5. (msg, valid) ← wots_digest(PK.seed, digest, ctr, ADRS, keypair, mode)
     6. if not valid:
         return false
     7. tmp ← []

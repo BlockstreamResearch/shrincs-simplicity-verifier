@@ -8,7 +8,7 @@ The key challenges for deploying hash-based signatures in Bitcoin are:
 \end{enumerate}
 
 \subsection{SHRINCS} 
-SHRINCS (Stateful Hash-based Robust Integrated NIST-Compatible Signatures) is a hybrid post-quantum signature scheme that combines the efficiency of stateful signatures with the robustness of stateless ones. It provides with two parameters set depending on what matters for verifier:
+SHRINCS (Shrunken SHPINCS) is a hybrid post-quantum signature scheme that combines the efficiency of stateful signatures with the robustness of stateless ones. It provides with two parameters set depending on what matters for verifier:
     \begin{itemize}
         \item SHRINCS-B (Bitcoin-optimized): Minimizes signature size at the cost of more verification hashes.
         \item SHRINCS-L (Liquid-optimized): Minimizes verification cost at the cost of larger signatures.

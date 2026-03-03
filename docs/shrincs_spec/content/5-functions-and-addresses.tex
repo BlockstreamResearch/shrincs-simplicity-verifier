@@ -95,22 +95,25 @@ A total \texttt{ADRS} size is 32 bytes.
 
 \subsubsection{Address Types}
 \begin{verbatim}
-0x00: SF_WOTS_HASH: Stateful WOTS+C chain hashing
-0x01: SF_WOTS_PK:   Stateful WOTS+C public key compression
-0x02: SF_TREE:      Stateful tree internal nodes
-0x03: SL_WOTS_HASH: Stateless WOTS+C chain hashing  
-0x04: SL_WOTS_PK:   Stateless WOTS+C public key compression
-0x05: SL_TREE:      Stateless tree internal nodes
-0x06: FORS_HASH:    FORS leaf hashing
-0x07: FORS_TREE:    FORS tree internal nodes
-0x08: FORS_PK:      FORS roots compression
-0x09: WOTS_GRIND:   WOTS+C grinding
-0x0A: FORS_PRF:     PRF for FORS secret key derivation
-0x0B: H_MSG:        Message hash
-0x0C: WOTS_PRF:     PRF for WOTS+C key derivation
-0x0D: ROOT:         Root public key computation
+0x00: SF_WOTS_HASH:     Stateful WOTS+C chain hashing
+0x01: SF_WOTS_PK:       Stateful WOTS+C public key compression
+0x02: SF_TREE:          Stateful tree internal nodes
+0x03: SF_WOTS_GRIND:    Stateful WOTS+C grinding
+0x04: SF_H_MSG:         Stateful message hash
+0x05: SF_WOTS_PRF:      Stateful PRF for WOTS+C key derivation
+0x06: FORS_HASH:        FORS leaf hashing
+0x07: FORS_TREE:        FORS tree internal nodes
+0x08: FORS_PK:          FORS roots compression
+0x09: FORS_PRF:         PRF for FORS secret key derivation
+0x0A: SL_WOTS_HASH:     Stateless WOTS+C chain hashing
+0x0B: SL_WOTS_PK:       Stateless WOTS+C public key compression
+0x0C: SL_TREE:          Stateless tree internal nodes
+0x0D: SL_WOTS_GRIND:    Stateless WOTS+C grinding
+0x0E: SL_H_MSG:         Stateless message hash
+0x0F: SL_WOTS_PRF:      Stateless PRF for WOTS+C key derivation
+0x10: ROOT:             Root public key computation
 \end{verbatim}
-Summarizing, \texttt{(0x00, 0x01, 0x02)} are stateful only types, \texttt{(0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x0A)} are stateless only and \texttt{(0x09, 0x0B, 0x0C, 0x0D)} are shared types. 
+Summarizing, \texttt{(0x00, 0x01, 0x02, 0x03, 0x04, 0x05)} are stateful only types, \texttt{(0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F)} are stateless only and \texttt{(0x10)} is shared type. 
 
 \subsubsection{Address Manipulation Functions}
 \begin{verbatim}
@@ -153,20 +156,25 @@ The list of type-dependent words for address tweaking is the following:
 \hline
 \textbf{Type} & \textbf{Name} & \textbf{word1 [20:24]} & \textbf{word2 [24:28]} & \textbf{word3 [28:32]} \\
 \hline
-0x00 & \texttt{SF\_WOTS\_HASH}  & keypair   & chain   & hash \\
-0x01 & \texttt{SF\_WOTS\_PK}    & keypair   & 0       & 0 \\
-0x02 & \texttt{SF\_TREE}        & keypair   & height  & index \\
-0x03 & \texttt{SL\_WOTS\_HASH}  & keypair   & chain   & hash \\
-0x04 & \texttt{SL\_WOTS\_PK}    & keypair   & 0       & 0 \\
-0x05 & \texttt{SL\_TREE}        & keypair   & height  & index \\
-0x06 & \texttt{FORS\_HASH}      & tree\_idx & 0       & leaf\_idx \\
-0x07 & \texttt{FORS\_TREE}      & tree\_idx & height  & index \\
-0x08 & \texttt{FORS\_PK}        & 0         & 0       & 0 \\
-0x09 & \texttt{WOTS\_GRIND}     & keypair   & 0       & 0 \\
-0x0A & \texttt{FORS\_PRF}       & tree\_idx & 0       & leaf\_idx \\
-0x0B & \texttt{H\_MSG}          & 0         & 0       & 0 \\
-0x0C & \texttt{WOTS\_PRF}       & keypair   & chain   & 0 \\
-0x0D & \texttt{ROOT}            & 0         & 0       & 0 \\
+
+0x00 & SF\_WOTS\_HASH   & keypair   & chain   & hash \\
+0x01 & SF\_WOTS\_PK     & keypair   & 0       & 0 \\
+0x02 & SF\_TREE         & keypair   & height  & index \\
+0x03 & SF\_WOTS\_GRIND  & keypair   & 0       & 0 \\
+0x04 & SF\_H\_MSG       & 0         & 0       & 0 \\
+0x05 & SF\_WOTS\_PRF    & keypair   & chain   & 0 \\
+0x06 & FORS\_HASH       & tree\_idx & 0       & leaf\_idx \\
+0x07 & FORS\_TREE       & tree\_idx & height  & index \\
+0x08 & FORS\_PK         & 0         & 0       & 0 \\
+0x09 & FORS\_PRF        & tree\_idx & 0       & leaf\_idx \\
+0x0A & SL\_WOTS\_HASH   & keypair   & chain   & hash \\
+0x0B & SL\_WOTS\_PK     & keypair   & 0       & 0 \\
+0x0C & SL\_TREE         & keypair   & height  & index \\
+0x0D & SL\_WOTS\_GRIND  & keypair   & 0       & 0 \\
+0x0E & SL\_H\_MSG       & 0         & 0       & 0 \\
+0x0F & SL\_WOTS\_PRF    & keypair   & chain   & 0 \\
+0x10 & ROOT             & 0         & 0       & 0 \\
+
 \hline
 \end{tabular}
 \caption{Type-dependent interpretation of ADRS words \texttt{(bytes [20:32])}}

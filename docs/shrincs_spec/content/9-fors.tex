@@ -63,7 +63,7 @@ The \texttt{fors\_grind} function searches for a counter value where the last tr
         R: randomness that satisfied the grinding condition
         digest: the digest that satisfied the grinding condition
 
-    1. setTypeAndClear(ADRS, H_MSG)
+    1. setTypeAndClear(ADRS, SL_H_MSG)
     2. for ctr from 0 to 2^32 - 1:
         a. R ← PRF_msg_ctr(SK.prf, PK.seed, opt_rand, ctr, m)
         b. digest ← H_msg_fors(ADRS, R, PK.seed, PK.root, m)
