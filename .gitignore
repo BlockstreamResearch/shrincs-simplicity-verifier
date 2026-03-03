@@ -5,7 +5,7 @@ latexmk.out/
 target/
 wots_tw.simf
 xmss.simf
-.DS_Store
+*.DS_Store
 *.aux
 *.log
 *.out
