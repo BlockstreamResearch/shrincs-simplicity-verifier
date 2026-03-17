@@ -3,7 +3,7 @@
 
 #include "unbalanced_xmss.simf"
 #include "../sphincs/sphincs.simf"
-#include "types.simf"
+#include "../types.simf"
 
 fn shrincs_verify(proof: SHRINCSSignProof) {
     let (message, seed_root, signature, root_part): SHRINCSSignProof = proof;
