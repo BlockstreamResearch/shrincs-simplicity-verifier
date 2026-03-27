@@ -7,22 +7,26 @@ SHRINCS uses SHA-256 truncated to \texttt{n} bytes for all internal hash operati
     \texttt{H(m) = SHA-256(m)[0:n]}
 \end{center}
 
+\paragraph{SHA-256 Block Precomputation} 
+For SHA-256, the compression function \texttt{C(H,M)} operates on 64-byte blocks. Since \texttt{PK.seed} is 16 bytes, we pad it to 64 bytes to enable precomputation of the first block:
+
+\begin{center}
+    \texttt{P = C(IV, PK.seed || 0\string^48)}
+\end{center}
+
+Then we use the following precomputation \texttt{P} in the next compression function iteration.
+Every function that uses SHA-256 with it's argument involving PK.seed will use this precomputation value. This optimization allows to reduce the number of hashing operation, which leads to faster computation, especially in the grinding parts of the SHRINCS. 
+
+Additionally, we will denote the concatenation \texttt{PK.seed || 0\string^48} as \texttt{PK.seed*}. 
+
 \subsection{Tweakable Hash Function}
 To prevent multi-target attacks and ensure domain separation between the various components, we employ the tweakable hash function construction defined in SPHINCS+ \cite{sphincsplus_paper2019}:
 
 \begin{center}
-    \texttt{Tw(PK.seed, ADRS, m) = H(PK.seed || ADRS || m)}
+    \texttt{Tw(PK.seed, ADRS, m) = H(PK.seed* || ADRS || m)}
 \end{center}
 
 This usage of tweaked hashing is critical. It ensures that a hash computed at one position in the Merkle tree cannot be substituted for a hash at another position, effectively mitigating generic tree-grafting attacks.
-
-\paragraph{Note:} For SHA-256, the compression function operates on 64-byte blocks. Since \texttt{PK.seed} is 16 bytes, we pad it to 64 bytes to enable precomputation:
-
-\begin{center}
-    \texttt{Tw(PK.seed, ADRS, m) = H(PK.seed || 0\string^48|| ADRS || m)}
-\end{center}
-
-Having the first 64 bytes constant (\texttt{PK.seed || 0\string^48}), we can precompute the compression function state once per key pair. Each tweak call then only needs to process the variable part (\texttt{ADRS || m}), reducing per-call overhead.
 
 \subsection{Pseudorandom Functions}
 SHRINCS uses two pseudorandom functions for different purposes: key derivation and getting the randomizer for the signature.
@@ -30,7 +34,7 @@ SHRINCS uses two pseudorandom functions for different purposes: key derivation a
 For deterministic derivation of secret key material (WOTS+C chain starting values, FORS secret keys):
 
 \begin{center}
-    \texttt{PRF(PK.seed, ADRS, SK.seed) = Tw(PK.seed, ADRS, SK.seed)}
+    \texttt{PRF(PK.seed, ADRS, SK.seed) = Tw(PK.seed*, ADRS, SK.seed)}
 \end{center}
 
 The address structure \texttt{ADRS} ensures that each derived value is unique and bound to its position in the scheme.
@@ -61,19 +65,19 @@ WOTS+C uses a two-phase approach for message hashing and grinding. This design i
 
 \paragraph{Phase 1. Message Digest.} Computes a randomized hash of the user message:
 \begin{center}
-    \texttt{H\_msg(ADRS, R, PK.seed, PK.root, m) = SHA-256(ADRS || R || PK.seed || PK.root || m)[0:n]}
+    \texttt{H\_msg(ADRS, R, PK.seed, PK.root, m) = SHA-256(PK.seed* || ADRS || R || PK.root || m)[0:n]}
 \end{center}
 This is computed once per signature, producing an n-byte digest.
 
 \paragraph{Phase 2. Grinding Hash.} Takes the digest and a counter:
 \begin{center}
-    \texttt{H\_grind(ADRS, PK.seed, digest, ctr) = SHA-256(ADRS || PK.seed || digest || ctr)[0:n]}
+    \texttt{H\_grind(ADRS, PK.seed, digest, ctr) = SHA-256(PK.seed* || ADRS || digest || ctr)[0:n]}
 \end{center}
 
 \subsubsection{FORS+C: Single-Phase Hashing}
 FORS+C always signs user messages (never tree roots), so it uses a simpler single-phase approach. The grinding counter is not included in the message hash. Instead, it is iterated inside \texttt{PRF\_msg\_ctr} (Section~5.3) to produce a fresh \texttt{R} on each grinding attempt. The verifier only sees the final \texttt{R}:
 \begin{center}
-    \texttt{H\_msg\_fors(ADRS, R, PK.seed, PK.root, m) = SHA-256(ADRS || R || PK.seed || PK.root || m)[0:roundup((k*a + hsl) / 8)]}
+    \texttt{H\_msg\_fors(ADRS, R, PK.seed, PK.root, m) = SHA-256(PK.seed* || ADRS || R || PK.root || m)[0:roundup((k*a + hsl) / 8)]}
 \end{center}
 
 The output length is roundup((k*a + hsl) / 8) = 20 bytes for both parameter sets, encoding both the \texttt{k} FORS leaf indices and the \texttt{hsl} hypertree path indices in a unified digest (see Section~10.5).
