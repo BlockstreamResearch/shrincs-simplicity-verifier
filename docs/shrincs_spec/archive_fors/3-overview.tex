@@ -3,7 +3,7 @@ SHRINCS is designed in the way it can operate in two modes: \textbf{stateful} an
 
 During normal operation with intact state, the user generates signatures according to efficient stateful path. Each leaf of the UXMSS is represented by WOTS+C one time signature instance. UXMSS is right-skewed, which makes the first stateful signature (\texttt{q = 1}) the cheapest from the verification and size perspective and adds 16 bytes and one additional hash operation for each next stateful signature, up to \texttt{q = hsf}. The final signature (\texttt{q = hsf + 1}) has the same size and verification cost as \texttt{q = hsf}. A right-skewed UXMSS is a tree construction in which every internal node has a one-time signature leaf as its left child and a UXMSS subtree as its right child, yielding a recursively right-branching authentication tree (as shown on the Figure~1).
 
-If the state is corrupted (or the limit for stateful operations is met), the scheme can continue operating with stateless mode. Stateless mode utilizes an optimized SPHINCS+ variant with WOTS+C signatures in regular XMSS trees on each layer in the hypertree and PORS+FP for few-time signature scheme. The general construction of SHRINCS signature is presented on the Figure~1.
+If the state is corrupted (or the limit for stateful operations is met), the scheme can continue operating with stateless mode. Stateless mode utilizes an optimized SPHINCS+ variant with WOTS+C signatures in regular XMSS trees on each layer in the hypertree and FORS+C for few-time signature scheme. The general construction of SHRINCS signature is presented on the Figure~1.
 \begin{figure}[h!]
     \centering
     \includegraphics[width=1\linewidth]{content/img/general.png}
@@ -61,46 +61,46 @@ The signature verification cost is:
 Stateless signatures consist of:
 \begin{enumerate}
     \item \texttt{PK.sf}: the stateful public key (unified verification)
-    \item PORS+FP signature: few-time signature on the message
+    \item FORS+C signature: few-time signature on the message
     \item HT signature: \texttt{d} XMSS signatures forming the hypertree
 \end{enumerate}
 
 Signature size calculation: 
 \begin{verbatim}
-    General formula: size = PK.sf_SIZE + pors_size(R_SIZE + (k + m_max)*n)
+    General formula: size = PK.sf_SIZE + fors_size(R_SIZE + (k-1)*(n + a*n))
                       + xmss_layer_size(R_SIZE + c + l*n + h'*n) * d
 
-    SHRINCS-B.size = 16 + pors_size(32 + (5 + 91)*16)
-                    + xmss_layer_size(32 + 4 + 16*16 + 11*16) * 2
-                    = 16 + (32 + 1536) + (32 + 4 + 256 + 176) * 2
-                    = 16 + 1568 + 936 = 2520
+    SHRINCS-B.size = 16 + fors_size(32 + 5*(16 + 22*16))
+                    + xmss_layer_size(32 + 4 + 16*16 + 12*16) * 2
+                    = 16 + (32 + 1840) + (32 + 4 + 256 + 192) * 2
+                    = 16 + 1872 + 968 = 2856
 
-    SHRINCS-L.size = 16 + pors_size(32 + (5+91)*16)
-                    + xmss_layer_size(32 + 4 + 64*16 + 11*16) * 2
-                    = 16 + (32 + 1536) + (32 + 4 + 1024 + 176) * 2
-                    = 16 + 1568 + 2472 = 4056
+    SHRINCS-L.size = 16 + fors_size(32 + 5*(16 + 22*16))
+                    + xmss_layer_size(32 + 4 + 64*16 + 12*16) * 2
+                    = 16 + (32 + 1840) + (32 + 4 + 1024 + 192) * 2
+                    = 16 + 1872 + 2504 = 4392
 \end{verbatim}
 
 The signature verification cost is:
 \begin{verbatim}
     General formula:
-        pors_hashes = 2*k + m_max
+        fors_hashes = (k-1)*(1 + a) + 1
         wots_per_layer = (w-1)*l - S_wn + 1
         xmss_per_layer = wots_per_layer + h'
-        total = pors_hashes + d*xmss_per_layer + 1
+        total = fors_hashes + d*xmss_per_layer + 1
 
     SHRINCS-B:
-        fors_hashes = 2*5 + 91 = 101
+        fors_hashes = 5*23 + 1 = 116
         wots_per_layer = (256-1)*16 - 2040 + 1 = 2041
-        xmss_per_layer = 2041 + 11 = 2052
-        total = 101 + 2*2052 + 1 = 4206 hashes
+        xmss_per_layer = 2041 + 12 = 2053
+        total = 116 + 2*2053 + 1 = 4223 hashes
 
     SHRINCS-L:
-        pors_hashes = 101
+        fors_hashes = 116
         wots_per_layer = (w-1)*l - S_wn + 1 = 53
-        xmss_per_layer = wots_per_layer + h' = 53 + 11 = 64
+        xmss_per_layer = wots_per_layer + h' = 53 + 12 = 65
         total = fors_hashes + d*xmss_per_layer + 1
-              = 101 + 2*64 + 1 = 230 hashes
+              = 116 + 2*65 + 1 = 247 hashes
 \end{verbatim}
 
-\paragraph{Note:} \texttt{k} (number of trees) and \texttt{m\_max} (maximum Octopus authentication set) are parameters of PORS+FP (see Section~9). \texttt{h'} is the height of internal tree in HT. One additional hash is required to obtain the root public key after stateless public key recovery. 
+\paragraph{Note:} \texttt{k} (number of trees) and \texttt{a} (tree height) are parameters of FORS+ (see Section~9). \texttt{h'} is the height of internal tree in HT. One additional hash is required to obtain the root public key after stateless public key recovery. 

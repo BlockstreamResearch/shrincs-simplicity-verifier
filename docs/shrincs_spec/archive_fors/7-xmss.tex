@@ -119,14 +119,14 @@ The message \texttt{m} being verified is either a FORS+C public key (at layer 0)
 \end{verbatim}
 
 \subsection{XMSS Signature Generation (Stateless Layer)}
-To sign a message within the stateless hypertree, the XMSS signature generation produces a WOTS+C signature on the message followed by the authentication path for the corresponding leaf. The message being signed is typically either a PORS+FP public key (at layer 0) or the root of a lower-layer XMSS tree (at layers 1 through \texttt{d-1}). In both cases the message is already a hash value, so \texttt{wots\_sign} is called with \texttt{is\_internal = true}.
+To sign a message within the stateless hypertree, the XMSS signature generation produces a WOTS+C signature on the message followed by the authentication path for the corresponding leaf. The message being signed is typically either a FORS+C public key (at layer 0) or the root of a lower-layer XMSS tree (at layers 1 through \texttt{d-1}). In both cases the message is already a hash value, so \texttt{wots\_sign} is called with \texttt{is\_internal = true}.
 
 The leaf index \texttt{idx} determines which WOTS+C key pair is used; this index is determined from the message digest during stateless signing (see Section~10.5).
 
 \begin{verbatim}
     Algorithm: xmss_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS, h_prime, idx)
     Input:
-        m: message to sign (lower-layer root or PORS+FP public key)
+        m: message to sign (lower-layer root or FORS public key)
         SK.seed: secret seed
         SK.prf: PRF key
         PK.seed: public seed
@@ -148,8 +148,8 @@ Each XMSS signature consists of a WOTS+C signature plus an authentication path o
 
 The full stateless hypertree consists of \texttt{d = 2} layers, giving:
 \begin{itemize}
-    \item 936 bytes and 4104 hashes for SHRINCS-B
-    \item 2472 bytes and 128 hashes for SHRINCS-L
+    \item 968 bytes and 4106 hashes for SHRINCS-B
+    \item 2504 bytes and 130 hashes for SHRINCS-L
 \end{itemize}
 
-\paragraph{Note:} This excludes the PORS+FP contribution (see Section~9). The total stateless signature size and verification cost are the sum of PORS+FP and hypertree components, as presented in Section~3.2.2.
+\paragraph{Note:} This excludes the FORS+C contribution (see Section~9). The total stateless signature size and verification cost are the sum of FORS+C and hypertree components, as presented in Section~3.2.2.

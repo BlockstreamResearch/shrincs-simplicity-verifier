@@ -21,9 +21,9 @@ The advantages of SHRINCS are following:
         \item SHRINCS-L: \texttt{1076 + 16q} bytes and \textbf{only} \texttt{54 + q} hashes, which makes this setting practical from the \textit{verification complexity} perspective
     \end{itemize} 
     bytes (where \texttt{q >= 1} is the signature counter).
-    \item \textbf{Robust stateless fallback.} When the state is lost, corrupted, or exhausted, SHRINCS falls back to a SPHINCS+-based stateless signature (2520 or 4056 bytes). This is still smaller than standard SLH-DSA.
+    \item \textbf{Robust stateless fallback.} When the state is lost, corrupted, or exhausted, SHRINCS falls back to a SPHINCS+-based stateless signature (2856 or 4392 bytes). This is still smaller than standard SLH-DSA.
     \item \textbf{Static seed backup.} Users can back up their wallet using a standard seed phrase. Upon recovery, the wallet operates in stateless-only mode, preserving funds while accepting larger signatures.
-    \item \textbf{The number of supported signatures}. The construction supports up to 138 (SHRINCS-B) and 186 (SHRINCS-L) stateful signatures and up to $2^{20}$ stateless signatures, which should be enough for wallets. 
+    \item \textbf{The number of supported signatures}. The construction supports up to 159 (SHRINCS-B) and 207 (SHRINCS-L) stateful signatures and up to $2^{20}$ stateless signatures, which should be enough for wallets. 
 \end{itemize}
 
 \subsection{Limitations and Practical Considerations} 
@@ -55,6 +55,6 @@ Each SHRINCS-based address requires its own signing state. As users generate new
 SHRINCS signatures presume variable signature size and verification complexity depending on: (1) the number of already produced stateful signatures; (2) the signing mode. In decentralized system we need to consider how the cost of the signature verification is calculated to prevent spam attacks.
 \begin{itemize}
     \item That's basically the reason this specification introduced two modes for SHRINCS. SHRINCS-B is designed for accounting systems, where the user pays for each transaction byte, so the signature size matters. SHRINCS-L is better suited to systems that calculate transaction cost based on the number of computation units consumed.
-    \item If such or a similar post-quantum signature construction is accepted in Bitcoin, it's likely to be done with one (e.g. \texttt{OP\_SHRINCS}) or the set (e.g. \texttt{OP\_WOTS, OP\_PORS, OP\_XMSS}) of opcodes, 1 byte per each. If the signature presumes a dynamic number of hashes to be verified (and the cost of verifying "short" and "long" chains is the same), it can lead to spam with longer verification paths. 
+    \item If such or a similar post-quantum signature construction is accepted in Bitcoin, it's likely to be done with one (e.g. \texttt{OP\_SHRINCS}) or the set (e.g. \texttt{OP\_WOTS, OP\_FORS, OP\_XMSS}) of opcodes, 1 byte per each. If the signature presumes a dynamic number of hashes to be verified (and the cost of verifying "short" and "long" chains is the same), it can lead to spam with longer verification paths. 
     \item In the case of systems where the fee additionally is calculated based on the computation complexity of the transaction, we could implement a kind of efficient pre-compiles, but in the case of dynamic signatures, we need to introduce additional parameters. 
 \end{itemize}

@@ -11,21 +11,19 @@ This specification provides with the list of parameters for different SHRINCS in
  \hline
  \texttt{H} & \texttt{SHA-256} & \texttt{SHA-256} & Hash function \\ 
  \texttt{OTS} & \texttt{WOTS+C} & \texttt{WOTS+C} & One-time signature \\ 
- \texttt{FTS} & \texttt{PORS+FP} & \texttt{PORS+FP} & Few-time signature \\ 
+ \texttt{FTS} & \texttt{FORS+C} & \texttt{FORS+C} & Few-time signature \\ 
  \texttt{n} & $16$ & $16$ & Security parameter (bytes) \\  
  \texttt{w} & $256$ & $4$ & Winternitz parameter \\
  \texttt{l}  & $16$ & $64$ & The number of WOTS+C chains \\
  \texttt{S\_wn} & $2040$ & $140$ & Target sum for WOTS+C \\
- \texttt{hsf} & $138$ & $186$ & Maximum stateful tree height \\
- \texttt{hsl} & $22$ & $22$ & Maximum stateless hypertree height \\
+ \texttt{hsf} & $158$ & $206$ & Maximum stateful tree height \\
+ \texttt{hsl} & $24$ & $24$ & Maximum stateless hypertree height \\
  \texttt{d} & $2$ & $2$ & Stateless hypertree layers \\
- \texttt{h'} & $11$ & $11$ & XMSS tree height per hypertree layer \texttt{hsl/d = 11} \\
- \texttt{t} & $227000997$ & $227000997$ & The number of secret values in PORS+FP tree \\ 
- \texttt{b} & $28$ & $28$ & PORS+FP tree height \\ 
- \texttt{k} & $5$ & $5$ & Number of PORS+FP revealed tree leafs \\
+ \texttt{h'} & $12$ & $12$ & XMSS tree height per hypertree layer \texttt{hsl/d = 12} \\
+ \texttt{a} & $22$ & $22$ & FORS tree height \\ 
+ \texttt{k} & $6$ & $6$ & Number of FORS+C trees \\
  \texttt{c} & $4$ & $4$ & Counter size for WOTS+C grinding (bytes) \\
  \texttt{R\_SIZE} & $32$ & $32$ & The size (bytes) of the randomness in the signature \\
- \texttt{m\_max} & $91$ & $91$ & Maximum size of the Octopus authentication path \\
 \end{tabular}
 \end{center}
 
