@@ -36,7 +36,7 @@ PORS+FP uses the same two-call message-hash interface (Section~5.4.2):
 \begin{verbatim}
     R      ← PRF_msg_ctr(SK.prf, PK.seed, opt_rand, ctr, m)
     digest ← H_msg_pors(ADRS, R, PK.seed, PK.root, m)
-    A      ← pors_octopus(pors_digest_to_indices(digest, t, k), t)
+    A      ← pors_octopus(pors_digest_to_indices(digest))
     condition: |A| <= m_max
 \end{verbatim}
  
@@ -81,7 +81,7 @@ algorithm. We use rejection sampling over SHA256 XOF output.
 
 \paragraph{Note:} \texttt{extract\_bits(x, offset, length)} extracts length bits from byte string \texttt{x} starting at bit position offset, returned as an unsigned integer. Bits are numbered in big-endian order: bit \texttt{0} is the most significant bit of byte \texttt{x[0]}.
 
-Let candidates will represent potencial index to be added in the indices array. In our case, for chosen parameters of SHRINCS-B and SHRINCS-L, we will need \texttt{C' := roundup(2\string^b * k / t) = roundup(2\string^24 * 6 / 9245141) = 11} expected candidates (Appendix~1.1) to obtain \texttt{k} distinct indicesin range $[0,t-1]$.
+Let candidates will represent potencial index to be added in the indices array. In our case, for chosen parameters of SHRINCS-B and SHRINCS-L, we will need \texttt{C' := roundup(2\string^b * k / t) = roundup(2\string^24 * 6 / 9245141) = 11} expected candidates (Appendix~1.1) to obtain \texttt{k} distinct indices in range $[0,t-1]$.
 The expected number of bits to extract from XOF is \texttt{24 * 11 = 264} bits.
 This means that we need to produce two XOF blocks, each in size of 32 bytes. 
 We want to use the XOF output to obtain index for hypertree, reserving \texttt{hsl} bits (Section~10.5). 
