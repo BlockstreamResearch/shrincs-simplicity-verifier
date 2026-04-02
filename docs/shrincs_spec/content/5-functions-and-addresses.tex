@@ -31,7 +31,7 @@ This usage of tweaked hashing is critical. It ensures that a hash computed at on
 \subsection{Pseudorandom Functions}
 SHRINCS uses two pseudorandom functions for different purposes: key derivation and getting the randomizer for the signature.
 
-For deterministic derivation of secret key material (WOTS+C chain starting values, FORS secret keys):
+For deterministic derivation of secret key material (WOTS+C chain starting values, PORS+FP secret keys):
 
 \begin{center}
     \texttt{PRF(PK.seed, ADRS, SK.seed) = Tw(PK.seed*, ADRS, SK.seed)}
@@ -45,7 +45,7 @@ For generating the randomizer \texttt{R} used in message hashing:
     \texttt{PRF\_msg(SK.prf, PK.seed, opt\_rand, m) = HMAC-SHA-256(SK.prf, PK.seed || opt\_rand || m)[0:R\_SIZE]},
 \end{center}
 where \texttt{opt\_rand} is an optional randomness (\texttt{n} bytes), can be \texttt{PK.seed} for deterministic signing.
-For the stateless signing path, the FORS+C grinding counter is iterated inside \texttt{PRF\_msg} to produce a fresh \texttt{R} on each attempt. The counter-augmented variant is:
+For the stateless signing path, the PORS+FP grinding counter is iterated inside \texttt{PRF\_msg} to produce a fresh \texttt{R} on each attempt. The counter-augmented variant is:
 
 \begin{center}
     \texttt{PRF\_msg\_ctr(SK.prf, PK.seed, opt\_rand, ctr, m) = HMAC-SHA-256(SK.prf, PK.seed || opt\_rand || ctr || m)[0:R\_SIZE]}
@@ -80,8 +80,6 @@ PORS+FP always signs user messages (never tree roots), so it uses a simpler sing
     \texttt{H\_msg\_pors(ADRS, R, PK.seed, PK.root, m) = SHA-256(PK.seed* || ADRS || R || PK.root || m)}
 \end{center}
 
-The output length is \texttt{roundup(((roundup(2\string^b*k/t)+2)*b + hsl) / 8) = 31} bytes for both parameter sets, encoding the \texttt{k} PORS+FP leaf indices and the \texttt{hsl} hypertree path indices in a unified digest (see Section~10.5). 
-
 \subsection{Tweak Structure and Domain Separation}
 Tweaks are structured as follows to ensure uniqueness across all scheme components:
 
@@ -107,8 +105,8 @@ A total \texttt{ADRS} size is 32 bytes.
 0x05: SF_WOTS_PRF:      Stateful PRF for WOTS+C key derivation
 0x06: PORS_HASH:        PORS+FP leaf hashing
 0x07: PORS_TREE:        PORS+FP tree internal nodes
-0x08: PORS_PK:          FORS+FP roots compression
-0x09: FORS_PRF:         PRF for PORS+FP secret key derivation
+0x08: PORS_PK:          PORS+FP roots compression
+0x09: PORS_PRF:         PRF for PORS+FP secret key derivation
 0x0A: SL_WOTS_HASH:     Stateless WOTS+C chain hashing
 0x0B: SL_WOTS_PK:       Stateless WOTS+C public key compression
 0x0C: SL_TREE:          Stateless tree internal nodes

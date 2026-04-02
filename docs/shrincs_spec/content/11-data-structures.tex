@@ -65,27 +65,27 @@ Hypertree: d XMSS signatures. For each layer i:
   xmss_chains[i]: l * n bytes         // WOTS+C chain values
   xmss_auth[i]  : h_prime * n bytes   // XMSS authentication path
 
-SHRINCS-B (n=16, R_SIZE=32, c=4, k=5, m_max = 91, d=2, h'=11, l=16):
+SHRINCS-B (n=16, R_SIZE=32, c=4, k=6, m_max = 91, d=2, h'=12, l=16):
   PK.sf          :   16 bytes
   PORS+FP signature:
     pors_R       :   32 bytes
-    pors_sigs    : (5 + 91) * 16 = 96 * 16 = 1536 bytes
-    subtotal     : 1568 bytes
+    pors_sigs    : (6 + 91) * 16 = 97 * 16 = 1552 bytes
+    subtotal     : 1584 bytes
   XMSS hypertree (2 layers):
-    per layer    : 32 + 4 + 256 + 176 = 468 bytes
-    2 layers     : 936 bytes
-  Total: 16 + 1568 + 936 = 2520 bytes
+    per layer    : 32 + 4 + 256 + 192 = 484 bytes
+    2 layers     : 968 bytes
+  Total: 16 + 1584 + 968 = 2568 bytes
 
-SHRINCS-L (n=16, R_SIZE=32, c=4, k=5, m_max = 91, d=2, h'=11, l=64):
+SHRINCS-L (n=16, R_SIZE=32, c=4, k=6, m_max = 91, d=2, h'=12, l=64):
   PK.sf          :   16 bytes
   PORS+FP signature:
     pors_R       :   32 bytes
-    pors_sigs    : (5 + 91) * 16 = 96 * 16 = 1536 bytes
-    subtotal     : 1568 bytes
+    pors_sigs    : (6 + 91) * 16 = 97 * 16 = 1552 bytes
+    subtotal     : 1584 bytes
   XMSS hypertree (2 layers):
-    per layer    : 32 + 4 + 1024 + 176 = 1236 bytes
-    2 layers     : 2472 bytes
-  Total: 16 + 1568 + 2472 = 4056 bytes
+    per layer    : 32 + 4 + 1024 + 192 = 1252 bytes
+    2 layers     : 2504 bytes
+  Total: 16 + 1584 + 2504 = 4104 bytes
 \end{verbatim}
 
 \subsection{Signature Type Indication}
@@ -95,8 +95,8 @@ Verifiers distinguish between stateful and stateless signatures by length (Algor
     \texttt{max\_stateful\_size = n + R\_SIZE + c + l*n + hsf*n}
 \end{center}
 \begin{itemize}
-    \item For SHRINCS-B: \texttt{max\_stateful\_size = 16 + 32 + 4 + 256 + 138*16 = 2516} bytes
-    \item For SHRINCS-L: \texttt{max\_stateful\_size = 16 + 32 + 4 + 1024 + 186*16 = 4052} bytes
+    \item For SHRINCS-B: \texttt{max\_stateful\_size = 16 + 32 + 4 + 256 + 141*16 = 2564} bytes
+    \item For SHRINCS-L: \texttt{max\_stateful\_size = 16 + 32 + 4 + 1024 + 189*16 = 4100} bytes
 \end{itemize}
 
 Signatures with length \texttt{<= max\_stateful\_size} are processed as stateful; larger signatures as stateless.

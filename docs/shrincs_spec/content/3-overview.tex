@@ -70,15 +70,15 @@ Signature size calculation:
     General formula: size = PK.sf_SIZE + pors_size(R_SIZE + (k + m_max)*n)
                       + xmss_layer_size(R_SIZE + c + l*n + h'*n) * d
 
-    SHRINCS-B.size = 16 + pors_size(32 + (5 + 91)*16)
-                    + xmss_layer_size(32 + 4 + 16*16 + 11*16) * 2
-                    = 16 + (32 + 1536) + (32 + 4 + 256 + 176) * 2
-                    = 16 + 1568 + 936 = 2520
+    SHRINCS-B.size = 16 + pors_size(32 + (6 + 91)*16)
+                    + xmss_layer_size(32 + 4 + 16*16 + 12*16) * 2
+                    = 16 + (32 + 1552) + (32 + 4 + 256 + 192) * 2
+                    = 16 + 1584 + 968 = 2568
 
-    SHRINCS-L.size = 16 + pors_size(32 + (5+91)*16)
-                    + xmss_layer_size(32 + 4 + 64*16 + 11*16) * 2
-                    = 16 + (32 + 1536) + (32 + 4 + 1024 + 176) * 2
-                    = 16 + 1568 + 2472 = 4056
+    SHRINCS-L.size = 16 + pors_size(32 + (6+91)*16)
+                    + xmss_layer_size(32 + 4 + 64*16 + 12*16) * 2
+                    = 16 + (32 + 1552) + (32 + 4 + 1024 + 192) * 2
+                    = 16 + 1584 + 2504 = 4104
 \end{verbatim}
 
 The signature verification cost is:
@@ -90,17 +90,17 @@ The signature verification cost is:
         total = pors_hashes + d*xmss_per_layer + 1
 
     SHRINCS-B:
-        fors_hashes = 2*5 + 91 = 101
+        pors_hashes = 2*6 + 91 = 103
         wots_per_layer = (256-1)*16 - 2040 + 1 = 2041
-        xmss_per_layer = 2041 + 11 = 2052
-        total = 101 + 2*2052 + 1 = 4206 hashes
+        xmss_per_layer = 2041 + 12 = 2053
+        total = 103 + 2*2053 + 1 = 4210 hashes
 
     SHRINCS-L:
-        pors_hashes = 101
+        pors_hashes = 103
         wots_per_layer = (w-1)*l - S_wn + 1 = 53
-        xmss_per_layer = wots_per_layer + h' = 53 + 11 = 64
-        total = fors_hashes + d*xmss_per_layer + 1
-              = 101 + 2*64 + 1 = 230 hashes
+        xmss_per_layer = wots_per_layer + h' = 53 + 12 = 65
+        total = pors_hashes + d*xmss_per_layer + 1
+              = 103 + 2*65 + 1 = 234 hashes
 \end{verbatim}
 
 \paragraph{Note:} \texttt{k} (number of trees) and \texttt{m\_max} (maximum Octopus authentication set) are parameters of PORS+FP (see Section~9). \texttt{h'} is the height of internal tree in HT. One additional hash is required to obtain the root public key after stateless public key recovery. 

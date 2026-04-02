@@ -88,9 +88,9 @@ The signature includes \texttt{PK.sl} prepended to enable unified verification. 
 \subsection{Stateless signing}
 The \texttt{SHRINCS.SignStateless} function signs a message using the stateless (SPHINCS+C) path. This is used when state is lost, corrupted, or exhausted.
 
-SHRINCS uses a unified digest for the stateless path: a single call to \texttt{H\_msg\_pors} produces a digest that encodes both the PORS+FP leaf indices (determining which leaves to reveal in the few-time signature) and the hypertree tree/leaf indices (determining which XMSS trees and WOTS+C key pairs to use at each layer). The grinding counter \texttt{ctr} is iterated until the grinding condition is satisfied on this unified digest.
+SHRINCS uses a unified digest for the stateless path: a single call to \texttt{pors\_digest\_to\_indices} produces a XOF output that encodes both the PORS+FP leaf indices (determining which leaves to reveal in the few-time signature) and the hypertree tree/leaf indices (determining which XMSS trees and WOTS+C key pairs to use at each layer). The grinding counter \texttt{ctr} is iterated until the grinding condition is satisfied on this unified digest.
 
-The digest output length is \texttt{(roundup((k*a + hsl) / 8))} bytes. The first \texttt{k*a} bits encode the \texttt{k} PORS+FP leaf indices. The remaining \texttt{hsl} bits encode the hypertree path indices.
+Let \texttt{C := roundup(k * 2\string^b / t) + 7}, so the XOF output length is \texttt{roundup((C * b + 16 + hsl)/8)}. The first \texttt{C * b + 16} bits encode the \texttt{k} PORS+FP leaf indices. The remaining \texttt{hsl} bits encode the hypertree path indices.
 
 The signature is constructed bottom-up: first a PORS+FP signature on the message, then \texttt{d} XMSS signatures on successive layer roots ascending through the hypertree. The signature includes \texttt{PK.sf} prepended to enable unified verification.
 
@@ -106,13 +106,13 @@ The signature is constructed bottom-up: first a PORS+FP signature on the message
     2.  setLayerAddress(ADRS, 0)
     3.  setTreeAddress(ADRS, 0)
     4.  (pors_sig, digest) ← pors_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS)
-    5.  (tree_idx, leaf_idx) ← parse_idx(digest)
-    6.  indices ← pors_digest_to_indices(digest)
+    5.  indices, xof_out ← pors_digest_to_indices(digest)
+    6.  (tree_idx, leaf_idx) ← parse_idx(xof_out)
     7.  setLayerAddress(ADRS, 0)
     8.  setTreeAddress(ADRS, tree_idx[0] * 2^h_prime + leaf_idx[0])
-    9.  pors_pk ← pors_pkFromSig(fors_sig, indices, PK.seed, ADRS)
+    9.  pors_pk ← pors_pkFromSig(pors_sig, indices, PK.seed, ADRS)
     10. ht_sig ← []
-    11. msg ← fors_pk
+    11. msg ← pors_pk
     12. for layer from 0 to d - 1:
         a. setLayerAddress(ADRS, layer)
         b. setTreeAddress(ADRS, tree_idx[layer])
@@ -120,23 +120,24 @@ The signature is constructed bottom-up: first a PORS+FP signature on the message
         d. ht_sig ← ht_sig || xmss_sig
         e. if layer < d - 1:
                msg ← xmss_root(SK.seed, PK.seed, ADRS, h') // we may cache or reuse the root computed during xmss_sign 
-    13. sig ← PK.sf || fors_sig || ht_sig
+    13. sig ← PK.sf || pors_sig || ht_sig
     14. return sig
 \end{verbatim}
 
 \subsection{Index Parsing}
-The \texttt{parse\_idx} function extracts tree and leaf indices for each hypertree layer from the stateless digest. In the unified digest scheme, these bits follow the \texttt{k*a} bits used for PORS+FP indices. The \texttt{hsl} bits are partitioned into \texttt{d} pairs of \texttt{(leaf\_idx, tree\_idx)}, extracted from least significant (layer 0) to most significant (layer \texttt{d-1}), with \texttt{h'} bits per leaf index.
-%\mknote{This is a bit confusin, that we extract the indices of the OTS/FTS schemes used, but not the indices of the revealed leaves in FORS. With the Hashing changes, it needs a double-check that everything is computed correctly and the same data is not used for two purposes. }
+The \texttt{parse\_idx} function extracts tree and leaf indices for each hypertree layer from the stateless digest. 
+In the unified digest scheme, these bits follow the XOF output from \texttt{pors\_digest\_to\_indices}, resulting in \texttt{C * b + 16} bits used for PORS+FP indices. The \texttt{hsl} bits are partitioned into \texttt{d} pairs of \texttt{(leaf\_idx, tree\_idx)}, extracted from least significant (layer 0) to most significant (layer \texttt{d-1}), with \texttt{h'} bits per leaf index.
+%\mknote{This is a bit confusin, that we extract the indices of the OTS/FTS schemes used, but not the indices of the revealed leaves in PORS. With the Hashing changes, it needs a double-check that everything is computed correctly and the same data is not used for two purposes. }
 \begin{verbatim}
-    Algorithm: parse_idx(digest)
+    Algorithm: parse_idx(xof_out)
     Input:
-        digest: message digest
+        xof_out: XOF output
     Output:
         tree_idx: array of d tree indices
         leaf_idx: array of d leaf indices
 
-    1. ht_offset ← k * a
-    2. ht_bits ← extract_bits(digest, ht_offset, hsl)
+    1. ht_offset ← roundup(2^b * k/t + 2) * b + 16 
+    2. ht_bits ← extract_bits(xof_out, ht_offset, hsl)
     3. idx ← ht_bits
     4. tree_idx ← []
     5. leaf_idx ← []
@@ -146,7 +147,7 @@ The \texttt{parse\_idx} function extracts tree and leaf indices for each hypertr
         c. tree_idx[layer] ← idx
     7. return (tree_idx, leaf_idx)
 \end{verbatim}
-\paragraph{Note:} The total digest must encode \texttt{(roundup(k*2\string^b/t)+2)*b + hsl = 8*28 + 22 = 246} bits. The \texttt{H\_msg\_pors} output length (Section~5.4.2) must be set accordingly: \texttt{roundup(((roundup(k*2\string^b/t)+2)*b + hsl) / 8) = 31} bytes. This is a correction from the original \texttt{roundup((roundup(k*2\string^b/t)+2)*b / 8) = 28} bytes, which was insufficient for the unified digest.
+\paragraph{Note:} The total XOF output must encode \texttt{C * b + hsl = 18 * 24 + 16 + 22 = 470} bits. 
 
 \subsection{Stateful verification}
 The \texttt{SHRINCS.VerifyStateful} function verifies a stateful signature. It extracts \texttt{PK.sl} from the signature, parses the UXMSS signature, and infers \texttt{q} from the authentication path length. It then uses the two-phase WOTS+C hashing to recover \texttt{PK.sf} via \texttt{uxmss\_pkFromSig} and verifies that \texttt{Tw(PK.seed, ADRS, PK.sf || PK.sl)} equals \texttt{PK.root}.
@@ -209,11 +210,11 @@ The \texttt{SHRINCS.VerifyStateless} function verifies a stateless signature. It
     7.  R ← pors_sig[0 : R_SIZE]
     8.  setTypeAndClear(ADRS, SL_H_MSG)
     9.  digest ← H_msg_pors(ADRS, R, PK.seed, PK.root, m)
-    10. indices ← pors_digest_to_indices(digest)
+    10. indices, xof_out ← pors_digest_to_indices(digest)
     11. A ← pors_octopus(indices)
     11. if |A| > m_max:
             return false
-    13. (tree_idx, leaf_idx) ← parse_idx(digest)
+    13. (tree_idx, leaf_idx) ← parse_idx(xof_out)
     14. setLayerAddress(ADRS, 0)
     15. setTreeAddress(ADRS, tree_idx[0] * 2^h_prime + leaf_idx[0])
     16. pors_pk ← pors_pkFromSig(pors_sig, indices, PK.seed, ADRS)

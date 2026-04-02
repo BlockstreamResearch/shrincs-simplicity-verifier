@@ -1,8 +1,8 @@
 \section{PORS+FP}
 PORS (PRNG to Obtain a Random Subset) is a few-time signature scheme that uses a \emph{single} Merkle tree over $t$
-leaves. PORS reveals $k$ leaves from a single tree and uses the Octopus algorithm~\cite{octopus} to compute the minimal
+leaves. PORS reveals $k$ leaves from a single tree and uses the Octopus algorithm~\cite{pors_octopus2018} to compute the minimal
 set of authentication nodes needed to verify all $k$ leaves simultaneously,
-exploiting shared nodes to shorten the proof. PORS+FP~\cite{pors_fp} adds
+exploiting shared nodes to shorten the proof. PORS+FP~\cite{pors_fp2025} adds
 \emph{forced pruning} on top: the signer grinds a counter until the resulting
 $k$-subset of leaves produces an Octopus authentication set of size at most
 $m_{\max}$ nodes, bounding the signature to a fixed maximum size.
@@ -15,7 +15,7 @@ PORS consists of a single Merkle tree over $t$ leaves:
           left-filled as described in Section~2.1)
     \item Each leaf is derived from \texttt{SK.seed} using \texttt{PRF} with address
           type \texttt{PORS\_PRF}
-    \item The message digest $M'$, together with a grinding counter \texttt{ctr},
+    \item The message together with a grinding randomness \texttt{R},
           is hashed to a 32-byte digest which is then expanded into $k$ distinct
           indices in $[t]$
     \item The Octopus algorithm computes the minimal authentication set $A$ for those
@@ -32,8 +32,7 @@ $|A| \le m_{\max}$, bounding the signature to a fixed maximum size.
 \subsection{Grinding Condition}
 \label{subsec:pors_grind_condition}
  
-PORS+FP uses the same two-call message-hash interface as FORS+C
-(Section~5.4.2):
+PORS+FP uses the same two-call message-hash interface (Section~5.4.2):
 \begin{verbatim}
     R      ← PRF_msg_ctr(SK.prf, PK.seed, opt_rand, ctr, m)
     digest ← H_msg_pors(ADRS, R, PK.seed, PK.root, m)
@@ -62,52 +61,39 @@ algorithm. We use rejection sampling over SHA256 XOF output.
         digest: 32-byte value
     Output:
         indices: array of k distinct integers in [0, t-1]
+        xof_block: XOF output with size 256*blk
 
     1. b       ← ceil(log2(t))         // bits per candidate
     2. c       ← floor(256 / b)        // number of candidates per 256-bit block
     3. indices ← []
-    4. for blk from 0 to MAX_BLOCKS - 1:
+    4. xof_out ← ""
+    5. for blk from 0 to 2^32 - 1:
         a. block ← SHA-256(digest || toByte(blk, 4))
-        b. for i from 0 to c - 1:
+        b. xof_out ← xof_out || block
+        c. for i from 0 to c - 1:
             candidate ← extract_bits(block, i * b, b)
             if candidate < t and candidate not in indices:
                 indices ← indices || [candidate]
             if |indices| == k:
-                return indices
-    5. abort with error
+                return (indices, xof_out)
+    6. abort with error
 \end{verbatim}
 
 \paragraph{Note:} \texttt{extract\_bits(x, offset, length)} extracts length bits from byte string \texttt{x} starting at bit position offset, returned as an unsigned integer. Bits are numbered in big-endian order: bit \texttt{0} is the most significant bit of byte \texttt{x[0]}.
 
-The algorithm could be optimized for choosen parametrs of SHRINCS-B and SHRINCS-L. We can omit the usage of XOF build on SHA256, and use only the digest to obtain indices. 
-The expected number of candidates is $\texttt{roundup}(2^b\cdot k/t), k\ll t$ (see Appendix~1.1), which for $t=227000997$, $b=28$ and $k=5$ will result in $6$ expected candidates, while the maximum number of candidates that could be extracted from output of digest is $9$. 
-Let's add the two more candidates to ensure that we will have enough candidates to generate $k$ indices. 
-Also, we want to save \texttt{hsl} bits for XMSS indices generation from the PORS+FP message digest. 
-The overall bytes from the digest will be: $\texttt{roundup}(((6+2)*28+22)/8) = 31$. 
-We will use the optimized version of \texttt{pors\_digest\_to\_indices} in grinding process. 
-
-\begin{verbatim}
-    Algorithm: pors_digest_to_indices(digest)
-    Input:
-        digest: 32-byte value
-    Output:
-        indices: array of k distinct integers in [0, t-1]
-
-    1. b       ← ceil(log2(t))         
-    2. c       ← floor(256 / b)        
-    3. indices ← []
-    4. for i from 0 to c - 1:
-        candidate ← extract_bits(digest, i * b, b)
-        if candidate < t and candidate not in indices:
-            indices ← indices || [candidate]
-        if |indices| == k:
-            return indices
-    5. abort with error
-\end{verbatim}
+Let candidates will represent potencial index to be added in the indices array. In our case, for chosen parameters of SHRINCS-B and SHRINCS-L, we will need \texttt{C' := roundup(2\string^b * k / t) = roundup(2\string^24 * 6 / 9245141) = 11} expected candidates (Appendix~1.1) to obtain \texttt{k} distinct indicesin range $[0,t-1]$.
+The expected number of bits to extract from XOF is \texttt{24 * 11 = 264} bits.
+This means that we need to produce two XOF blocks, each in size of 32 bytes. 
+We want to use the XOF output to obtain index for hypertree, reserving \texttt{hsl} bits (Section~10.5). 
+Also, we wan to save some bits in the case, if we need more than 264 to obtain $6$ indices, so we reserve up to 7 candidates, resulting in total number of candidates \texttt{C := C' + 7} equal to $18$.
+The resulting number of bits to extract is \texttt{18 * 24 = 432}. 
+But because we omit last $16$ bits from the first block, the position from where we strat to extract index for hypertree is shifted by $16$, resulting in starting position after $448$ bit. 
+Overall, we set $448$ to use in rejection sampling and $22$ bits in hypertree, resulting in 470 bits or 59 bytes.
+We truncate the XOF output to be $59$ bytes long.
 
 \subsection{Octopus for the PORS+FP Tree}
  
-The Octopus algorithm~\cite{octopus} computes the minimal set of authentication
+The Octopus algorithm~\cite{pors_octopus2018} computes the minimal set of authentication
 nodes whose values are sufficient to recompute the tree root from $k$ revealed
 leaves. It is invoked during grinding (to check the size condition), during signing
 (to determine which node values to include in the signature), and implicitly during
@@ -180,21 +166,21 @@ deterministically from $R$ and $m$.
     Output:
         indices: array of k integers in [0, t-1]
         R:       randomness satisfying the forced-pruning condition
-        digest:  H_msg_fors output for that R
+        digest:  H_msg_pors output for that R
  
     1. setTypeAndClear(ADRS, SL_H_MSG)
     2. for ctr from 0 to 2^32 - 1:
         a. R      ← PRF_msg_ctr(SK.prf, PK.seed, opt_rand, ctr, m)
-        b. digest ← H_msg_fors(ADRS, R, PK.seed, PK.root, m)
-        c. indices ← pors_digest_to_indices(digest, t, k)
-        d. A       ← pors_octopus(indices, t)
+        b. digest ← H_msg_pors(ADRS, R, PK.seed, PK.root, m)
+        c. indices ← pors_digest_to_indices(digest)
+        d. A       ← pors_octopus(indices)
         e. if |A| <= m_max:
                return (indices, R, digest)
     3. abort with error
 \end{verbatim}
  
 \paragraph{Note:} Each iteration costs one \texttt{PRF\_msg\_ctr} evaluation plus
-one \texttt{H\_msg\_pors} evaluation and dominates the Octopus authentication cost). The address type \texttt{SL\_H\_MSG} is set
+one \texttt{H\_msg\_pors} evaluation and dominates the Octopus authentication cost. The address type \texttt{SL\_H\_MSG} is set
 at the start and remains fixed for the duration of grinding.
 
 \subsection{Secret Key Generation}
@@ -247,11 +233,11 @@ However, if no right subtree exists, the tree is considered left-filled, and the
     3. left_count  ← min(2^(target_height-1), leaves_in_subtree)
     right_count ← leaves_in_subtree - left_count
     4. left ← pors_treehash(SK.seed, PK.seed, ADRS,
-                            target_height - 1, start_idx, t)
+                            target_height - 1, start_idx)
     5. if right_count == 0:
         return left
     6. right ← pors_treehash(SK.seed, PK.seed, ADRS,
-                            target_height - 1, start_idx + left_count, t)
+                            target_height - 1, start_idx + left_count)
     7. setTypeAndClear(ADRS, PORS_TREE)
     8. setKeyPairAddress(ADRS, 0)
     9. setTreeHeight(ADRS, target_height)
@@ -308,7 +294,7 @@ where $\{i_1,\dots,i_k\} = I$ are the $k$ revealed leaf indices and $\{a_1,\dots
     4. for each i in indices (in increasing order):
         a. sk_i ← pors_SKgen(SK.seed, PK.seed, ADRS, i)
         b. sig  ← sig || sk_i
-    5. auth_path ← pors_auth_path(SK.seed, PK.seed, ADRS, indices, t)
+    5. auth_path ← pors_auth_path(SK.seed, PK.seed, ADRS, indices)
     6. sig ← sig || auth_path
     7. return (sig, digest)
 \end{verbatim}
@@ -324,7 +310,6 @@ The function returns \texttt{"false"} if the grinding condition is not satisfied
     Input:
         sig:     PORS+FP signature (R || secret leaves || auth nodes)
         indices: PORS+FP k indices from digest
-        A:       Octopus authentication set
         PK.seed: public seed
         PK.root: public key root
         ADRS:    tweak (layer and tree_address set by caller)   
