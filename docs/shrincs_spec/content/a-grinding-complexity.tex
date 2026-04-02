@@ -67,7 +67,7 @@ Expected grinding iterations:
     \mathbb{E}[\text{iterations}] = \frac{1}{P(\sum d_i = S_{wn})}
 \end{align}
 
-\subsubsection{FORS+C Grinding}
+\subsubsection{PORS+FP Grinding}
 The grinding operation searches for $\text{indices}[k-1] = 0$, meaning the last $a$ bits of the digest must all be zero. This is a deterministic bit condition with:
 \begin{align}
     P(\text{indices}[k-1] = 0) &= \frac{1}{2^a} \\
@@ -144,8 +144,8 @@ The grinding operation searches for $\text{indices}[k-1] = 0$, meaning the last 
     \item Expected grinding time: 2-4 seconds per signature
 \end{itemize}
 
-\subsection{FORS+C Grinding Complexity}
-Both SHRINCS-B and SHRINCS-L use identical FORS+C parameters:
+\subsection{PORS+FP Grinding Complexity}
+Both SHRINCS-B and SHRINCS-L use identical PORS+FP parameters:
 \begin{itemize}
     \item $k = 6$ trees
     \item $a = 22$ (tree height)

@@ -139,7 +139,7 @@ The combination order follows from the tree structure:
     9. return node
 \end{verbatim}
 
-\paragraph{Note:} In step 3, \texttt{is\_internal = false} because the stateful UXMSS signs user messages directly (requiring phase 1 + phase 2 hashing). This differs from the stateless XMSS layers which always sign tree roots or FORS public keys (\texttt{is\_internal = true}).
+\paragraph{Note:} In step 3, \texttt{is\_internal = false} because the stateful UXMSS signs user messages directly (requiring phase 1 + phase 2 hashing). This differs from the stateless XMSS layers which always sign tree roots or PORS+FP public key (\texttt{is\_internal = true}).
 
 \subsection{UXMSS Signature Generation}
 To sign a message using the stateful path, UXMSS signature generation produces a WOTS+C signature followed by the authentication path for position \texttt{q}. The signature number \texttt{q} must be tracked as state and incremented after each use to ensure one-time signature security. As noted in Section~1.2, the state counter should be persisted before generating the signature to prevent key reuse in case of interruption.
