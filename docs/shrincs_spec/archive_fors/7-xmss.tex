@@ -13,7 +13,7 @@ An XMSS tree of height \texttt{h'} is a complete binary Merkle tree where:
 
 Layer indexing within the stateless hypertree is the following:
 \begin{itemize}
-    \item Layer 0: Bottom layer (is used to sign the PORS+FP public keys)
+    \item Layer 0: Bottom layer (is used to sign the FORS+C public keys)
     \item Layer d-1: Top layer (root is \texttt{PK.sl})
 \end{itemize}
 
@@ -85,14 +85,14 @@ At height \texttt{h}, the sibling subtree's leftmost leaf index is determined by
 \subsection{XMSS Public Key Recovery from Signature}
 Given a WOTS+C signature and authentication path, this algorithm recovers the XMSS tree root. First, it recovers the WOTS+C public key (the leaf value) from the WOTS+C signature. Then, starting from the leaf, it iteratively combines the current node with the corresponding authentication path node to compute the parent, continuing until reaching the root. At each height \texttt{h}, the \texttt{h}-th bit of idx determines whether the current node is the left child \texttt{(bit = 0)} or right child \texttt{(bit = 1)}, which dictates the ordering when hashing the pair.
 
-The message \texttt{m} being verified is either a PORS+FP public key (at layer 0) or a lower-layer tree root (at layers \texttt{1...d-1}). In both cases, m is already a hash, so \texttt{wots\_pkFromSig} is called with \texttt{is\_internal = true} (phase 1 of message hashing is skipped; see Section~6.7).
+The message \texttt{m} being verified is either a FORS+C public key (at layer 0) or a lower-layer tree root (at layers \texttt{1...d-1}). In both cases, m is already a hash, so \texttt{wots\_pkFromSig} is called with \texttt{is\_internal = true} (phase 1 of message hashing is skipped; see Section~6.7).
 
 \begin{verbatim}
     Algorithm: xmss_pkFromSig(wots_sig, auth, m, PK.seed, PK.root, ADRS, h_prime, idx)
     Input:
         wots_sig: WOTS+C signature
         auth: authentication path (h_prime * n bytes)
-        m: signed message (PORS+FP public key or lower-layer tree root)
+        m: signed message (FORS+C public key or lower-layer tree root)
         PK.seed: public seed
         PK.root: root public key
         ADRS: tweak
@@ -119,14 +119,14 @@ The message \texttt{m} being verified is either a PORS+FP public key (at layer 0
 \end{verbatim}
 
 \subsection{XMSS Signature Generation (Stateless Layer)}
-To sign a message within the stateless hypertree, the XMSS signature generation produces a WOTS+C signature on the message followed by the authentication path for the corresponding leaf. The message being signed is typically either a PORS+FP public key (at layer 0) or the root of a lower-layer XMSS tree (at layers 1 through \texttt{d-1}). In both cases the message is already a hash value, so \texttt{wots\_sign} is called with \texttt{is\_internal = true}.
+To sign a message within the stateless hypertree, the XMSS signature generation produces a WOTS+C signature on the message followed by the authentication path for the corresponding leaf. The message being signed is typically either a FORS+C public key (at layer 0) or the root of a lower-layer XMSS tree (at layers 1 through \texttt{d-1}). In both cases the message is already a hash value, so \texttt{wots\_sign} is called with \texttt{is\_internal = true}.
 
 The leaf index \texttt{idx} determines which WOTS+C key pair is used; this index is determined from the message digest during stateless signing (see Section~10.5).
 
 \begin{verbatim}
     Algorithm: xmss_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS, h_prime, idx)
     Input:
-        m: message to sign (lower-layer root or PORS+FP public key)
+        m: message to sign (lower-layer root or FORS public key)
         SK.seed: secret seed
         SK.prf: PRF key
         PK.seed: public seed
@@ -148,8 +148,8 @@ Each XMSS signature consists of a WOTS+C signature plus an authentication path o
 
 The full stateless hypertree consists of \texttt{d = 2} layers, giving:
 \begin{itemize}
-    \item 936 bytes and 4104 hashes for SHRINCS-B
-    \item 2472 bytes and 128 hashes for SHRINCS-L
+    \item 968 bytes and 4106 hashes for SHRINCS-B
+    \item 2504 bytes and 130 hashes for SHRINCS-L
 \end{itemize}
 
-\paragraph{Note:} This excludes the PORS+FP contribution (see Section~9). The total stateless signature size and verification cost are the sum of PORS+FP and hypertree components, as presented in Section~3.2.2.
+\paragraph{Note:} This excludes the FORS+C contribution (see Section~9). The total stateless signature size and verification cost are the sum of FORS+C and hypertree components, as presented in Section~3.2.2.

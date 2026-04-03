@@ -31,7 +31,7 @@ This usage of tweaked hashing is critical. It ensures that a hash computed at on
 \subsection{Pseudorandom Functions}
 SHRINCS uses two pseudorandom functions for different purposes: key derivation and getting the randomizer for the signature.
 
-For deterministic derivation of secret key material (WOTS+C chain starting values, PORS+FP secret keys):
+For deterministic derivation of secret key material (WOTS+C chain starting values, FORS secret keys):
 
 \begin{center}
     \texttt{PRF(PK.seed, ADRS, SK.seed) = Tw(PK.seed*, ADRS, SK.seed)}
@@ -45,16 +45,16 @@ For generating the randomizer \texttt{R} used in message hashing:
     \texttt{PRF\_msg(SK.prf, PK.seed, opt\_rand, m) = HMAC-SHA-256(SK.prf, PK.seed || opt\_rand || m)[0:R\_SIZE]},
 \end{center}
 where \texttt{opt\_rand} is an optional randomness (\texttt{n} bytes), can be \texttt{PK.seed} for deterministic signing.
-For the stateless signing path, the PORS+FP grinding counter is iterated inside \texttt{PRF\_msg} to produce a fresh \texttt{R} on each attempt. The counter-augmented variant is:
+For the stateless signing path, the FORS+C grinding counter is iterated inside \texttt{PRF\_msg} to produce a fresh \texttt{R} on each attempt. The counter-augmented variant is:
 
 \begin{center}
     \texttt{PRF\_msg\_ctr(SK.prf, PK.seed, opt\_rand, ctr, m) = HMAC-SHA-256(SK.prf, PK.seed || opt\_rand || ctr || m)[0:R\_SIZE]}
 \end{center}
 
-where \texttt{ctr} is a counter incremented during PORS+FP grinding (see Section~9.4). The verifier never sees \texttt{ctr}, it only receives the final \texttt{R} that satisfied the grinding condition. This design keeps the grinding work inside the signer's PRF evaluation while allowing the verifier to check the result using only \texttt{R}  and the message hash.
+where \texttt{ctr} is a counter incremented during FORS+C grinding (see Section~9.4). The verifier never sees \texttt{ctr}, it only receives the final \texttt{R} that satisfied the grinding condition. This design keeps the grinding work inside the signer's PRF evaluation while allowing the verifier to check the result using only \texttt{R}  and the message hash.
 
 \subsection{Message Hash Function}
-SHRINCS uses different hashing strategies for WOTS+C and PORS+FP, optimized for their respective use cases.
+SHRINCS uses different hashing strategies for WOTS+C and FORS+C, optimized for their respective use cases.
 
 \subsubsection{WOTS+C: Two-Phase Hashing}
 WOTS+C uses a two-phase approach for message hashing and grinding. This design is necessary because:
@@ -74,11 +74,13 @@ This is computed once per signature, producing an n-byte digest.
     \texttt{H\_grind(ADRS, PK.seed, digest, ctr) = SHA-256(PK.seed* || ADRS || digest || ctr)[0:n]}
 \end{center}
 
-\subsubsection{PORS+FP: Single-Phase Hashing}
-PORS+FP always signs user messages (never tree roots), so it uses a simpler single-phase approach. The grinding counter is not included in the message hash. Instead, it is iterated inside \texttt{PRF\_msg\_ctr} (Section~5.3) to produce a fresh \texttt{R} on each grinding attempt. The verifier only sees the final \texttt{R}:
+\subsubsection{FORS+C: Single-Phase Hashing}
+FORS+C always signs user messages (never tree roots), so it uses a simpler single-phase approach. The grinding counter is not included in the message hash. Instead, it is iterated inside \texttt{PRF\_msg\_ctr} (Section~5.3) to produce a fresh \texttt{R} on each grinding attempt. The verifier only sees the final \texttt{R}:
 \begin{center}
-    \texttt{H\_msg\_pors(ADRS, R, PK.seed, PK.root, m) = SHA-256(PK.seed* || ADRS || R || PK.root || m)}
+    \texttt{H\_msg\_fors(ADRS, R, PK.seed, PK.root, m) = SHA-256(PK.seed* || ADRS || R || PK.root || m)[0:roundup((k*a + hsl) / 8)]}
 \end{center}
+
+The output length is roundup((k*a + hsl) / 8) = 20 bytes for both parameter sets, encoding both the \texttt{k} FORS leaf indices and the \texttt{hsl} hypertree path indices in a unified digest (see Section~10.5).
 
 \subsection{Tweak Structure and Domain Separation}
 Tweaks are structured as follows to ensure uniqueness across all scheme components:
@@ -103,10 +105,10 @@ A total \texttt{ADRS} size is 32 bytes.
 0x03: SF_WOTS_GRIND:    Stateful WOTS+C grinding
 0x04: SF_H_MSG:         Stateful message hash
 0x05: SF_WOTS_PRF:      Stateful PRF for WOTS+C key derivation
-0x06: PORS_HASH:        PORS+FP leaf hashing
-0x07: PORS_TREE:        PORS+FP tree internal nodes
-0x08: PORS_PK:          PORS+FP roots compression
-0x09: PORS_PRF:         PRF for PORS+FP secret key derivation
+0x06: FORS_HASH:        FORS leaf hashing
+0x07: FORS_TREE:        FORS tree internal nodes
+0x08: FORS_PK:          FORS roots compression
+0x09: FORS_PRF:         PRF for FORS secret key derivation
 0x0A: SL_WOTS_HASH:     Stateless WOTS+C chain hashing
 0x0B: SL_WOTS_PK:       Stateless WOTS+C public key compression
 0x0C: SL_TREE:          Stateless tree internal nodes
@@ -165,10 +167,10 @@ The list of type-dependent words for address tweaking is the following:
 0x03 & \texttt{SF\_WOTS\_GRIND}  & \texttt{keypair}   & \texttt{0}       & \texttt{0} \\
 0x04 & \texttt{SF\_H\_MSG}       & \texttt{0}         & \texttt{0}       & \texttt{0} \\
 0x05 & \texttt{SF\_WOTS\_PRF}    & \texttt{keypair}   & \texttt{chain}   & \texttt{0} \\
-0x06 & \texttt{PORS\_HASH}       & \texttt{0}         & \texttt{0}       & \texttt{leaf\_idx} \\
-0x07 & \texttt{PORS\_TREE}       & \texttt{0}         & \texttt{height}  & \texttt{index} \\
-0x08 & \texttt{PORS\_PK}         & \texttt{0}         & \texttt{0}       & \texttt{0} \\
-0x09 & \texttt{PORS\_PRF}        & \texttt{tree\_idx} & \texttt{0}       & \texttt{leaf\_idx} \\
+0x06 & \texttt{FORS\_HASH}       & \texttt{tree\_idx} & \texttt{0}       & \texttt{leaf\_idx} \\
+0x07 & \texttt{FORS\_TREE}       & \texttt{tree\_idx} & \texttt{height}  & \texttt{index} \\
+0x08 & \texttt{FORS\_PK}         & \texttt{0}         & \texttt{0}       & \texttt{0} \\
+0x09 & \texttt{FORS\_PRF}        & \texttt{tree\_idx} & \texttt{0}       & \texttt{leaf\_idx} \\
 0x0A & \texttt{SL\_WOTS\_HASH}   & \texttt{keypair}   & \texttt{chain}   & \texttt{hash} \\
 0x0B & \texttt{SL\_WOTS\_PK}     & \texttt{keypair}   & \texttt{0}       & \texttt{0} \\
 0x0C & \texttt{SL\_TREE}         & \texttt{keypair}   & \texttt{height}  & \texttt{index} \\

@@ -1,40 +1,7 @@
 \section{Expected Grinding Complexity}
-This section analyzes the computational cost of the grinding operations in WOTS+C and PORS+FP for both SHRINCS parameter sets.
+This section analyzes the computational cost of the grinding operations in WOTS+C and FORS+C for both SHRINCS parameter sets.
 
 \subsection{Probabilistic Analysis}
-\subsubsection{Rejection Sampling}
-Rejection sampling used to obtain $k$ distinct indices from the set $\{0,1,...,t-1\}$ in \texttt{pors\_digest\_to\_indices} function, where $t$ is an arbitrary number that is not the power of 2. 
-Inside of \texttt{pors\_digest\_to\_indices} we evaluate some number of SHA256 blocks, and sequentialy extract $b = \lceil\log_2{(t)}\rceil$ bits for every index, which we will call a \emph{candidate}. 
-A candidate that is distinct among previous candidates and is in $[0,t-1]$ is "good".
-The extraction of next candidate is independent from previous draws index. Moreover, each candidate chosen uniformly from $\{0,1,...,2^b-1\}$, and rejetion smapling does not affect the uniformity of choosing a candidate.
-
-Let's define probability that extracted $i$-th index is distinct:
-\begin{align}
-    p^{(i)}_c = \frac{t-(i-1)}{t}
-\end{align}
-
-and define the probability that the obtained index will be in range $[0,t-1]$:
-\begin{align}
-    p_r = \frac{t}{2^b}
-\end{align}
-
-Then the probability of obtaining "good" i-th candidate is simply the product of $p^{(i)}_c\cdot p_r$. Then
-\begin{align}
-    p_i = \frac{t-(i-1)}{t}\cdot \frac{t}{2^b} =  \frac{t - (i-1)}{2^b}
-\end{align}
-
-As we can see, each candidate draw is the Bernoulli trial with probability of success $p_i$. 
-Furthermore, each draw of good candidate obeys the geometric distribution with success probability $p_i$ and expected number of candidates $1/p_i$.
-The expected total number of candidates to obtain $k$ "good" is:
-\begin{align}
-    \mathbb{E}\left[\text{total candidates}\right] = \sum_{i=1}^{k} \frac{1}{p_i} = 2^b\sum_{i=1}^{k} \frac{1}{t - (i-1)}
-\end{align}
-
-If $k \ll t$, then we can aproximate the expression (6) as:
-\begin{align}
-    \mathbb{E}\left[\text{total candidates}\right] \approx 2^b\cdot\frac{k}{t}
-\end{align}
-
 
 \subsubsection{WOTS+C Grinding}
 The grinding operation searches for a counter $\texttt{ctr}$ such that the sum of base-$w$ digits equals the target $S_{wn}$. Each digest attempt produces $l$ independent random digits, each uniformly distributed in $[0, w-1]$.
@@ -67,7 +34,7 @@ Expected grinding iterations:
     \mathbb{E}[\text{iterations}] = \frac{1}{P(\sum d_i = S_{wn})}
 \end{align}
 
-\subsubsection{PORS+FP Grinding}
+\subsubsection{FORS+C Grinding}
 The grinding operation searches for $\text{indices}[k-1] = 0$, meaning the last $a$ bits of the digest must all be zero. This is a deterministic bit condition with:
 \begin{align}
     P(\text{indices}[k-1] = 0) &= \frac{1}{2^a} \\
@@ -144,8 +111,8 @@ The grinding operation searches for $\text{indices}[k-1] = 0$, meaning the last 
     \item Expected grinding time: 2-4 seconds per signature
 \end{itemize}
 
-\subsection{PORS+FP Grinding Complexity}
-Both SHRINCS-B and SHRINCS-L use identical PORS+FP parameters:
+\subsection{FORS+C Grinding Complexity}
+Both SHRINCS-B and SHRINCS-L use identical FORS+C parameters:
 \begin{itemize}
     \item $k = 6$ trees
     \item $a = 22$ (tree height)

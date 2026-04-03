@@ -1,0 +1,314 @@
+\section{WOTS+C}
+The standard Winternitz One-Time Signature (WOTS+) is the building block of most modern hash-based schemes. It works by encoding the message into a series of small integers and using them to iterate hash chains \cite{hulsing2013wotsplus}. A significant portion of a WOTS+ signature size (approx 20\%) is dedicated to "Checksum," which is necessary to prevent a forgery attack where an adversary extends the hash chains forward. WOTS+C (compressed WOTS+) eliminates the transmission of this checksum entirely, achieving a smaller signature size. 
+
+In WOTS+, the checksum $C$ is calculated from the message digest $D$.
+\begin{align}
+C = \sum_{i=1}^{l} (w - 1 - d_i)
+\end{align}
+
+This checksum is then signed using additional chains. In WOTS+C \cite{wotsc_sphincsc2022}, instead of calculating a checksum for a fixed message digest, the signer modifies the message digest until it possesses a specific, pre-determined checksum property. This is done by hashing the message with a random salt \texttt{R} (phase 1), then iterating over a counter \texttt{ctr} applied to the resulting digest (phase 2) until the output satisfies a global target condition.
+
+\subsection{The Target Condition}
+WOTS utilize a parameter \texttt{w} to define the number of hashchains and correspondingly their length. The message digest length is \texttt{n} bytes so \texttt{l = 8n/(log2(w))}. The values $d_{i\in[l]}$ are treated as integers in \texttt{0...(w-1)}. 
+
+Let \texttt{S\_wn} be a protocol parameter (often near the expected value, but may be chosen larger to trade signing/grinding cost for verification cost). If the hash output is uniform, the expected value of a single digit is \texttt{d\_i = (w-1)/2}. For \texttt{l} digits, the expected \texttt{S\_wn} is: 
+\begin{align}
+S_{wn} = \sum_{i=0}^{l-1}d_i
+\end{align}
+
+By enforcing this condition during signing (including grinding), the verifier can simply assume the checksum is \texttt{S\_wn} without receiving it. If the reconstructed digest does not sum to \texttt{S\_wn}, the signature is invalid. 
+
+Additionally we can manipulate a target condition to decrease the cost of signature verification. All \texttt{l}-chains consist of \texttt{St = (w-1)*l} hashing operations. Increasing \texttt{S\_wn} increases grinding cost but reduces the verification complexity to \texttt{(S\_t - S\_wn)} hashes. Concrete parameters are presented in Section~4.
+% could be not so clear, check later
+
+\subsection{Base-w Representation}
+WOTS represents a message digest in base \texttt{w} so that each digit is an integer in \texttt{[0...w-1]}. These digits directly determine the number of hashes to apply to each WOTS chain element during signing and verification. The \texttt{base\_w()} function converts a byte string into an array of \texttt{out\_len} base-w digits. In this specification we assume \texttt{w} is a power of two for efficiency, though this is not a strict requirement of the construction.
+
+\begin{verbatim}
+    Algorithm: base_w(m, w, out_len) 
+        m: byte string
+        w: Winternitz parameter
+        out_len: output length
+    Output: 
+        b_w: array of out_len integers in [0, w-1]
+    
+    1. in_idx ← 0
+    2. bits ← 0
+    3. total ← 0
+    4. b_w ← []
+    5. for i from 0 to (out_len - 1):
+        a. if bits == 0:
+            total ← m[in_idx]
+            in_idx ← in_idx + 1
+            bits ← 8
+        b. bits ← bits - log2(w)
+        c. b_w[i] ← (total >> bits) AND (w - 1)
+    6. return b_w
+\end{verbatim} 
+
+We provide optimized versions for \texttt{w = 256} and \texttt{w = 4} proposed by different SHRINCS instances. For \texttt{w=256}:
+\begin{verbatim}
+    Algorithm: base_w256(m, out_len)
+    Input:
+        m: byte string
+        out_len: output length 
+    Output:
+        b_w: array of out_len integers in [0, 255]
+
+    1. b_w ← []
+    2. for i from 0 to (out_len - 1):
+        a. b_w[i] ← m[i]
+    3. return b_w
+\end{verbatim}
+For \texttt{w=4}:
+\begin{verbatim}
+    Algorithm: base_w4(m, out_len)
+    Input:
+        m: byte string
+        out_len: output length
+    Output:
+        b_w: array of out_len integers in [0,3]
+
+    1. b_w ← []
+    2. for j from 0 to (out_len/4 - 1):
+        a. x ← m[j]
+        b. b_w[4*j + 0] ← (x >> 6) AND 3
+        c. b_w[4*j + 1] ← (x >> 4) AND 3
+        d. b_w[4*j + 2] ← (x >> 2) AND 3
+        e. b_w[4*j + 3] ← x AND 3
+    3. return b_w
+\end{verbatim}
+
+\subsection{Chain Function}
+WOTS derives signature components and public key material by iteratively applying the tweakable hash function along a Winternitz chain. The function \texttt{chain()} takes an n-byte input value \texttt{m} and applies \texttt{Tw(PK.seed, ADRS, ·)} exactly \texttt{steps} times, beginning at chain position \texttt{start}. For each iteration, the address field hash inside \texttt{ADRS} is set to the current chain position \texttt{i} (from \texttt{start} to \texttt{start + steps - 1}) to ensure domain separation between different chain steps. The output is the resulting n-byte value after advancing the chain by steps, which is used both for producing signature chain values (advancing from \texttt{0} to \texttt{msg[i]}) and for reconstructing end-of-chain values during verification (advancing from \texttt{msg[i]} to \texttt{w-1}).
+
+The \texttt{mode} parameter determines which address types are used: \texttt{SF} for the stateful tree instance or \texttt{SL} for the stateless instance.
+\begin{verbatim}
+    Algorithm: chain(m, start, steps, PK.seed, ADRS)
+    Input:
+        m: input
+        start: starting index
+        steps: number of iterations
+        PK.seed: public seed
+        ADRS: tweak (type already set to SF_WOTS_HASH or SL_WOTS_HASH)
+    Output:
+        n-byte chain output
+
+    1. tmp ← m
+    2. for i from start to (start + steps - 1):
+        a. setHashAddress(ADRS, i)
+        b. tmp ← Tw(PK.seed, ADRS, tmp)
+    3. return tmp
+\end{verbatim}
+
+\subsection{Key Generation}
+To create a WOTS public key for a given \texttt{keypair} index, we derive one secret starting value per chain using \texttt{PRF}, then advance each value to the end of its chain. The resulting array of end-of-chain values is compressed into a single n-byte WOTS public key via the tweakable hash. The compression uses address type \texttt{SF\_WOTS\_PK} (stateful) or \texttt{SL\_WOTS\_PK} (stateless).
+\begin{verbatim}
+    Algorithm: wots_PKgen(SK.seed, PK.seed, ADRS, keypair, mode)
+    Input:
+        SK.seed: secret seed
+        PK.seed: public seed
+        ADRS: tweak
+        keypair: keypair index
+        mode: SF or SL
+    Output:
+        pk: compressed WOTS+C public key
+
+        if mode == SF: 
+            WOTS_HASH       ← SF_WOTS_HASH
+            WOTS_PK         ← SF_WOTS_PK
+            WOTS_PRF_TYPE   ← SF_WOTS_PRF
+        else:
+            WOTS_HASH       ← SL_WOTS_HASH
+            WOTS_PK         ← SL_WOTS_PK
+            WOTS_PRF_TYPE   ← SL_WOTS_PRF
+
+    1. tmp ← []
+    2. for i from 0 to l - 1:
+        a. setTypeAndClear(ADRS, WOTS_PRF_TYPE)
+        b. setKeyPairAddress(ADRS, keypair)
+        c. setChainAddress(ADRS, i)
+        d. sk_i ← PRF(PK.seed, ADRS, SK.seed)
+        e. setTypeAndClear(ADRS, WOTS_HASH)
+        f. setKeyPairAddress(ADRS, keypair)
+        g. setChainAddress(ADRS, i)
+        h. tmp[i] ← chain(sk_i, 0, w - 1, PK.seed, ADRS)
+    3. setTypeAndClear(ADRS, WOTS_PK)
+    4. setKeyPairAddress(ADRS, keypair)
+    5. pk ← Tw(PK.seed, ADRS, tmp[0] || ... || tmp[l-1])
+    6. return pk
+\end{verbatim}
+
+\subsection{Message Digest Grinding}
+WOTS+C uses a two-phase hashing approach (see Section~5.4.1):
+\begin{enumerate}
+    \item Phase 1 \texttt{(H\_msg)}: Computes a randomized digest of the user message. This is performed once per signature and produces an \texttt{n}-byte digest. For internal XMSS signatures (which sign tree roots that are already hashes), phase 1 is skipped and the tree root is used directly as the digest.
+    \item Phase 2 \texttt{(H\_grind)}: Takes the phase 1 digest (or tree root), \texttt{PK.seed}, and a counter, producing a candidate n-byte output. This is iterated during grinding until the target condition is met. \texttt{PK.seed} is included to bind the grinding output to the key pair.
+\end{enumerate}
+
+The function \texttt{wots\_grind()} takes a pre-computed digest and increments \texttt{ctr} until the base-w digits of the Phase 2 output satisfy the target sum \texttt{S\_wn}. It returns the found \texttt{ctr} and the corresponding digit array.
+
+\begin{verbatim}
+    Algorithm: wots_grind(PK.seed, digest, ADRS, keypair, mode)
+    Input:
+        PK.seed: public seed
+        digest: a digest from phase 1 H_msg, or a tree root for internal signatures
+        ADRS: tweak
+        keypair: keypair
+        mode: SF or SL
+    Output:
+        msg: array of l integers in [0, w-1]
+        ctr: final counter value used
+
+    1. if mode == SF:
+            setTypeAndClear(ADRS, SF_WOTS_GRIND)
+        else:
+            setTypeAndClear(ADRS, SL_WOTS_GRIND)
+    2. setKeyPairAddress(ADRS, keypair)
+    3. for ctr from 0 to 2^32 - 1:  // c = 4 bytes
+        a. grind_out ← H_grind(ADRS, PK.seed, digest, ctr)
+        b. msg ← base_w(grind_out, w, l)
+        c. sum ← 0
+        d. for i from 0 to (l - 1):
+            sum ← sum + msg[i]
+        e. if sum == S_wn:
+            return (msg, ctr)
+    4. abort with error  // caller should resample R and retry
+\end{verbatim}
+
+Additionally we need to define a func which allows to calculate the digest without grinding (by providing the \texttt{ctr} value directly).
+
+\begin{verbatim}
+    Algorithm: wots_digest(PK.seed, digest, ctr, ADRS, keypair, mode)
+    Input:
+        digest: digest from phase 1 H_msg, or a tree root
+        ctr: counter value
+        ADRS: tweak
+        keypair: keypair
+        mode: SF or SL
+    Output:
+        msg: array of l integers in [0, w-1]
+        valid: boolean indicating if sum == S_wn
+
+    1. if mode == SF:
+            setTypeAndClear(ADRS, SF_WOTS_GRIND)
+        else:
+            setTypeAndClear(ADRS, SL_WOTS_GRIND)
+    2. setKeyPairAddress(ADRS, keypair)
+    3. grind_out ← H_grind(ADRS, PK.seed, digest, ctr)
+    4. msg ← base_w(grind_out, w, l)
+    5. sum ← 0
+    6. for i from 0 to l - 1:
+        sum ← sum + msg[i]
+    7. valid ← (sum == S_wn)
+    8. return (msg, valid)
+\end{verbatim}
+
+\subsection{Signature Generation}
+To sign a user message, WOTS+C first computes the phase 1 digest, then grinds to find a valid counter. For each chain, it reveals the chain value after exactly \texttt{msg[i]} steps (starting from the secret-derived chain \texttt{start}). The signature carries \texttt{R}, the grinding counter \texttt{ctr}, and the \texttt{l} chain values.
+
+For internal XMSS signatures (signing tree roots at layers \texttt{1..d-1} of the hypertree), phase 1 is skipped: the tree root serves directly as the digest input to \texttt{wots\_grind}. In this case \texttt{R} is still generated and included in the signature to maintain a uniform format, but it does not affect the digest computation.
+\begin{verbatim}
+    Algorithm: wots_sign(m, SK.seed, SK.prf, PK.seed, PK.root, ADRS, keypair, mode, is_internal)
+    Input:
+        m: message 
+        SK.seed: secret seed
+        SK.prf: PRF key for randomness
+        PK.seed: public seed
+        PK.root: public key root
+        ADRS: tweak
+        keypair: keypair index
+        mode: SF or SL
+        is_internal: boolean (true for internal XMSS tree-root signatures)
+    Output:
+        sig: WOTS+C signature (R || ctr || chain_values)
+
+        if mode == SF:
+            WOTS_HASH     ← SF_WOTS_HASH
+            WOTS_PRF_TYPE ← SF_WOTS_PRF
+            H_MSG_TYPE    ← SF_H_MSG
+        else:
+            WOTS_HASH     ← SL_WOTS_HASH
+            WOTS_PRF_TYPE ← SL_WOTS_PRF
+            H_MSG_TYPE    ← SL_H_MSG
+
+    1. opt_rand ← random(n) or PK.seed     // randomized or deterministic
+    2. R ← PRF_msg(SK.prf, PK.seed, opt_rand, m)
+    3. if is_internal:
+            digest ← m
+        else:
+            setTypeAndClear(ADRS, H_MSG_TYPE)
+            digest ← H_msg(ADRS, R, PK.seed, PK.root, m)
+    4. (msg, ctr) ← wots_grind(PK.seed, digest, ADRS, keypair, mode)
+    5. sig ← R || ctr
+    6. for i from 0 to (l - 1):
+        a. setTypeAndClear(ADRS, WOTS_PRF_TYPE)
+        b. setKeyPairAddress(ADRS, keypair)
+        c. setChainAddress(ADRS, i)
+        d. sk_i ← PRF(PK.seed, ADRS, SK.seed)
+        e. setTypeAndClear(ADRS, WOTS_HASH)
+        f. setKeyPairAddress(ADRS, keypair)
+        g. setChainAddress(ADRS, i)
+        h. sig ← sig || chain(sk_i, 0, msg[i], PK.seed, ADRS)
+    7. return sig
+\end{verbatim}
+
+\subsection{Signature Verification (Public Key Recovery)}
+Verification reconstructs the WOTS+C public key implied by the signature. It first recomputes the message digest using the two-phase approach (or directly from the tree root for internal signatures), then verifies the target sum. For each chain element, the verifier continues hashing forward from the signature's provided intermediate value for \texttt{(w - 1 - msg[i])} steps to reach the end-of-chain value. Compressing all end-of-chain values yields the recovered WOTS+C public key.
+\begin{verbatim}
+    Algorithm: wots_pkFromSig(sig, m, PK.seed, PK.root, ADRS, keypair, mode, is_internal)
+    Input:
+        sig: WOTS+C signature (R || ctr || chain_values)
+        m: signed message (user message or tree root)
+        PK.seed: public seed
+        PK.root: root public key
+        ADRS: tweak
+        keypair: keypair index
+        mode: SF or SL
+        is_internal: boolean (true for internal XMSS tree-root signatures)
+    Output:
+        pk: recovered public key (n bytes), or "false" if invalid
+
+        if mode == SF:
+            WOTS_HASH  ← SF_WOTS_HASH
+            WOTS_PK    ← SF_WOTS_PK
+            H_MSG_TYPE ← SF_H_MSG
+        else:
+            WOTS_HASH  ← SL_WOTS_HASH
+            WOTS_PK    ← SL_WOTS_PK
+            H_MSG_TYPE ← SL_H_MSG
+
+    1. R ← sig[0 : R_SIZE]
+    2. ctr ← sig[R_SIZE : R_SIZE + c]
+    3. chains_start ← R_SIZE + c
+    4. if is_internal:
+            digest ← m
+        else:
+            setTypeAndClear(ADRS, H_MSG_TYPE)
+            digest ← H_msg(ADRS, R, PK.seed, PK.root, m)
+    5. (msg, valid) ← wots_digest(PK.seed, digest, ctr, ADRS, keypair, mode)
+    6. if not valid:
+        return false
+    7. tmp ← []
+    8. for i from 0 to (l - 1):
+        a. setTypeAndClear(ADRS, WOTS_HASH)
+        b. setKeyPairAddress(ADRS, keypair)
+        c. setChainAddress(ADRS, i)
+        d. sig_i ← sig[chains_start + i * n : chains_start + (i+1) * n]
+        e. tmp[i] ← chain(sig_i, msg[i], w - 1 - msg[i], PK.seed, ADRS)
+    9. setTypeAndClear(ADRS, WOTS_PK)
+    10. setKeyPairAddress(ADRS, keypair)
+    11. pk ← Tw(PK.seed, ADRS, tmp[0] || ... || tmp[l-1])
+    12. return pk
+\end{verbatim}
+
+\subsection{Contribution to the Signature Size and Verification Complexity}
+Each WOTS+C signature contributes the following to the enclosing signature:
+\begin{itemize}
+    \item \texttt{R}: \texttt{R\_SIZE} bytes
+    \item \texttt{ctr}: \texttt{c} bytes
+    \item chain values: \texttt{l*n} bytes
+\end{itemize}
+Total: \texttt{R\_SIZE + c + l*n} bytes (292 bytes for SHRINCS-B and 1060 bytes for SHRINCS-L)
+
+The verification cost is \texttt{(w-1)*l - S\_wn + 1} hashes per WOTS+C instance (2041 hashes for SHRINCS-B and 53 hashes for SHRINCS-L): the verifier completes each chain forward by \texttt{(w - 1 - msg[i])} steps, and the sum of all forward steps is \texttt{(w-1)*l - S\_wn} (since the sum of \texttt{msg[i]} values equals \texttt{S\_wn}). One additional hash is needed for the public key compression.
