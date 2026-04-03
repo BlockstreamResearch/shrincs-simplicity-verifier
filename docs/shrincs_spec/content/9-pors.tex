@@ -44,9 +44,7 @@ The signer searches for an \texttt{R} that satisfies this condition by
 iterating a counter inside \texttt{PRF\_msg\_ctr}. Each counter value produces
 a fresh \texttt{R}, which is then evaluated via \texttt{H\_msg\_pors}. The
 verifier only sees the final \texttt{R} that satisfied the condition and
-recomputes the same digest deterministically.
-
-Expected grinding cost depends on the distribution of $|A|$; 
+recomputes the same digest deterministically. Expected grinding cost depends on the distribution of $|A|$; 
 
 \subsection{Digest to Indices}
 \label{subsec:pors_digest_to_indices}
@@ -110,7 +108,7 @@ then proceed identically to the standard Octopus formulation.
     Input:
         indices: array of k distinct leaf indices in [0, t-1], sorted ascending
     Output:
-        A:       array of authentication node (lvl, x) pairs
+        A:       array of authentication node (lvl, idx) pairs
 
     1. h ← ceil(log2(t))
     2. s ← t - 2^(h-1)
@@ -119,25 +117,26 @@ then proceed identically to the standard Octopus formulation.
     5. A ← []
     6. for each i in indices:
         a. if i < 2 * s:
-            I ← I || [(h, i)]
+            I ← I || [(0, i)]
         b. else:
-            P ← P || [(h-1, i)]
-    7. for current_lvl from h down to 1:
+            P ← P || [(1, i - s)]          
+    7. for current_lvl from 0 to h - 1:
         a. next_P ← []
         b. i ← 0
         c. while i < |I|:
-            (lvl, x) ← I[i]
-            sib ← (lvl, x XOR 1)
-            if i + 1 < |I| and I[i+1] == sib:
+            (lvl, idx) ← I[i]
+            sib_idx ← idx XOR 1
+            if i + 1 < |I| and I[i+1][1] == sib_idx:
                 i ← i + 2
             else:
-                A ← A || [sib]
+                A ← A || [(current_lvl, sib_idx)]
                 i ← i + 1
-            next_P ← next_P || [(lvl - 1, x >> 1)]
-        d. I ← sort_and_deduplicate(next_P || P)
+            next_P ← next_P || [(current_lvl + 1, idx >> 1)]
+            
+        d. I ← next_P || P
         e. P ← []
-        f. if |I| == 1 and I[0] == (0, 0):
-            break
+        f. if |I| == 1 and I[0][1] == 0:
+            break   
     8. return A
 \end{verbatim}
  
@@ -206,50 +205,55 @@ The \texttt{pors\_SKgen} function derives the secret value for a single PORS lea
 
 \subsection{TreeHash}
 
-The \texttt{pors\_treehash} function recursively computes the nodes of the PORS+FP Merkle tree, which can accommodate a total number of leaves $t$ that are not a power of two. 
-When a subtree contains only a single leaf, the function generates a secret key using \texttt{pors\_SKgen} and hashes it to produce a leaf value using the \texttt{PORS\_HASH} address type. 
-For larger subtrees, the algorithm calculates the distribution of leaves between left and right children. 
-If both children exist, they are combined using the \texttt{PORS\_TREE} address type. 
-However, if no right subtree exists, the tree is considered left-filled, and the left child is promoted unchanged to the higher level.
+The \texttt{pors\_treehash} function recursively computes the value associated with
+node \texttt{(target\_height, idx)} in the single PORS+FP Merkle tree, where
+\texttt{target\_height} is the height of the node counted upward from the leaves and \texttt{idx}
+is its horizontal index at that height. The tree is left-filled with $t$ leaves: letting $h = \lceil \log t \rceil$ and $s = t - 2^{h-1}$, the
+leftmost $2s$ leaves sit at depth $h$ (or height~0) and the
+remaining $t - 2s$ leaves sit at depth $h - 1$ (height~1).
 
 \begin{verbatim}
-    Algorithm: pors_treehash(SK.seed, PK.seed, ADRS, target_height, start_idx)
+    Algorithm: pors_treehash(SK.seed, PK.seed, ADRS, target_height, idx)
     Input:
         SK.seed, PK.seed: seeds
         ADRS:             tweak
         target_height:    height of output node
-        start_idx:        leftmost leaf index of this subtree
+        idx:        horizontal index of the node at target_height
     Output:
         node: hash value (n bytes)
 
-    1. leaves_in_subtree ← min(2^target_height, t - start_idx)
-    2. if leaves_in_subtree == 1:
-        a. sk ← pors_SKgen(SK.seed, PK.seed, ADRS, start_idx)
+    1. h ← ceil(log2(t))
+    2. s ← t - 2^(h-1)
+    3. if target_height == 0:
+        a. sk ← pors_SKgen(SK.seed, PK.seed, ADRS, idx)
         b. setTypeAndClear(ADRS, PORS_HASH)
         c. setKeyPairAddress(ADRS, 0)
         d. setTreeHeight(ADRS, 0)
-        e. setTreeIndex(ADRS, start_idx)
+        e. setTreeIndex(ADRS, idx)
         f. return Tw(PK.seed, ADRS, sk)
-    3. left_count  ← min(2^(target_height-1), leaves_in_subtree)
-    right_count ← leaves_in_subtree - left_count
-    4. left ← pors_treehash(SK.seed, PK.seed, ADRS,
-                            target_height - 1, start_idx)
-    5. if right_count == 0:
-        return left
-    6. right ← pors_treehash(SK.seed, PK.seed, ADRS,
-                            target_height - 1, start_idx + left_count)
+    4. if target_height == 1 and idx >= s:
+        a. leaf_idx ← s + idx
+        b. sk ← pors_SKgen(SK.seed, PK.seed, ADRS, idx)
+        c. setTypeAndClear(ADRS, PORS_HASH)
+        d. setKeyPairAddress(ADRS, 0)
+        e. setTreeHeight(ADRS, 0)
+        f. setTreeIndex(ADRS, idx)
+        g. return Tw(PK.seed, ADRS, sk)
+    5. left  ← pors_treehash_paper(SK.seed, PK.seed, ADRS, target_height - 1, 2*idx)
+    6. right ← pors_treehash_paper(SK.seed, PK.seed, ADRS, target_height - 1, 2*idx + 1)
     7. setTypeAndClear(ADRS, PORS_TREE)
     8. setKeyPairAddress(ADRS, 0)
     9. setTreeHeight(ADRS, target_height)
-    10. setTreeIndex(ADRS, start_idx >> target_height)
+    10. setTreeIndex(ADRS, idx)
     11. return Tw(PK.seed, ADRS, left || right)
 \end{verbatim}
 
 \subsection{PORS+FP Authentication path}
-The \texttt{pors\_auth\_path} function generates the minimal set of authentication nodes needed to verify all $k$ revealed leaves simultaneously from the single Merkle tree. 
-Rather than authenticating one leaf at a time independently, it relies on the Octopus algorithm to exploit shared nodes and significantly shorten the proof. 
-For each authentication node label returned by the Octopus algorithm, the function computes the actual hash value by invoking \texttt{pors\_treehash} for the corresponding node height and its leftmost leaf. 
-This starting leaf index is computed by shifting the node's horizontal index x left by its level \texttt{lvl}.
+
+The \texttt{pors\_auth\_path} function generates the minimal set of authentication nodes required to verify all \texttt{k} revealed leaves simultaneously within the single PORS+FP Merkle tree. 
+Rather than authenticating each leaf independently, it employs the Octopus algorithm to identify shared internal nodes, which significantly shortens the resulting proof. 
+For every node coordinate \texttt{(lvl, idx)} returned by the Octopus algorithm, the function computes the required hash value by invoking \texttt{pors\_treehash}. 
+In this context, \texttt{lvl} specifies the height of the authentication node, and \texttt{idx} represents the leftmost leaf index of the subtree rooted at that node.
 \begin{verbatim}
     Algorithm: pors_auth_path(SK.seed, PK.seed, ADRS, indices)
         Input:
@@ -260,11 +264,10 @@ This starting leaf index is computed by shifting the node's horizontal index x l
             auth:    authentication path (sequence of n-byte hashes)
 
         1. auth ← []
-        2. A ← pors_octopus(indices, t)
-        3. for each (lvl, x) in A:  
-            a. start_idx ← x << lvl  
-            b. node ← pors_treehash(SK.seed, PK.seed, ADRS, lvl, start_idx)
-            c. auth ← auth || node
+        2. A ← pors_octopus(indices)
+        3. for each (lvl, idx) in A:  
+            a. node ← pors_treehash(SK.seed, PK.seed, ADRS, lvl, idx)
+            b. auth ← auth || node
         4. return auth
 \end{verbatim}
 
@@ -330,38 +333,39 @@ The function returns \texttt{"false"} if the grinding condition is not satisfied
             f. setTreeIndex(ADRS, indices[i])
             g. val ← Tw(PK.seed, ADRS, sk_i)
             h. if indices[i] < 2*s:
-                I ← I || [(h,   indices[i], val)]
+                I ← I || [(0, indices[i],     val)]
             i. else:
-                P ← P || [(h-1, indices[i], val)]
-    7. for current_lvl from h down to 1:
-        a. for i from 0 to |I| - 1:
+                P ← P || [(1, indices[i] - s, val)]
+    7. for current_lvl from 0 to h - 1:
+        a. paired ← [false] * |I|
+        b. for i from 0 to |I| - 1:
             if i + 1 < |I| and I[i+1][1] == I[i][1] XOR 1:
                 paired[i]     ← true
                 paired[i + 1] ← true
-        b. next_P ← []
-        c. for i from 0 to |I| - 1:
-            (lvl, x, val) ← I[i]
+        c. next_P ← []
+        d. for i from 0 to |I| - 1:
+            (lvl, idx, val) ← I[i]
+            if paired[i] and (idx AND 1) == 0:
+                continue                 
             setTypeAndClear(ADRS, PORS_TREE)
             setKeyPairAddress(ADRS, 0)
-            setTreeHeight(ADRS, current_lvl)
-            setTreeIndex(ADRS, x >> 1)
-            if paired[i]:
-                if (x AND 1) == 0:           // left child: wait for right
-                    continue                 // right sibling at i+1 will compute parent
-                else:                        // right child: left sibling at i-1
-                    sib_val ← I[i-1][2]
-                    parent_val ← Tw(PK.seed, ADRS, sib_val || val)
+            setTreeHeight(ADRS, current_lvl + 1)
+            setTreeIndex(ADRS, idx >> 1)    
+            if paired[i]: 
+                sib_val ← I[i-1][2]
+                parent_val ← Tw(PK.seed, ADRS, sib_val || val)
             else:
                 auth_val ← sig[offset : offset + n]
                 offset ← offset + n
-                if (x AND 1) == 0:
+                if (idx AND 1) == 0:
                     parent_val ← Tw(PK.seed, ADRS, val || auth_val)
                 else:
                     parent_val ← Tw(PK.seed, ADRS, auth_val || val)
-            next_P ← next_P || [(current_lvl - 1, x >> 1, parent_val)]
+            
+            next_P ← next_P || [(current_lvl + 1, idx >> 1, parent_val)]
 
-        d. I ← sort_by_x(next_P || P)
-        e. P ← []
+        e. I ← next_P || P
+        f. P ← []
     8. root ← I[0][2]
     9. setTypeAndClear(ADRS, PORS_PK)
     10. pk ← Tw(PK.seed, ADRS, root)
