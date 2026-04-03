@@ -136,7 +136,7 @@ In the unified digest scheme, these bits follow the XOF output from \texttt{pors
         tree_idx: array of d tree indices
         leaf_idx: array of d leaf indices
 
-    1. ht_offset ← roundup(2^b * k/t + 2) * b + 16 
+    1. ht_offset ← roundup(2^b * k/t + 7) * b + 16 
     2. ht_bits ← extract_bits(xof_out, ht_offset, hsl)
     3. idx ← ht_bits
     4. tree_idx ← []
@@ -147,7 +147,7 @@ In the unified digest scheme, these bits follow the XOF output from \texttt{pors
         c. tree_idx[layer] ← idx
     7. return (tree_idx, leaf_idx)
 \end{verbatim}
-\paragraph{Note:} The total XOF output must encode \texttt{C * b + hsl = 18 * 24 + 16 + 22 = 470} bits. 
+\paragraph{Note:} The total XOF output must encode \texttt{C * b + hsl = 18 * 24 + 16 + 24 = 472} bits. 
 
 \subsection{Stateful verification}
 The \texttt{SHRINCS.VerifyStateful} function verifies a stateful signature. It extracts \texttt{PK.sl} from the signature, parses the UXMSS signature, and infers \texttt{q} from the authentication path length. It then uses the two-phase WOTS+C hashing to recover \texttt{PK.sf} via \texttt{uxmss\_pkFromSig} and verifies that \texttt{Tw(PK.seed, ADRS, PK.sf || PK.sl)} equals \texttt{PK.root}.

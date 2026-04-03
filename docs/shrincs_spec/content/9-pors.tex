@@ -88,7 +88,7 @@ We want to use the XOF output to obtain index for hypertree, reserving \texttt{h
 Also, we wan to save some bits in the case, if we need more than 264 to obtain $6$ indices, so we reserve up to 7 candidates, resulting in total number of candidates \texttt{C := C' + 7} equal to $18$.
 The resulting number of bits to extract is \texttt{18 * 24 = 432}. 
 But because we omit last $16$ bits from the first block, the position from where we strat to extract index for hypertree is shifted by $16$, resulting in starting position after $448$ bit. 
-Overall, we set $448$ to use in rejection sampling and $22$ bits in hypertree, resulting in 470 bits or 59 bytes.
+Overall, we set $448$ to use in rejection sampling and $24$ bits in hypertree, resulting in 472 bits or 59 bytes.
 We truncate the XOF output to be $59$ bytes long.
 
 \subsection{Octopus for the PORS+FP Tree}
