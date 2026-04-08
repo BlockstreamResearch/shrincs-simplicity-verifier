@@ -74,11 +74,28 @@ This is computed once per signature, producing an n-byte digest.
     \texttt{H\_grind(ADRS, PK.seed, digest, ctr) = SHA-256(PK.seed* || ADRS || digest || ctr)[0:n]}
 \end{center}
 
-\subsubsection{PORS+FP: Single-Phase Hashing}
-PORS+FP always signs user messages (never tree roots), so it uses a simpler single-phase approach. The grinding counter is not included in the message hash. Instead, it is iterated inside \texttt{PRF\_msg\_ctr} (Section~5.3) to produce a fresh \texttt{R} on each grinding attempt. The verifier only sees the final \texttt{R}:
+\subsubsection{PORS+FP: Two-Phase Hashing}
+PORS+FP consists of two phases, where we obatain the digest, and using this digest compute the XOF output for obtaining indices in the signing process.
+The grinding counter is not included in the message hash. Instead, it is iterated inside \texttt{PRF\_msg\_ctr} (Section~5.3) to produce a fresh \texttt{R} on each grinding attempt. The verifier only sees the final \texttt{R}:
+For XOF we don't need to store the \texttt{blk} value either (Section~9.3). 
+
+\paragraph{Phase 1. Message Digest.} Computes a randomized hash of the user message with the randomness \texttt{R}:
+
 \begin{center}
-    \texttt{H\_msg\_pors(ADRS, R, PK.seed, PK.root, m) = SHA-256(PK.seed* || ADRS || R || PK.root || m)}
+    \texttt{H\_msg\_pors(ADRS, R, PK.seed, PK.root, m) = SHA-256(PK.seed* || ADRS || R || PK.root || m)[0:n]}
 \end{center}
+The output length is n bytes.
+
+\paragraph{Phase 2. XOF Block Digest.} Computes a XOF hash blocks from the message digest, using \texttt{blk} to produce different blocks:
+
+\begin{center}
+    \texttt{H\_xof\_pors(ADRS, R, PK.seed, PK.root, m) = SHA-256(PK.seed* || ADRS || PK.root || digest || blk)}
+\end{center}
+
+The output length of XOF is \texttt{total\_bits = (roundup(2\string^b * k / t) + margin) * b + offset + hsl}, where 
+\texttt{margin} is needed in the case, when the number of extracted bits is bigger than expected, \texttt{offset} is the residue bits after extracting one XOF block, and
+\texttt{hsl} is the number of bits needed for the hypertree leaf index extraction. 
+
 
 \subsection{Tweak Structure and Domain Separation}
 Tweaks are structured as follows to ensure uniqueness across all scheme components:
@@ -107,15 +124,16 @@ A total \texttt{ADRS} size is 32 bytes.
 0x07: PORS_TREE:        PORS+FP tree internal nodes
 0x08: PORS_PK:          PORS+FP roots compression
 0x09: PORS_PRF:         PRF for PORS+FP secret key derivation
-0x0A: SL_WOTS_HASH:     Stateless WOTS+C chain hashing
-0x0B: SL_WOTS_PK:       Stateless WOTS+C public key compression
-0x0C: SL_TREE:          Stateless tree internal nodes
-0x0D: SL_WOTS_GRIND:    Stateless WOTS+C grinding
-0x0E: SL_H_MSG:         Stateless message hash
-0x0F: SL_WOTS_PRF:      Stateless PRF for WOTS+C key derivation
-0x10: ROOT:             Root public key computation
+0x0A: PORS_XOF:         XOF for PORS+FP indices extraction
+0x0B: SL_WOTS_HASH:     Stateless WOTS+C chain hashing
+0x0C: SL_WOTS_PK:       Stateless WOTS+C public key compression
+0x0D: SL_TREE:          Stateless tree internal nodes
+0x0E: SL_WOTS_GRIND:    Stateless WOTS+C grinding
+0x0F: SL_H_MSG:         Stateless message hash
+0x10: SL_WOTS_PRF:      Stateless PRF for WOTS+C key derivation
+0x11: ROOT:             Root public key computation
 \end{verbatim}
-Summarizing, \texttt{(0x00, 0x01, 0x02, 0x03, 0x04, 0x05)} are stateful only types, \texttt{(0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F)} are stateless only and \texttt{(0x10)} is shared type. 
+Summarizing, \texttt{(0x00, 0x01, 0x02, 0x03, 0x04, 0x05)} are stateful only types, \texttt{(0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10)} are stateless only and \texttt{(0x11)} is shared type. 
 
 \subsubsection{Address Manipulation Functions}
 \begin{verbatim}
@@ -169,13 +187,14 @@ The list of type-dependent words for address tweaking is the following:
 0x07 & \texttt{PORS\_TREE}       & \texttt{0}         & \texttt{height}  & \texttt{index} \\
 0x08 & \texttt{PORS\_PK}         & \texttt{0}         & \texttt{0}       & \texttt{0} \\
 0x09 & \texttt{PORS\_PRF}        & \texttt{tree\_idx} & \texttt{0}       & \texttt{leaf\_idx} \\
-0x0A & \texttt{SL\_WOTS\_HASH}   & \texttt{keypair}   & \texttt{chain}   & \texttt{hash} \\
-0x0B & \texttt{SL\_WOTS\_PK}     & \texttt{keypair}   & \texttt{0}       & \texttt{0} \\
-0x0C & \texttt{SL\_TREE}         & \texttt{keypair}   & \texttt{height}  & \texttt{index} \\
-0x0D & \texttt{SL\_WOTS\_GRIN}   & \texttt{keypair}   & \texttt{0}       & \texttt{0} \\
-0x0E & \texttt{SL\_H\_MSG}       & \texttt{0}         & \texttt{0}       & \texttt{0} \\
-0x0F & \texttt{SL\_WOTS\_PRF}    & \texttt{keypair}   & \texttt{chain}   & \texttt{0} \\
-0x10 & \texttt{ROOT}             & \texttt{0}         & \texttt{0}       & \texttt{0} \\
+0x0A & \texttt{PORS\_XOF}        & \texttt{0}         & \texttt{0}       & \texttt{0} \\
+0x0B & \texttt{SL\_WOTS\_HASH}   & \texttt{keypair}   & \texttt{chain}   & \texttt{hash} \\
+0x0C & \texttt{SL\_WOTS\_PK}     & \texttt{keypair}   & \texttt{0}       & \texttt{0} \\
+0x0D & \texttt{SL\_TREE}         & \texttt{keypair}   & \texttt{height}  & \texttt{index} \\
+0x0E & \texttt{SL\_WOTS\_GRIN}   & \texttt{keypair}   & \texttt{0}       & \texttt{0} \\
+0x0F & \texttt{SL\_H\_MSG}       & \texttt{0}         & \texttt{0}       & \texttt{0} \\
+0x10 & \texttt{SL\_WOTS\_PRF}    & \texttt{keypair}   & \texttt{chain}   & \texttt{0} \\
+0x11 & \texttt{ROOT}             & \texttt{0}         & \texttt{0}       & \texttt{0} \\
 
 \hline
 \end{tabular}

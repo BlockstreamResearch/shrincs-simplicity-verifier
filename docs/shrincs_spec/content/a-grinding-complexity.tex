@@ -35,6 +35,12 @@ If $k \ll t$, then we can aproximate the expression (6) as:
     \mathbb{E}\left[\text{total candidates}\right] \approx 2^b\cdot\frac{k}{t}
 \end{align}
 
+The expected number of hashes is the following: 
+
+\begin{align}
+    \mathbb{E}[\text{rejection sampling hashes}] = \left\lceil \frac{\mathbb{E}[\text{total candidates}]}{\left\lfloor \frac{256}{b}\right\rfloor}\right\rceil
+\end{align}
+
 
 \subsubsection{WOTS+C Grinding}
 The grinding operation searches for a counter $\texttt{ctr}$ such that the sum of base-$w$ digits equals the target $S_{wn}$. Each digest attempt produces $l$ independent random digits, each uniformly distributed in $[0, w-1]$.
@@ -59,19 +65,27 @@ By the Central Limit Theorem, for moderate $l$, the sum distribution approximate
 
 The probability of hitting exactly $S_{wn}$ can be approximated as:
 \begin{align}
-    P\left(\sum d_i = S_{wn}\right) \approx \frac{1}{\sigma\sqrt{2\pi}} \cdot \exp\left(-\frac{(S_{wn} - \mu)^2}{2\sigma^2}\right)
+    \text{Pr}\left(\sum d_i = S_{wn}\right) \approx \frac{1}{\sigma\sqrt{2\pi}} \cdot \exp\left(-\frac{(S_{wn} - \mu)^2}{2\sigma^2}\right)
 \end{align}
 
 Expected grinding iterations:
 \begin{align}
-    \mathbb{E}[\text{iterations}] = \frac{1}{P(\sum d_i = S_{wn})}
+    \mathbb{E}[\text{iterations}] = \frac{1}{\text{Pr}(\sum d_i = S_{wn})}
 \end{align}
 
 \subsubsection{PORS+FP Grinding}
-The grinding operation searches for $\text{indices}[k-1] = 0$, meaning the last $a$ bits of the digest must all be zero. This is a deterministic bit condition with:
+The grinding operation searches for $|A| \le m_{\max}$. Let $|A| = S(t,k)$. Then the expected number of iterations during grinding is the following:
 \begin{align}
-    P(\text{indices}[k-1] = 0) &= \frac{1}{2^a} \\
-    \mathbb{E}[\text{iterations}] &= 2^a
+    \text{Pr}(|A| \le m_{\max}) &= \sum_{m=1}^{m_{\max}} \text{Pr}(S(t,k) = m)\\
+    \mathbb{E}[\text{iterations}] &= \frac{1}{\text{Pr}\left(|A| \le m_{\max}\right)}
+\end{align}
+where $\text{Pr}(S(t,k) = m)$ is the probability that the size of authentication set is exactly $m$. 
+The analytical expression for this probability descibed and derived in~\cite{pors_fp2025}.
+We omit to describe the formula directly, due to complex derivation.
+
+We need to include the rejection sampling hash invocations (Apendix~1.1), which is inside the grinding loop, so the total hash operations is:
+\begin{align}
+    \mathbb{E}[\text{hashes}] =  \mathbb{E}[\text{iterations}] \cdot \mathbb{E}[\text{rejection sampling hashes}] 
 \end{align}
 
 \subsection{Concrete Parameters}
@@ -92,13 +106,13 @@ The grinding operation searches for $\text{indices}[k-1] = 0$, meaning the last 
 
 \paragraph{Approximate probability:}
 \begin{align}
-    P(\sum d_i = 2040) \approx \frac{1}{295.6 \cdot \sqrt{2\pi}} \approx \frac{1}{741}
+    Pr(\sum d_i = 2040) \approx \frac{1}{295.6 \cdot \sqrt{2\pi}} \approx \frac{1}{741}
 \end{align}
 
 \paragraph{Expected grinding cost:}
 \begin{itemize}
     \item $\mathbb{E}[\text{iterations}] \approx 741$ iterations
-    \item Per iteration: 2 SHA-256 compression (Phase 2 operates on 68-byte input
+    \item Per iteration: 2 SHA-256 compression (Phase 2 operates on 68-byte input)
     \item Total: $\approx 741$ SHA-256 compressions
 \end{itemize}
 
@@ -125,7 +139,7 @@ The grinding operation searches for $\text{indices}[k-1] = 0$, meaning the last 
 
 \paragraph{Approximate probability:}
 \begin{align}
-    P(\sum d_i = 140) &\approx \frac{1}{8.94\sqrt{2\pi}} \cdot \exp\left(-\frac{4.92^2}{2}\right) \nonumber \\
+    Pr(\sum d_i = 140) &\approx \frac{1}{8.94\sqrt{2\pi}} \cdot \exp\left(-\frac{4.92^2}{2}\right) \nonumber \\
     &\approx \frac{1}{22.4} \cdot \exp(-12.1) \nonumber \\
     &\approx \frac{1}{22.4} \cdot 5.5 \times 10^{-6} \nonumber \\
     &\approx 2.45 \times 10^{-7}
@@ -148,15 +162,17 @@ The grinding operation searches for $\text{indices}[k-1] = 0$, meaning the last 
 Both SHRINCS-B and SHRINCS-L use identical PORS+FP parameters:
 \begin{itemize}
     \item $k = 6$ trees
-    \item $a = 22$ (tree height)
+    \item $t = 9245141$ (number of leaves)
+    \item $m_{\max} = 91$
 \end{itemize}
 
-Grinding condition: $\text{indices}[k-1] = 0$ (last tree index must be zero)
+Grinding condition: $|A| \le 91$
+
 
 \paragraph{Expected grinding cost:}
 \begin{itemize}
-    \item $\mathbb{E}[\text{iterations}] = 2^a = 2^{22} = 4.1$m iterations
-    \item Per iteration: 1 HMAC-SHA-256 + 1 SHA-256 
+    \item $\mathbb{E}[\text{iterations}] = 2526130 \cdot 2 = 505226$m iterations
+    \item Per iteration: 1 HMAC-SHA-256 + 3 SHA-256 
 \end{itemize}
 
 \paragraph{Practical performance:}
