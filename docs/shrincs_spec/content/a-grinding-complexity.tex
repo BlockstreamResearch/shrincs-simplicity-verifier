@@ -35,7 +35,7 @@ If $k \ll t$, then we can aproximate the expression (6) as:
     \mathbb{E}\left[\text{total candidates}\right] \approx 2^b\cdot\frac{k}{t}
 \end{align}
 
-The expected number of hashes is the following: 
+The expected number of hashes during rejection smapling is the following: 
 
 \begin{align}
     \mathbb{E}[\text{rejection sampling hashes}] = \left\lceil \frac{\mathbb{E}[\text{total candidates}]}{\left\lfloor \frac{256}{b}\right\rfloor}\right\rceil
@@ -83,7 +83,7 @@ where $\text{Pr}(S(t,k) = m)$ is the probability that the size of authentication
 The analytical expression for this probability descibed and derived in~\cite{pors_fp2025}.
 We omit to describe the formula directly, due to complex derivation.
 
-We need to include the rejection sampling hash invocations (Apendix~1.1), which is inside the grinding loop, so the total hash operations is:
+We also need to include the rejection sampling hash invocations (Apendix~1.1), which is inside the grinding loop, resulting in the total expected hash operations:
 \begin{align}
     \mathbb{E}[\text{hashes}] =  \mathbb{E}[\text{iterations}] \cdot \mathbb{E}[\text{rejection sampling hashes}] 
 \end{align}
@@ -106,7 +106,7 @@ We need to include the rejection sampling hash invocations (Apendix~1.1), which 
 
 \paragraph{Approximate probability:}
 \begin{align}
-    Pr(\sum d_i = 2040) \approx \frac{1}{295.6 \cdot \sqrt{2\pi}} \approx \frac{1}{741}
+    \text{Pr}\left(\sum d_i = 2040\right) \approx \frac{1}{295.6 \cdot \sqrt{2\pi}} \approx \frac{1}{741}
 \end{align}
 
 \paragraph{Expected grinding cost:}
@@ -139,7 +139,7 @@ We need to include the rejection sampling hash invocations (Apendix~1.1), which 
 
 \paragraph{Approximate probability:}
 \begin{align}
-    Pr(\sum d_i = 140) &\approx \frac{1}{8.94\sqrt{2\pi}} \cdot \exp\left(-\frac{4.92^2}{2}\right) \nonumber \\
+    \text{Pr}\left(\sum d_i = 140\right) &\approx \frac{1}{8.94\sqrt{2\pi}} \cdot \exp\left(-\frac{4.92^2}{2}\right) \nonumber \\
     &\approx \frac{1}{22.4} \cdot \exp(-12.1) \nonumber \\
     &\approx \frac{1}{22.4} \cdot 5.5 \times 10^{-6} \nonumber \\
     &\approx 2.45 \times 10^{-7}

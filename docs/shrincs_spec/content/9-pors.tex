@@ -71,20 +71,20 @@ algorithm. We use rejection sampling over SHA256 XOF output.
         a. block ← H_xof_pors(ADRS, PKseed, digest, blk)
         b. xof_out ← xof_out || block
         c. for i from 0 to c - 1:
+            if |indices| == k:
+                break
             candidate ← extract_bits(block, i * b, b)
             if candidate < t and candidate not in indices:
                 indices ← indices || [candidate]
-            if |indices| == k:
-                break
         d. if |indices| == k and blk = min_blk - 1:
             return (indices, xof_out[0:total_bits])
     8. abort with error
 \end{verbatim}
 
-\paragraph{Note:} \texttt{extract\_bits(x, offset, length)} extracts length bits from byte string \texttt{x} starting at bit position offset, returned as an unsigned integer. Bits are numbered in big-endian order: bit \texttt{0} is the most significant bit of byte \texttt{x[0]}.
-
-The length of the XOF output is \texttt{total\_bits = (roundup(2\string^b * k / t) + margin) * b + offset + hsl} (see Section~5.4.2). 
+where \texttt{total\_bits = (roundup(2\string^b * k / t) + margin) * b + offset + hsl} is the length of the XOF output (see Section~5.4.2). 
 In our case, for chosen parameters of SHRINCS-B and SHRINCS-L, and \texttt{margin = 7}, \texttt{offset = 16}, we get the follwing length: \texttt{total\_bits = (roundup(2\string^24 * 6 / 9245141)) * 24 + 16 + 24 = 472} bits or 59 bytes.
+
+\paragraph{Note:} \texttt{extract\_bits(x, offset, length)} extracts length bits from byte string \texttt{x} starting at bit position offset, returned as an unsigned integer. Bits are numbered in big-endian order: bit \texttt{0} is the most significant bit of byte \texttt{x[0]}.
 
 \subsection{Octopus for the PORS+FP Tree}
  
