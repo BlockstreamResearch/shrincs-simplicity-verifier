@@ -89,13 +89,8 @@ The output length is n bytes.
 \paragraph{Phase 2. XOF Block Digest.} Computes a XOF hash blocks from the message digest, using \texttt{blk} to produce different blocks:
 
 \begin{center}
-    \texttt{H\_xof\_pors(ADRS, R, PK.seed, PK.root, m) = SHA-256(PK.seed* || ADRS || PK.root || digest || blk)}
+    \texttt{H\_xof\_pors(ADRS, PK.seed, digest, blk) = SHA-256(PK.seed* || ADRS || digest || blk)}
 \end{center}
-
-The output length of XOF is \texttt{total\_bits = (roundup(2\string^b * k / t) + margin) * b + offset + hsl}, where 
-\texttt{margin} is needed in the case, when the number of extracted bits is bigger than expected, \texttt{offset} is the residue bits after extracting one XOF block, and
-\texttt{hsl} is the number of bits needed for the hypertree leaf index extraction. 
-
 
 \subsection{Tweak Structure and Domain Separation}
 Tweaks are structured as follows to ensure uniqueness across all scheme components:

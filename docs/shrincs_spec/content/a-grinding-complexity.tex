@@ -168,15 +168,14 @@ Both SHRINCS-B and SHRINCS-L use identical PORS+FP parameters:
 
 Grinding condition: $|A| \le 91$
 
-
 \paragraph{Expected grinding cost:}
 \begin{itemize}
-    \item $\mathbb{E}[\text{iterations}] = 2526130 \cdot 2 = 505226$m iterations
+    \item $\mathbb{E}[\text{iterations}] = 2526130 \cdot 2 = 505226 \approx 5$m iterations
     \item Per iteration: 1 HMAC-SHA-256 + 3 SHA-256 
 \end{itemize}
 
 \paragraph{Practical performance:}
 \begin{itemize}
     \item $\sim$1-2 million SHA-256/sec
-    \item Expected grinding time: 4-8 seconds per stateless signature
+    \item Expected grinding time: 8-10 seconds per stateless signature
 \end{itemize}
