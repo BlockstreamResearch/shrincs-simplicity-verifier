@@ -38,7 +38,7 @@ If $k \ll t$, then we can aproximate the expression (6) as:
 The expected number of hashes during rejection smapling is the following: 
 
 \begin{align}
-    \mathbb{E}[\text{rejection sampling hashes}] = \left\lceil \frac{\mathbb{E}[\text{total candidates}]}{\left\lfloor \frac{256}{b}\right\rfloor}\right\rceil
+    \mathbb{E}[\text{hashes}] = \left\lceil \frac{\mathbb{E}[\text{total candidates}]}{\left\lfloor \frac{256}{b}\right\rfloor}\right\rceil
 \end{align}
 
 
@@ -81,12 +81,7 @@ The grinding operation searches for $|A| \le m_{\max}$. Let $|A| = S(t,k)$. Then
 \end{align}
 where $\text{Pr}(S(t,k) = m)$ is the probability that the size of authentication set is exactly $m$. 
 The analytical expression for this probability descibed and derived in~\cite{pors_fp2025}.
-We omit to describe the formula directly, due to complex derivation.
-
-We also need to include the rejection sampling hash invocations (Apendix~1.1), which is inside the grinding loop, resulting in the total expected hash operations:
-\begin{align}
-    \mathbb{E}[\text{hashes}] =  \mathbb{E}[\text{iterations}] \cdot \mathbb{E}[\text{rejection sampling hashes}] 
-\end{align}
+We omit to describe the formula directly, due to the complex derivation.
 
 \subsection{Concrete Parameters}
 
@@ -166,16 +161,40 @@ Both SHRINCS-B and SHRINCS-L use identical PORS+FP parameters:
     \item $m_{\max} = 91$
 \end{itemize}
 
-Grinding condition: $|A| \le 91$
+And for SHRINCS-B32:
+
+\begin{itemize}
+    \item $k = 11$ trees
+    \item $t = 109571$ (number of leaves)
+    \item $m_{\max} = 111$
+\end{itemize}
+
+Grinding condition: $|A| \le m_{\max}$
 
 \paragraph{Expected grinding cost:}
+
+For SHRINCS-B/L:
+
 \begin{itemize}
-    \item $\mathbb{E}[\text{iterations}] = 2526130 \cdot 2 = 505226 \approx 5$m iterations
-    \item Per iteration: 1 HMAC-SHA-256 + 3 SHA-256 
+    \item $\mathbb{E}[\text{iterations}] = 2526130 \approx 2.5$m iterations
+    \item Per iteration: 1 HMAC-SHA-256 + $(1 + \mathbb{E}[\text{hashes}])$ SHA-256 = 1 HMAC-SHA-256 + 3 SHA-256  
 \end{itemize}
 
 \paragraph{Practical performance:}
 \begin{itemize}
     \item $\sim$1-2 million SHA-256/sec
-    \item Expected grinding time: 8-10 seconds per stateless signature
+    \item Expected grinding time: 5-10 seconds per stateless signature
+\end{itemize}
+
+For SHRINCS-B32:
+
+\begin{itemize}
+    \item $\mathbb{E}[\text{iterations}] = 17718$ iterations
+    \item Per iteration: 1 HMAC-SHA-256 + $(1 + \mathbb{E}[\text{hashes}])$ SHA-256 = 1 HMAC-SHA-256 + 3 SHA-256
+\end{itemize}
+
+\paragraph{Practical performance:}
+\begin{itemize}
+    \item $\sim$1-2 million SHA-256/sec
+    \item Expected grinding time: 35 milliseconds per stateless signature
 \end{itemize}

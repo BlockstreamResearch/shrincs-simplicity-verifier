@@ -82,7 +82,8 @@ algorithm. We use rejection sampling over SHA256 XOF output.
 \end{verbatim}
 
 where \texttt{total\_bits = (roundup(2\string^b * k / t) + margin) * b + offset + hsl} is the length of the XOF output (see Section~5.4.2). 
-In our case, for chosen parameters of SHRINCS-B and SHRINCS-L, and \texttt{margin = 7}, \texttt{offset = 16}, we get the follwing length: \texttt{total\_bits = (roundup(2\string^24 * 6 / 9245141)) * 24 + 16 + 24 = 472} bits or 59 bytes.
+In our case, for chosen parameters of SHRINCS-B and SHRINCS-L, and \texttt{margin = 7}, \texttt{offset = 16}, we get the follwing length: \texttt{total\_bits = (roundup(2\string^24 * 6 / 9245141) + 7) * 24 + 16 + 24 = 472} bits or 59 bytes.
+For SHRINCS-B32 parameters we set \texttt{margin = 10}, \texttt{offset = 16}, and in the result is: \texttt{total\_bits = (roundup(2\string^17 * 11 / 109571) + 10) * 17 + 16 + 32 = 456} bits or 57 bytes.
 
 \paragraph{Note:} \texttt{extract\_bits(x, offset, length)} extracts length bits from byte string \texttt{x} starting at bit position offset, returned as an unsigned integer. Bits are numbered in big-endian order: bit \texttt{0} is the most significant bit of byte \texttt{x[0]}.
 
@@ -305,8 +306,7 @@ We pad additional n-byte 0 strings to make the length of the signature be fixed 
 \subsection{Public Key Recovery}
 The \texttt{pors\_pkFromSig} function recovers the PORS+FP public key from a signature. 
 For each of the \texttt{k} revealed leaves, it hashes the secret key to obtain the leaf value, then runs the Octopus-guided root recomputation using the supplied authentication nodes. 
-Verification succeeds if and only if the recovered root matches \texttt{PK.root}. We also check the correctness of padding in the signature.
-The function returns \texttt{"false"} if the grinding condition is not satisfied (i.e., the Octopus authentication set exceeds \texttt{m\_max}) or if the padding values are not all $0^{n}$.
+Verification succeeds if and only if the recovered root matches \texttt{PK.root}.
 
 \begin{verbatim}
    Algorithm: pors_pkFromSig(sig, indices, PK.seed, PK.root, ADRS)
@@ -317,17 +317,14 @@ The function returns \texttt{"false"} if the grinding condition is not satisfied
         PK.root: public key root
         ADRS:    tweak (layer and tree_address set by caller)   
     Output:
-        pk: recovered PORS public key (n bytes)
+        pk: PORS public key
 
     1. offset ← R_SIZE
     2. h ← ceil(log2(t))
     3. s ← t - 2^(h-1)
     4. I ← []
     5. P ← []
-    6. A ← pors_octopus(indices)
-    7.  if |A| > m_max:
-            return false
-    8. for i from 0 to k - 1:
+    6. for i from 0 to k - 1:
             a. sk_i ← sig[offset : offset + n]
             b. offset ← offset + n
             c. setTypeAndClear(ADRS, PORS_HASH)
@@ -339,7 +336,7 @@ The function returns \texttt{"false"} if the grinding condition is not satisfied
                 I ← I || [(0, indices[i],     val)]
             i. else:
                 P ← P || [(1, indices[i] - s, val)]
-    9. for current_lvl from 0 to h - 1:
+    7. for current_lvl from 0 to h - 1:
         a. paired ← [false] * |I|
         b. for i from 0 to |I| - 1:
             if i + 1 < |I| and I[i+1][1] == I[i][1] XOR 1:
@@ -369,13 +366,8 @@ The function returns \texttt{"false"} if the grinding condition is not satisfied
 
         e. I ← next_P || P
         f. P ← []
-    10. for i from |A| to m_max - 1:
-        a. pad_val ← sig[offset : offset + n]
-        b. if pad_val != toByte(0, n):
-               return false
-        c. offset ← offset + n
-    11. root ← I[0][2]
-    12. setTypeAndClear(ADRS, PORS_PK)
-    13. pk ← Tw(PK.seed, ADRS, root)
-    14. return pk
+    8. root ← I[0][2]
+    9. setTypeAndClear(ADRS, PORS_PK)
+    10. pk ← Tw(PK.seed, ADRS, root)
+    11. return pk
 \end{verbatim}

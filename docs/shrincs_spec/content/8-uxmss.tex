@@ -176,13 +176,19 @@ For concrete instances and signatures' number:
     SHRINCS-B:
         q=1:        32 + 4 + 16*16 + 16 =       308 bytes
         q=10:       32 + 4 + 16*16 + 16*10 =    452 bytes  
-        q=158:      32 + 4 + 16*16 + 16*158 =  2820 bytes
-        q=159(max): 32 + 4 + 16*16 + 16*158 =  2820 bytes // same as q=158; < 2856 (stateless)
+        q=140:      32 + 4 + 16*16 + 16*140 =  2548 bytes
+        q=141(max): 32 + 4 + 16*16 + 16*141 =  2564 bytes // same as q=140; < 2568 (stateless)
     SHRINCS-L:
         q=1:        32 + 4 + 64*16 + 16 =       1076 bytes
         q=10:       32 + 4 + 64*16 + 16*10 =    1220 bytes  
-        q=206:      32 + 4 + 64*16 + 16*206 =   4356 bytes
-        q=207(max): 32 + 4 + 64*16 + 16*206 =   4356 bytes // same as q=206; < 4392 (stateless)
+        q=188:      32 + 4 + 64*16 + 16*188 =   4084 bytes
+        q=189(max): 32 + 4 + 64*16 + 16*189 =   4100 bytes // same as q=188; < 4104 (stateless)
+
+    SHRINCS-B32:
+        q=1:        32 + 4 + 16*16 + 16 =       308 bytes
+        q=10:       32 + 4 + 16*16 + 16*10 =    452 bytes  
+        q=209:      32 + 4 + 16*16 + 16*209 =  3652 bytes
+        q=210(max): 32 + 4 + 16*16 + 16*210 =  3668 bytes // same as q=209; < 3680 (stateless)
 \end{verbatim}
 
 Verification cost per UXMSS signature is calculated as WOTS+C verification cost + \texttt{min(q, hsf)} hashes.

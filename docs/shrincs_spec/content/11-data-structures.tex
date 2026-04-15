@@ -33,7 +33,7 @@ auth_path   : min(q, hsf) * n bytes   // UXMSS authentication path
 \end{verbatim}
 The signature size depends on the signature index \texttt{q}:
 \begin{verbatim}
-SHRINCS-B (n=16, R_SIZE=32, c=4, l=16):
+SHRINCS-B/B32 (n=16, R_SIZE=32, c=4, l=16):
     PK.sl       : 16 bytes
     R           : 32 bytes
     ctr         : 4 bytes
@@ -86,6 +86,17 @@ SHRINCS-L (n=16, R_SIZE=32, c=4, k=6, m_max = 91, d=2, h'=12, l=64):
     per layer    : 32 + 4 + 1024 + 192 = 1252 bytes
     2 layers     : 2504 bytes
   Total: 16 + 1584 + 2504 = 4104 bytes
+
+  SHRINCS-B32 (n=16, R_SIZE=32, c=4, k=11, m_max = 111, d=4, h'=8, l=16):
+  PK.sf          :   16 bytes
+  PORS+FP signature:
+    pors_R       :   32 bytes
+    pors_sigs    : (11 + 111) * 16 = 122 * 16 = 1952 bytes
+    subtotal     : 1984 bytes
+  XMSS hypertree (2 layers):
+    per layer    : 32 + 4 + 256 + 128 = 420 bytes
+    4 layers     : 1680 bytes
+  Total: 16 + 1984 + 1680 = 3680 bytes
 \end{verbatim}
 
 \subsection{Signature Type Indication}
@@ -97,6 +108,7 @@ Verifiers distinguish between stateful and stateless signatures by length (Algor
 \begin{itemize}
     \item For SHRINCS-B: \texttt{max\_stateful\_size = 16 + 32 + 4 + 256 + 141*16 = 2564} bytes
     \item For SHRINCS-L: \texttt{max\_stateful\_size = 16 + 32 + 4 + 1024 + 189*16 = 4100} bytes
+    \item For SHRINCS-B32: \texttt{max\_stateful\_size = 16 + 32 + 4 + 256 + 210*16 = 3668} bytes
 \end{itemize}
 
 Signatures with length \texttt{<= max\_stateful\_size} are processed as stateful; larger signatures as stateless.

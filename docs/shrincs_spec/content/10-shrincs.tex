@@ -90,7 +90,7 @@ The \texttt{SHRINCS.SignStateless} function signs a message using the stateless 
 
 SHRINCS uses a unified digest for the stateless path: a single call to \texttt{pors\_digest\_to\_indices} produces a XOF output that encodes both the PORS+FP leaf indices (determining which leaves to reveal in the few-time signature) and the hypertree tree/leaf indices (determining which XMSS trees and WOTS+C key pairs to use at each layer). The grinding counter \texttt{ctr} is iterated until the grinding condition is satisfied on this unified digest.
 
-Let \texttt{C := roundup(k * 2\string^b / t) + 7}, so the XOF output length is \texttt{roundup((C * b + 16 + hsl)/8)}. The first \texttt{C * b + 16} bits encode the \texttt{k} PORS+FP leaf indices. The remaining \texttt{hsl} bits encode the hypertree path indices.
+Let \texttt{C := roundup(k * 2\string^b / t) + magrin}, so the XOF output length is \texttt{roundup((C * b + offset + hsl)/8)}. The first \texttt{C * b + offset} bits encode the \texttt{k} PORS+FP leaf indices. The remaining \texttt{hsl} bits encode the hypertree path indices.
 
 The signature is constructed bottom-up: first a PORS+FP signature on the message, then \texttt{d} XMSS signatures on successive layer roots ascending through the hypertree. The signature includes \texttt{PK.sf} prepended to enable unified verification.
 
@@ -136,7 +136,7 @@ In the unified digest scheme, these bits follow the XOF output from \texttt{pors
         tree_idx: array of d tree indices
         leaf_idx: array of d leaf indices
 
-    1. ht_offset ← roundup(2^b * k/t + 7) * b + 16 
+    1. ht_offset ← roundup(2^b * k/t + margin) * b + offset 
     2. ht_bits ← extract_bits(xof_out, ht_offset, hsl)
     3. idx ← ht_bits
     4. tree_idx ← []
@@ -147,7 +147,7 @@ In the unified digest scheme, these bits follow the XOF output from \texttt{pors
         c. tree_idx[layer] ← idx
     7. return (tree_idx, leaf_idx)
 \end{verbatim}
-\paragraph{Note:} The total XOF output must encode \texttt{C * b + hsl = 18 * 24 + 16 + 24 = 472} bits. 
+\paragraph{Note:} The total XOF output must encode \texttt{C * b + offset + hsl} bits. For SHRINCS-B/L the XOF length is 472 bits, and for SHRINCS-B32 is 456 bits (Section~9.3).
 
 \subsection{Stateful verification}
 The \texttt{SHRINCS.VerifyStateful} function verifies a stateful signature. It extracts \texttt{PK.sl} from the signature, parses the UXMSS signature, and infers \texttt{q} from the authentication path length. It then uses the two-phase WOTS+C hashing to recover \texttt{PK.sf} via \texttt{uxmss\_pkFromSig} and verifies that \texttt{Tw(PK.seed, ADRS, PK.sf || PK.sl)} equals \texttt{PK.root}.
@@ -212,15 +212,20 @@ The \texttt{SHRINCS.VerifyStateless} function verifies a stateless signature. It
     9.  digest ← H_msg_pors(ADRS, R, PK.seed, PK.root, m)
     10. indices, xof_out ← pors_digest_to_indices(digest)
     11. A ← pors_octopus(indices)
-    11. if |A| > m_max:
+    12. if |A| > m_max:
             return false
-    13. (tree_idx, leaf_idx) ← parse_idx(xof_out)
-    14. setLayerAddress(ADRS, 0)
-    15. setTreeAddress(ADRS, tree_idx[0] * 2^h_prime + leaf_idx[0])
-    16. pors_pk ← pors_pkFromSig(pors_sig, indices, PK.seed, ADRS)
-    17. msg ← pors_pk
-    18. xmss_sig_size ← R_SIZE + c + l * n + h_prime * n
-    19. for layer from 0 to d - 1:
+    13. for i from R_SIZE + k*n + |A| to pors_sig_size:
+        a. pad_val ← pors_sig[offset : offset + n]
+        b. if pad_val != toByte(0, n):
+               return false
+        c. offset ← offset + n
+    14. (tree_idx, leaf_idx) ← parse_idx(xof_out)
+    15. setLayerAddress(ADRS, 0)
+    16. setTreeAddress(ADRS, tree_idx[0] * 2^h_prime + leaf_idx[0])
+    17. pors_pk ← pors_pkFromSig(pors_sig, indices, PK.seed, ADRS)
+    18. msg ← pors_pk
+    19. xmss_sig_size ← R_SIZE + c + l * n + h_prime * n
+    20. for layer from 0 to d - 1:
         a. xmss_sig ← sig[offset : offset + xmss_sig_size]
         b. offset ← offset + xmss_sig_size
         c. wots_sig ← xmss_sig[0 : R_SIZE + c + l * n]
@@ -230,12 +235,12 @@ The \texttt{SHRINCS.VerifyStateless} function verifies a stateless signature. It
         g. msg ← xmss_pkFromSig(wots_sig, auth, msg, PK.seed, PK.root, ADRS, h_prime, leaf_idx[layer])
         h. if msg == false:
                return false
-    20. PK.sl ← msg
-    21. setLayerAddress(ADRS, 0)
-    22. setTreeAddress(ADRS, 0)
-    23. setTypeAndClear(ADRS, ROOT)
-    24. expected_root ← Tw(PK.seed, ADRS, PK.sf || PK.sl)
-    25. return (expected_root == PK.root)
+    21. PK.sl ← msg
+    22. setLayerAddress(ADRS, 0)
+    23. setTreeAddress(ADRS, 0)
+    24. setTypeAndClear(ADRS, ROOT)
+    25. expected_root ← Tw(PK.seed, ADRS, PK.sf || PK.sl)
+    26. return (expected_root == PK.root)
 \end{verbatim}
 
 \subsection{Unified Verification}
@@ -252,6 +257,6 @@ The \texttt{SHRINCS.Verify} function provides a single entry point for verifying
     1. max_sf_size ← n + R_SIZE + c + l * n + hsf * n
     2. if len(sig) <= max_sf_size:
             return SHRINCS.VerifyStateful(m, sig, PK)
-        else:
+       else:
             return SHRINCS.VerifyStateless(m, sig, PK)
 \end{verbatim}
