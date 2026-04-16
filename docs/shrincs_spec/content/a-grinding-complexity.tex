@@ -1,7 +1,46 @@
 \section{Expected Grinding Complexity}
-This section analyzes the computational cost of the grinding operations in WOTS+C and FORS+C for both SHRINCS parameter sets.
+This section analyzes the computational cost of the grinding operations in WOTS+C and PORS+FP for both SHRINCS parameter sets.
 
 \subsection{Probabilistic Analysis}
+\subsubsection{Rejection Sampling}
+Rejection sampling used to obtain $k$ distinct indices from the set $\{0,1,...,t-1\}$ in \texttt{pors\_digest\_to\_indices} function, where $t$ is an arbitrary number that is not the power of 2. 
+Inside of \texttt{pors\_digest\_to\_indices} we evaluate some number of SHA256 blocks, and sequentialy extract $b = \lceil\log_2{(t)}\rceil$ bits for every index, which we will call a \emph{candidate}. 
+A candidate that is distinct among previous candidates and is in $[0,t-1]$ is "good".
+The extraction of next candidate is independent from previous draws index. Moreover, each candidate chosen uniformly from $\{0,1,...,2^b-1\}$, and rejetion smapling does not affect the uniformity of choosing a candidate.
+
+Let's define probability that extracted $i$-th index is distinct:
+\begin{align}
+    p^{(i)}_c = \frac{t-(i-1)}{t}
+\end{align}
+
+and define the probability that the obtained index will be in range $[0,t-1]$:
+\begin{align}
+    p_r = \frac{t}{2^b}
+\end{align}
+
+Then the probability of obtaining "good" i-th candidate is simply the product of $p^{(i)}_c\cdot p_r$. Then
+\begin{align}
+    p_i = \frac{t-(i-1)}{t}\cdot \frac{t}{2^b} =  \frac{t - (i-1)}{2^b}
+\end{align}
+
+As we can see, each candidate draw is the Bernoulli trial with probability of success $p_i$. 
+Furthermore, each draw of good candidate obeys the geometric distribution with success probability $p_i$ and expected number of candidates $1/p_i$.
+The expected total number of candidates to obtain $k$ "good" is:
+\begin{align}
+    \mathbb{E}\left[\text{total candidates}\right] = \sum_{i=1}^{k} \frac{1}{p_i} = 2^b\sum_{i=1}^{k} \frac{1}{t - (i-1)}
+\end{align}
+
+If $k \ll t$, then we can aproximate the expression (6) as:
+\begin{align}
+    \mathbb{E}\left[\text{total candidates}\right] \approx 2^b\cdot\frac{k}{t}
+\end{align}
+
+The expected number of hashes during rejection smapling is the following: 
+
+\begin{align}
+    \mathbb{E}[\text{hashes}] = \left\lceil \frac{\mathbb{E}[\text{total candidates}]}{\left\lfloor \frac{256}{b}\right\rfloor}\right\rceil
+\end{align}
+
 
 \subsubsection{WOTS+C Grinding}
 The grinding operation searches for a counter $\texttt{ctr}$ such that the sum of base-$w$ digits equals the target $S_{wn}$. Each digest attempt produces $l$ independent random digits, each uniformly distributed in $[0, w-1]$.
@@ -26,20 +65,23 @@ By the Central Limit Theorem, for moderate $l$, the sum distribution approximate
 
 The probability of hitting exactly $S_{wn}$ can be approximated as:
 \begin{align}
-    P\left(\sum d_i = S_{wn}\right) \approx \frac{1}{\sigma\sqrt{2\pi}} \cdot \exp\left(-\frac{(S_{wn} - \mu)^2}{2\sigma^2}\right)
+    \text{Pr}\left(\sum d_i = S_{wn}\right) \approx \frac{1}{\sigma\sqrt{2\pi}} \cdot \exp\left(-\frac{(S_{wn} - \mu)^2}{2\sigma^2}\right)
 \end{align}
 
 Expected grinding iterations:
 \begin{align}
-    \mathbb{E}[\text{iterations}] = \frac{1}{P(\sum d_i = S_{wn})}
+    \mathbb{E}[\text{iterations}] = \frac{1}{\text{Pr}(\sum d_i = S_{wn})}
 \end{align}
 
-\subsubsection{FORS+C Grinding}
-The grinding operation searches for $\text{indices}[k-1] = 0$, meaning the last $a$ bits of the digest must all be zero. This is a deterministic bit condition with:
+\subsubsection{PORS+FP Grinding}
+The grinding operation searches for $|A| \le m_{\max}$. Let $|A| = S(t,k)$. Then the expected number of iterations during grinding is the following:
 \begin{align}
-    P(\text{indices}[k-1] = 0) &= \frac{1}{2^a} \\
-    \mathbb{E}[\text{iterations}] &= 2^a
+    \text{Pr}(|A| \le m_{\max}) &= \sum_{m=1}^{m_{\max}} \text{Pr}(S(t,k) = m)\\
+    \mathbb{E}[\text{iterations}] &= \frac{1}{\text{Pr}\left(|A| \le m_{\max}\right)}
 \end{align}
+where $\text{Pr}(S(t,k) = m)$ is the probability that the size of authentication set is exactly $m$. 
+The analytical expression for this probability descibed and derived in~\cite{pors_fp2025}.
+We omit to describe the formula directly, due to the complex derivation.
 
 \subsection{Concrete Parameters}
 
@@ -59,13 +101,13 @@ The grinding operation searches for $\text{indices}[k-1] = 0$, meaning the last 
 
 \paragraph{Approximate probability:}
 \begin{align}
-    P(\sum d_i = 2040) \approx \frac{1}{295.6 \cdot \sqrt{2\pi}} \approx \frac{1}{741}
+    \text{Pr}\left(\sum d_i = 2040\right) \approx \frac{1}{295.6 \cdot \sqrt{2\pi}} \approx \frac{1}{741}
 \end{align}
 
 \paragraph{Expected grinding cost:}
 \begin{itemize}
     \item $\mathbb{E}[\text{iterations}] \approx 741$ iterations
-    \item Per iteration: 2 SHA-256 compression (Phase 2 operates on 68-byte input
+    \item Per iteration: 2 SHA-256 compression (Phase 2 operates on 68-byte input)
     \item Total: $\approx 741$ SHA-256 compressions
 \end{itemize}
 
@@ -92,7 +134,7 @@ The grinding operation searches for $\text{indices}[k-1] = 0$, meaning the last 
 
 \paragraph{Approximate probability:}
 \begin{align}
-    P(\sum d_i = 140) &\approx \frac{1}{8.94\sqrt{2\pi}} \cdot \exp\left(-\frac{4.92^2}{2}\right) \nonumber \\
+    \text{Pr}\left(\sum d_i = 140\right) &\approx \frac{1}{8.94\sqrt{2\pi}} \cdot \exp\left(-\frac{4.92^2}{2}\right) \nonumber \\
     &\approx \frac{1}{22.4} \cdot \exp(-12.1) \nonumber \\
     &\approx \frac{1}{22.4} \cdot 5.5 \times 10^{-6} \nonumber \\
     &\approx 2.45 \times 10^{-7}
@@ -111,23 +153,48 @@ The grinding operation searches for $\text{indices}[k-1] = 0$, meaning the last 
     \item Expected grinding time: 2-4 seconds per signature
 \end{itemize}
 
-\subsection{FORS+C Grinding Complexity}
-Both SHRINCS-B and SHRINCS-L use identical FORS+C parameters:
+\subsection{PORS+FP Grinding Complexity}
+Both SHRINCS-B and SHRINCS-L use identical PORS+FP parameters:
 \begin{itemize}
     \item $k = 6$ trees
-    \item $a = 22$ (tree height)
+    \item $t = 9245141$ (number of leaves)
+    \item $m_{\max} = 91$
 \end{itemize}
 
-Grinding condition: $\text{indices}[k-1] = 0$ (last tree index must be zero)
+And for SHRINCS-B32:
+
+\begin{itemize}
+    \item $k = 11$ trees
+    \item $t = 109571$ (number of leaves)
+    \item $m_{\max} = 111$
+\end{itemize}
+
+Grinding condition: $|A| \le m_{\max}$
 
 \paragraph{Expected grinding cost:}
+
+For SHRINCS-B/L:
+
 \begin{itemize}
-    \item $\mathbb{E}[\text{iterations}] = 2^a = 2^{22} = 4.1$m iterations
-    \item Per iteration: 1 HMAC-SHA-256 + 1 SHA-256 
+    \item $\mathbb{E}[\text{iterations}] = 2526130 \approx 2.5$m iterations
+    \item Per iteration: 1 HMAC-SHA-256 + $(1 + \mathbb{E}[\text{hashes}])$ SHA-256 = 1 HMAC-SHA-256 + 3 SHA-256  
 \end{itemize}
 
 \paragraph{Practical performance:}
 \begin{itemize}
     \item $\sim$1-2 million SHA-256/sec
-    \item Expected grinding time: 4-8 seconds per stateless signature
+    \item Expected grinding time: 5-10 seconds per stateless signature
+\end{itemize}
+
+For SHRINCS-B32:
+
+\begin{itemize}
+    \item $\mathbb{E}[\text{iterations}] = 17718$ iterations
+    \item Per iteration: 1 HMAC-SHA-256 + $(1 + \mathbb{E}[\text{hashes}])$ SHA-256 = 1 HMAC-SHA-256 + 3 SHA-256
+\end{itemize}
+
+\paragraph{Practical performance:}
+\begin{itemize}
+    \item $\sim$1-2 million SHA-256/sec
+    \item Expected grinding time: 35 milliseconds per stateless signature
 \end{itemize}
