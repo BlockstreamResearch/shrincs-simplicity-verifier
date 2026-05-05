@@ -1,53 +1,105 @@
-#ifndef SPHINCS
-#define SPHINCS
+#ifndef SHRINCS_STATELESS
+#define SHRINCS_STATELESS
 
 #include "sphincs_xmss.simf"
-#include "fors.simf"
+#include "pors.simf"
 #include "../types.simf"
 
-// n = 16
-// h = 24
-// d = 2
-// a = 22
-// k = 6
-// lg(w) = 2
-// Sw,n = 140
-
-fn sphincs_root_from_path_iter(el: XMSSSignature, ctx: (u128, u128, u128, u32, Ctx8, u32, u64, u32)) -> (u128, u128, u128, u32, Ctx8, u32, u64, u32) {
-    let (pk_seed, pk_root, message, key_index, hash_ctx, layer_adrs, tree_adrs_2, idx): (u128, u128, u128, u32, Ctx8, u32, u64, u32) = ctx;
-    let pub_key: u128 = sphincs_get_xmss_pub_key(el, pk_seed, pk_root, message, key_index, hash_ctx, layer_adrs, 0, tree_adrs_2);
-
-    let key_index: u32 = idx;
-    let idx: u32 = jet::right_shift_32(12, idx);
-    let tree_adrs: u64 = <(u32, u32)>::into((0, jet::and_32(idx, 0x00000FFF)));
-
-    let (_, layer_adrs): (bool, u32) = jet::add_32(layer_adrs, 1);
-
-    (pk_seed, pk_root, pub_key, key_index, hash_ctx, layer_adrs, tree_adrs, idx)
+fn shrincs_extract_ht_bits(base_ctx: Ctx8, digest: u256) -> u32 {
+    let blk1: u256 = pors_xof_block(base_ctx, digest, 1);
+    pors_extract_24bits(blk1, 192)
 }
 
-fn ht_verify(signature: XMSSHTSignature, pk_seed: u128, message: u128, hash_ctx: Ctx8, tree_adrs_2: u64, leaf_idx: u32, pk_root: u128, idx: u32) -> u128 {
-    let (_, _, root, _, _, _, _, _): (u128, u128, u128, u32, Ctx8, u32, u64, u32) = array_fold::<sphincs_root_from_path_iter, 2>(signature, (pk_seed, pk_root, message, leaf_idx, hash_ctx, 0, tree_adrs_2, idx));
+fn shrincs_root_hash(hash_ctx: Ctx8, pk_sf: u128, pk_sl: u128) -> u128 {
+    let base_ctx: Ctx8 = jet::sha_256_ctx_8_add_8(
+        jet::sha_256_ctx_8_add_4(
+            jet::sha_256_ctx_8_add_4(hash_ctx, 0), 
+        0), 
+    0);
+
+    let (root, _): (u128, u128) = <u256>::into(
+        jet::sha_256_ctx_8_finalize(
+        jet::sha_256_ctx_8_add_16(        
+        jet::sha_256_ctx_8_add_16(        
+        jet::sha_256_ctx_8_add_8(         
+        jet::sha_256_ctx_8_add_4(         
+        jet::sha_256_ctx_8_add_4(         
+        base_ctx, 17), 0), 0), 
+        pk_sf), pk_sl) )
+    );
     root
 }
 
 fn sphincs_verify(proof: SPHINCSSignProof, hash_ctx: Ctx8) -> u128 {
-    let (message_hash, pk, signature): SPHINCSSignProof = proof;
+    let (message, pk, sig): SPHINCSSignProof = proof;
     let (pk_seed, pk_root): SPHINCSPK = pk;
-    let (fors_signature, xmss_ht_signature): SPHINCSSignature = signature;
-    let (r, _): SPHINCSFORSSignature = fors_signature;
+    
+    let (pors_sig, ht_sig): SPHINCSSignature = sig;
+    let (r, (sk_values, auth_nodes)): SPHINCSPORSSignature = pors_sig;
+    
+    let base_ctx_0: Ctx8 = jet::sha_256_ctx_8_add_8(
+        jet::sha_256_ctx_8_add_4(
+        jet::sha_256_ctx_8_add_4(hash_ctx, 0), 0), 0);
+        
+    let digest: u256 = pors_h_msg(base_ctx_0, r, pk_root, message);
 
-    let message: u256 = jet::sha_256_ctx_8_finalize(jet::sha_256_ctx_8_add_32(jet::sha_256_ctx_8_add_16(jet::sha_256_ctx_8_add_16(jet::sha_256_ctx_8_add_32(jet::sha_256_ctx_8_add_8(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_16(jet::sha_256_ctx_8_init(), 0), 14), 0), 0), r), pk_seed), pk_root), message_hash));
+    let indices: [u32; 6] = pors_digest_to_indices(base_ctx_0, digest);
+    let ht_bits: u32 = shrincs_extract_ht_bits(base_ctx_0, digest);
 
-    let (_, ((leaf_part, _), _)): (u128, ((u32, u32), u64)) = <u256>::into(message);
-    let idx: u32 = jet::right_shift_32(8, jet::left_shift_32(4, leaf_part));
-    let leaf_adrs: u32 = jet::and_32(idx, 0x00000FFF);
-    let idx: u32 = jet::right_shift_32(12, idx);
+    let leaf_idx_0: u32 = jet::and_32(ht_bits, 4095);
+    let tree_idx_0: u32 = jet::right_shift_32(12, ht_bits);
+    let pors_tree_adrs_2: u64 = <(u32, u32)>::into((0, ht_bits));
+    
+    let base_ctx_pors: Ctx8 = jet::sha_256_ctx_8_add_8(
+        jet::sha_256_ctx_8_add_4(
+        jet::sha_256_ctx_8_add_4(hash_ctx, 0), 0), pors_tree_adrs_2);
+        
+    let (i_idxs, i_vals, p_idxs, p_vals, p_count): ([u32; 6], [u128; 6], [u32; 6], [u128; 6], u32) = 
+        pors_build_initial_sets(sk_values, indices, base_ctx_pors);
+        
+    let (pors_root, final_auth_pos): (u128, u32) = 
+        pors_octopus_verify(i_idxs, i_vals, auth_nodes, p_idxs, p_vals, p_count, base_ctx_pors);
 
-    let (_, tree_adrs_2): (bool, u64) = jet::add_64(jet::multiply_32(idx, jet::left_shift_32(12, 1)), <(u32, u32)>::into((0, leaf_adrs)));
-    let fors_pk: u128 = sphincs_get_fors_pub_key(fors_signature, hash_ctx, message, 0, tree_adrs_2);
+    let valid_len: bool = match jet::eq_32(final_auth_pos, 91) {
+        true => { true },
+        false => { jet::lt_32(final_auth_pos, 91) }
+    };
+    assert!(valid_len);
 
-    ht_verify(xmss_ht_signature, pk_seed, fors_pk, hash_ctx, <(u32, u32)>::into((0, idx)), leaf_adrs, pk_root, idx)
+    let padding_ok: bool = match jet::eq_32(final_auth_pos, 91) {
+        true => { true },
+        false => {
+            let levels_91: [u32; 91] = [
+                0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+                10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+                20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+                30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+                40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
+                50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
+                60, 61, 62, 63, 64, 65, 66, 67, 68, 69,
+                70, 71, 72, 73, 74, 75, 76, 77, 78, 79,
+                80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90
+            ];
+            let (ok, _, _): (bool, u32, [u128; 91]) = 
+                array_fold::<pors_check_padding_step, 91>(levels_91, (true, final_auth_pos, auth_nodes));
+            ok
+        }
+    };
+    assert!(padding_ok);
+
+    let pors_pk: u128 = pors_compress_root(base_ctx_pors, pors_root);
+
+    let [xmss_sig_0, xmss_sig_1]: [XMSSSignature; 2] = ht_sig;
+    let msg_1: u128 = sphincs_get_xmss_pub_key(
+        xmss_sig_0, pk_seed, pk_root, pors_pk, leaf_idx_0, hash_ctx, 0, 0, <(u32, u32)>::into((0, tree_idx_0))
+    );
+    
+    let leaf_idx_1: u32 = tree_idx_0; 
+    let pk_sl: u128 = sphincs_get_xmss_pub_key(
+        xmss_sig_1, pk_seed, pk_root, msg_1, leaf_idx_1, hash_ctx, 1, 0, 0
+    );
+    
+    pk_sl
 }
 
 #endif

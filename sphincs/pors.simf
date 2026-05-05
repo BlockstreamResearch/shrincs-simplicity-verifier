@@ -1,0 +1,467 @@
+#ifndef SHRINCS_PORS_OPT
+#define SHRINCS_PORS_OPT
+
+#include "../templates/array_map.simf"
+#include "../utils.simf"
+#include "../types.simf"
+
+DEFINE_GET_AT_ARR_128(91)
+
+fn pors_xof_block(base_ctx: Ctx8, digest: u256, blk: u32) -> u256 {
+    let (d_hi, d_lo): (u128, u128) = <u256>::into(digest);
+    jet::sha_256_ctx_8_finalize(
+        jet::sha_256_ctx_8_add_4(
+            jet::sha_256_ctx_8_add_16(
+                jet::sha_256_ctx_8_add_16(
+                    jet::sha_256_ctx_8_add_4(
+                        jet::sha_256_ctx_8_add_8(
+                            jet::sha_256_ctx_8_add_4(
+                                base_ctx,
+                                10
+                            ),
+                            0
+                        ),
+                        0
+                    ),
+                    d_hi
+                ),
+                d_lo
+            ),
+            blk
+        )
+    )
+}
+
+fn pors_extract_24bits(block: u256, msb_offset: u8) -> u32 {
+    let (_, shift_amount): (bool, u8) = jet::subtract_8(232, msb_offset);
+    let shifted: u256 = right_shift_256(block, shift_amount);
+    let (_, (_, (_, lo32))): (u128, (u64, (u32, u32))) = <u256>::into(shifted);
+    jet::and_32(lo32, 0x00FFFFFF)
+}
+
+fn pors_try_insert(cand: u32, state: ([u32; 6], u32)) -> ([u32; 6], u32) {
+    let (indices, count): ([u32; 6], u32) = state;
+    let [i0, i1, i2, i3, i4, i5]: [u32; 6] = indices;
+
+    let m0: bool = jet::eq_32(cand, i0);
+    let m1: bool = jet::eq_32(cand, i1);
+    let m2: bool = jet::eq_32(cand, i2);
+    let m3: bool = jet::eq_32(cand, i3);
+    let m4: bool = jet::eq_32(cand, i4);
+    let m5: bool = jet::eq_32(cand, i5);
+
+    let is_dup: bool = match m0 { true => { true }, false => { match m1 { true => { true }, false => { match m2 { true => { true }, false => { match m3 { true => { true }, false => { match m4 { true => { true }, false => { m5 } } } } } } } } } };
+
+    let valid_range: bool = jet::lt_32(cand, 9245141);
+    let not_full: bool = jet::lt_32(count, 6);
+
+    let accept: bool = match valid_range {
+        false => { false },
+        true => {
+            match not_full {
+                false => { false },
+                true => { match is_dup { true => { false }, false => { true } } }
+            }
+        }
+    };
+
+    match accept {
+        false => { (indices, count) },
+        true => {
+            let i5_new: u32 = cand;
+            let (i4, i5_new): (u32, u32) = match jet::lt_32(i5_new, i4) { true => { (i5_new, i4) }, false => { (i4, i5_new) } };
+            let (i3, i4): (u32, u32) = match jet::lt_32(i4, i3) { true => { (i4, i3) }, false => { (i3, i4) } };
+            let (i2, i3): (u32, u32) = match jet::lt_32(i3, i2) { true => { (i3, i2) }, false => { (i2, i3) } };
+            let (i1, i2): (u32, u32) = match jet::lt_32(i2, i1) { true => { (i2, i1) }, false => { (i1, i2) } };
+            let (i0, i1): (u32, u32) = match jet::lt_32(i1, i0) { true => { (i1, i0) }, false => { (i0, i1) } };
+            let (_, new_count): (bool, u32) = jet::add_32(count, 1);
+            ([i0, i1, i2, i3, i4, i5_new], new_count)
+        }
+    }
+}
+
+
+fn pors_process_blk0(block: u256, state: ([u32; 6], u32)) -> ([u32; 6], u32) {
+    let state: ([u32; 6], u32) = pors_try_insert(pors_extract_24bits(block, 0), state);
+    let state: ([u32; 6], u32) = pors_try_insert(pors_extract_24bits(block, 24), state);
+    let state: ([u32; 6], u32) = pors_try_insert(pors_extract_24bits(block, 48), state);
+    let state: ([u32; 6], u32) = pors_try_insert(pors_extract_24bits(block, 72), state);
+    let state: ([u32; 6], u32) = pors_try_insert(pors_extract_24bits(block, 96), state);
+    let state: ([u32; 6], u32) = pors_try_insert(pors_extract_24bits(block, 120), state);
+    let state: ([u32; 6], u32) = pors_try_insert(pors_extract_24bits(block, 144), state);
+    let state: ([u32; 6], u32) = pors_try_insert(pors_extract_24bits(block, 168), state);
+    let state: ([u32; 6], u32) = pors_try_insert(pors_extract_24bits(block, 192), state);
+    pors_try_insert(pors_extract_24bits(block, 216), state)
+}
+
+
+fn pors_process_blk1(block: u256, state: ([u32; 6], u32)) -> ([u32; 6], u32) {
+    let state: ([u32; 6], u32) = pors_try_insert(pors_extract_24bits(block, 0), state);
+    let state: ([u32; 6], u32) = pors_try_insert(pors_extract_24bits(block, 24), state);
+    let state: ([u32; 6], u32) = pors_try_insert(pors_extract_24bits(block, 48), state);
+    let state: ([u32; 6], u32) = pors_try_insert(pors_extract_24bits(block, 72), state);
+    let state: ([u32; 6], u32) = pors_try_insert(pors_extract_24bits(block, 96), state);
+    let state: ([u32; 6], u32) = pors_try_insert(pors_extract_24bits(block, 120), state);
+    let state: ([u32; 6], u32) = pors_try_insert(pors_extract_24bits(block, 144), state);
+    pors_try_insert(pors_extract_24bits(block, 168), state)
+}
+
+fn pors_digest_to_indices(base_ctx: Ctx8, digest: u256) -> [u32; 6] {
+    let init: ([u32; 6], u32) = ([0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF], 0);
+    let blk0: u256 = pors_xof_block(base_ctx, digest, 0);
+    let state: ([u32; 6], u32) = pors_process_blk0(blk0, init);
+    let blk1: u256 = pors_xof_block(base_ctx, digest, 1);
+    let (indices, count): ([u32; 6], u32) = pors_process_blk1(blk1, state);
+
+    assert!(jet::eq_32(count, 6));
+    indices
+}
+
+fn pors_h_msg(base_ctx: Ctx8, r: u256, pk_root: u128, message: u256) -> u256 {
+    let (r_hi, r_lo): (u128, u128) = <u256>::into(r);
+    let (m_hi, m_lo): (u128, u128) = <u256>::into(message);
+
+    jet::sha_256_ctx_8_finalize(
+        jet::sha_256_ctx_8_add_16(
+        jet::sha_256_ctx_8_add_16(
+        jet::sha_256_ctx_8_add_16(
+        jet::sha_256_ctx_8_add_16(
+        jet::sha_256_ctx_8_add_16(
+        jet::sha_256_ctx_8_add_4(
+        jet::sha_256_ctx_8_add_8(    
+        jet::sha_256_ctx_8_add_4(
+            base_ctx,
+        15), 0), 0), r_hi), r_lo), pk_root), m_hi), m_lo)
+    )
+}
+
+fn pors_leaf_hash(base_ctx: Ctx8, leaf_idx: u32, sk: u128) -> u128 {
+    let (leaf, _): (u128, u128) = <u256>::into(
+        jet::sha_256_ctx_8_finalize(
+            jet::sha_256_ctx_8_add_16(         // <--- Payload (16 bytes)
+                jet::sha_256_ctx_8_add_4(      // <--- Index (4 bytes)
+                    jet::sha_256_ctx_8_add_8(  // <--- Pad (8 bytes)
+                        jet::sha_256_ctx_8_add_4( // <--- Type 6 (4 bytes)
+                            base_ctx,
+                            6
+                        ),
+                        0
+                    ),
+                    leaf_idx
+                ),
+                sk
+            )
+        )
+    );
+    leaf
+}
+
+fn pors_node_hash(base_ctx: Ctx8, height: u32, parent_idx: u32, left: u128, right: u128) -> u128 {
+    let (node, _): (u128, u128) = <u256>::into(
+        jet::sha_256_ctx_8_finalize(
+            jet::sha_256_ctx_8_add_16( // Right child (16 bytes)
+                jet::sha_256_ctx_8_add_16( // Left child (16 bytes)
+                    jet::sha_256_ctx_8_add_4( // Tree Index (4 bytes)
+                        jet::sha_256_ctx_8_add_4( // Tree Height (4 bytes)
+                            jet::sha_256_ctx_8_add_4( // KeyPair (4 bytes)
+                                jet::sha_256_ctx_8_add_4( // Type 7 (4 bytes)
+                                    base_ctx, // Base (16 bytes)
+                                    7
+                                ), 
+                                0
+                            ), 
+                            height
+                        ), 
+                        parent_idx
+                    ), 
+                    left
+                ), 
+                right
+            )
+        )
+    );
+    node
+}
+
+fn pors_compress_root(base_ctx: Ctx8, root: u128) -> u128 {
+    let (pk, _): (u128, u128) = <u256>::into(
+        jet::sha_256_ctx_8_finalize(
+            jet::sha_256_ctx_8_add_16(
+                jet::sha_256_ctx_8_add_4(
+                    jet::sha_256_ctx_8_add_8(
+                        jet::sha_256_ctx_8_add_4(
+                            base_ctx,
+                            8
+                        ),
+                        0
+                    ),
+                    0
+                ),
+                root
+            )
+        )
+    );
+    pk
+}
+
+fn pors_compact_swap(ai: u32, av: u128, bi: u32, bv: u128) -> (u32, u128, u32, u128) {
+    match jet::eq_32(ai, 0xFFFFFFFF) {
+        true => (bi, bv, ai, av),
+        false => (ai, av, bi, bv),
+    }
+}
+
+fn pors_compact6(idxs: [u32; 6], vals: [u128; 6]) -> ([u32; 6], [u128; 6]) {
+    let [i0, i1, i2, i3, i4, i5]: [u32; 6] = idxs;
+    let [v0, v1, v2, v3, v4, v5]: [u128; 6] = vals;
+    
+    let (i0, v0, i1, v1): (u32, u128, u32, u128) = pors_compact_swap(i0, v0, i1, v1);
+    let (i1, v1, i2, v2): (u32, u128, u32, u128) = pors_compact_swap(i1, v1, i2, v2);
+    let (i2, v2, i3, v3): (u32, u128, u32, u128) = pors_compact_swap(i2, v2, i3, v3);
+    let (i3, v3, i4, v4): (u32, u128, u32, u128) = pors_compact_swap(i3, v3, i4, v4);
+    let (i4, v4, i5, v5): (u32, u128, u32, u128) = pors_compact_swap(i4, v4, i5, v5);
+    
+    let (i0, v0, i1, v1): (u32, u128, u32, u128) = pors_compact_swap(i0, v0, i1, v1);
+    let (i1, v1, i2, v2): (u32, u128, u32, u128) = pors_compact_swap(i1, v1, i2, v2);
+    let (i2, v2, i3, v3): (u32, u128, u32, u128) = pors_compact_swap(i2, v2, i3, v3);
+    let (i3, v3, i4, v4): (u32, u128, u32, u128) = pors_compact_swap(i3, v3, i4, v4);
+    
+    let (i0, v0, i1, v1): (u32, u128, u32, u128) = pors_compact_swap(i0, v0, i1, v1);
+    let (i1, v1, i2, v2): (u32, u128, u32, u128) = pors_compact_swap(i1, v1, i2, v2);
+    let (i2, v2, i3, v3): (u32, u128, u32, u128) = pors_compact_swap(i2, v2, i3, v3);
+    
+    let (i0, v0, i1, v1): (u32, u128, u32, u128) = pors_compact_swap(i0, v0, i1, v1);
+    let (i1, v1, i2, v2): (u32, u128, u32, u128) = pors_compact_swap(i1, v1, i2, v2);
+    
+    let (i0, v0, i1, v1): (u32, u128, u32, u128) = pors_compact_swap(i0, v0, i1, v1);
+    
+    ([i0,i1,i2,i3,i4,i5], [v0,v1,v2,v3,v4,v5])
+}
+
+fn pors_merge_step(
+    a_idxs: [u32; 6], a_vals: [u128; 6],
+    b_idxs: [u32; 6], b_vals: [u128; 6]
+) -> (u32, u128, [u32; 6], [u128; 6], [u32; 6], [u128; 6]) {
+    let [a0,a1,a2,a3,a4,a5]: [u32; 6] = a_idxs;
+    let [av0,av1,av2,av3,av4,av5]: [u128; 6] = a_vals;
+    let [b0,b1,b2,b3,b4,b5]: [u32; 6] = b_idxs;
+    let [bv0,bv1,bv2,bv3,bv4,bv5]: [u128; 6] = b_vals;
+
+    match jet::lt_32(a0, b0) {
+        true => { (a0, av0, [a1,a2,a3,a4,a5,0xFFFFFFFF], [av1,av2,av3,av4,av5,0], b_idxs, b_vals) },
+        false => { (b0, bv0, a_idxs, a_vals, [b1,b2,b3,b4,b5,0xFFFFFFFF], [bv1,bv2,bv3,bv4,bv5,0]) }
+    }
+}
+
+fn pors_merge6(
+    a_idxs: [u32; 6], a_vals: [u128; 6],
+    b_idxs: [u32; 6], b_vals: [u128; 6]
+) -> ([u32; 6], [u128; 6]) {
+    let (r0i, r0v, ai, av, bi, bv): (u32, u128, [u32; 6], [u128; 6], [u32; 6], [u128; 6]) = pors_merge_step(a_idxs, a_vals, b_idxs, b_vals);
+    let (r1i, r1v, ai, av, bi, bv): (u32, u128, [u32; 6], [u128; 6], [u32; 6], [u128; 6]) = pors_merge_step(ai, av, bi, bv);
+    let (r2i, r2v, ai, av, bi, bv): (u32, u128, [u32; 6], [u128; 6], [u32; 6], [u128; 6]) = pors_merge_step(ai, av, bi, bv);
+    let (r3i, r3v, ai, av, bi, bv): (u32, u128, [u32; 6], [u128; 6], [u32; 6], [u128; 6]) = pors_merge_step(ai, av, bi, bv);
+    let (r4i, r4v, ai, av, bi, bv): (u32, u128, [u32; 6], [u128; 6], [u32; 6], [u128; 6]) = pors_merge_step(ai, av, bi, bv);
+    let (r5i, r5v, _, _, _, _): (u32, u128, [u32; 6], [u128; 6], [u32; 6], [u128; 6]) = pors_merge_step(ai, av, bi, bv);
+    ([r0i,r1i,r2i,r3i,r4i,r5i], [r0v,r1v,r2v,r3v,r4v,r5v])
+}
+
+fn pors_find_sibling(sib_idx: u32, idxs: [u32; 6], vals: [u128; 6]) -> (bool, u128) {
+    let [i0,i1,i2,i3,i4,i5]: [u32; 6] = idxs;
+    let [v0,v1,v2,v3,v4,v5]: [u128; 6] = vals;
+
+    let m0: bool = jet::eq_32(sib_idx, i0);
+    let m1: bool = jet::eq_32(sib_idx, i1);
+    let m2: bool = jet::eq_32(sib_idx, i2);
+    let m3: bool = jet::eq_32(sib_idx, i3);
+    let m4: bool = jet::eq_32(sib_idx, i4);
+    let m5: bool = jet::eq_32(sib_idx, i5);
+
+    let found: bool = match m0 { true => { true }, false => { match m1 { true => { true }, false => { match m2 { true => { true }, false => { match m3 { true => { true }, false => { match m4 { true => { true }, false => { m5 } } } } } } } } } };
+
+    let val: u128 = match m0 {
+        true => { v0 },
+        false => { match m1 {
+            true => { v1 },
+            false => { match m2 {
+                true => { v2 },
+                false => { match m3 {
+                    true => { v3 },
+                    false => { match m4 {
+                        true => { v4 },
+                        false => { v5 }
+                    }}
+                }}
+            }}
+        }}
+    };
+    (found, val)
+}
+
+fn pors_process_slot(
+    slot_idx: u32,
+    slot_val: u128,
+    all_idxs: [u32; 6],
+    all_vals: [u128; 6],
+    auth: [u128; 91],
+    auth_pos: u32,
+    current_lvl: u32,
+    base_ctx: Ctx8
+) -> (u32, u128, u32) {
+    // Destructure the array to safely access the second element
+    let [idx0, idx1, idx2, idx3, idx4, idx5]: [u32; 6] = all_idxs;
+
+    match jet::eq_32(slot_idx, 0xFFFFFFFF) {
+        true => { (0xFFFFFFFF, 0, auth_pos) },
+        false => {
+            // TRUE ROOT CONDITION: Index is 0 AND the next slot is empty
+            let is_true_root: bool = match jet::eq_32(slot_idx, 0) {
+                false => { false },
+                true => { jet::eq_32(idx1, 0xFFFFFFFF) }
+            };
+            
+            match is_true_root {
+                true => { (0, slot_val, auth_pos) }, 
+                false => {
+                    let sib_idx: u32 = jet::xor_32(slot_idx, 1);
+                    let is_right: bool = jet::eq_32(jet::and_32(slot_idx, 1), 1);
+                    let (sib_found, sib_val): (bool, u128) = pors_find_sibling(sib_idx, all_idxs, all_vals);
+                    
+                    let found_and_right: bool = match sib_found {
+                        false => { false },
+                        true => { is_right }
+                    };
+                    match found_and_right {
+                        true => { (0xFFFFFFFF, 0, auth_pos) },
+                        false => {
+                            // CORRECTED: 1 goes first (u8 shift amount), slot_idx goes second!
+                            let parent_idx: u32 = jet::right_shift_32(1, slot_idx);
+                            let (_, parent_lvl): (bool, u32) = jet::add_32(current_lvl, 1);
+                            let (left, right, new_auth_pos): (u128, u128, u32) = match sib_found {
+                                    true => { (slot_val, sib_val, auth_pos) },
+                                    false => {
+                                        let auth_node: u128 = get_at_array_128_91(auth, auth_pos);
+                                        let (_, next_pos): (bool, u32) = jet::add_32(auth_pos, 1);
+                                        match is_right {
+                                            true => { (auth_node, slot_val, next_pos) },
+                                            false => { (slot_val, auth_node, next_pos) }
+                                        }
+                                    }
+                                };
+                            let parent_val: u128 = pors_node_hash(base_ctx, parent_lvl, parent_idx, left, right);
+                            (parent_idx, parent_val, new_auth_pos)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+fn pors_octopus_level_step(
+    el: u32,
+    ctx: ([u32;6], [u128;6], [u128;91], u32, [u32;6], [u128;6], u32, Ctx8)
+) -> ([u32;6], [u128;6], [u128;91], u32, [u32;6], [u128;6], u32, Ctx8) {
+
+    let (idxs, vals, auth, auth_pos, p_idxs, p_vals, p_count, base_ctx): ([u32;6], [u128;6], [u128;91], u32, [u32;6], [u128;6], u32, Ctx8) = ctx;
+    let (idxs, vals): ([u32;6], [u128;6]) = match jet::eq_32(el, 1) {
+        false => { (idxs, vals) },
+        true => { pors_merge6(idxs, vals, p_idxs, p_vals) }
+    };
+
+    let [s0,s1,s2,s3,s4,s5]: [u32;6] = idxs;
+    let [v0,v1,v2,v3,v4,v5]: [u128;6] = vals;
+
+    let (pi0, pv0, auth_pos): (u32, u128, u32) = pors_process_slot(s0,v0,idxs,vals,auth,auth_pos,el,base_ctx);
+    let (pi1, pv1, auth_pos): (u32, u128, u32) = pors_process_slot(s1,v1,idxs,vals,auth,auth_pos,el,base_ctx);
+    let (pi2, pv2, auth_pos): (u32, u128, u32) = pors_process_slot(s2,v2,idxs,vals,auth,auth_pos,el,base_ctx);
+    let (pi3, pv3, auth_pos): (u32, u128, u32) = pors_process_slot(s3,v3,idxs,vals,auth,auth_pos,el,base_ctx);
+    let (pi4, pv4, auth_pos): (u32, u128, u32) = pors_process_slot(s4,v4,idxs,vals,auth,auth_pos,el,base_ctx);
+    let (pi5, pv5, auth_pos): (u32, u128, u32) = pors_process_slot(s5,v5,idxs,vals,auth,auth_pos,el,base_ctx);
+
+    let (new_idxs, new_vals): ([u32;6], [u128;6]) = pors_compact6([pi0,pi1,pi2,pi3,pi4,pi5], [pv0,pv1,pv2,pv3,pv4,pv5]);
+
+    (new_idxs, new_vals, auth, auth_pos, p_idxs, p_vals, p_count, base_ctx)
+}
+
+fn pors_build_initial_sets(
+    sk_values: [u128; 6],
+    leaf_indices: [u32; 6],
+    base_ctx: Ctx8
+) -> ([u32;6], [u128;6], [u32;6], [u128;6], u32) {
+
+    let [sk0,sk1,sk2,sk3,sk4,sk5]: [u128; 6] = sk_values;
+    let [li0,li1,li2,li3,li4,li5]: [u32; 6] = leaf_indices;
+
+    let two_s: u32 = 1713066;
+    let s: u32 = 856533;
+
+    let lv0: u128 = pors_leaf_hash(base_ctx, li0, sk0);
+    let lv1: u128 = pors_leaf_hash(base_ctx, li1, sk1);
+    let lv2: u128 = pors_leaf_hash(base_ctx, li2, sk2);
+    let lv3: u128 = pors_leaf_hash(base_ctx, li3, sk3);
+    let lv4: u128 = pors_leaf_hash(base_ctx, li4, sk4);
+    let lv5: u128 = pors_leaf_hash(base_ctx, li5, sk5);
+
+    let (ii0, iv0, pi0, piv0, pinc0): (u32, u128, u32, u128, u32) = match jet::lt_32(li0, two_s) { true => { (li0, lv0, 0xFFFFFFFF, 0, 0) }, false => { let (_,adj): (bool, u32) = jet::subtract_32(li0, s); (0xFFFFFFFF, 0, adj, lv0, 1) } };
+    let (ii1, iv1, pi1, piv1, pinc1): (u32, u128, u32, u128, u32) = match jet::lt_32(li1, two_s) { true => { (li1, lv1, 0xFFFFFFFF, 0, 0) }, false => { let (_,adj): (bool, u32) = jet::subtract_32(li1, s); (0xFFFFFFFF, 0, adj, lv1, 1) } };
+    let (ii2, iv2, pi2, piv2, pinc2): (u32, u128, u32, u128, u32) = match jet::lt_32(li2, two_s) { true => { (li2, lv2, 0xFFFFFFFF, 0, 0) }, false => { let (_,adj): (bool, u32) = jet::subtract_32(li2, s); (0xFFFFFFFF, 0, adj, lv2, 1) } };
+    let (ii3, iv3, pi3, piv3, pinc3): (u32, u128, u32, u128, u32) = match jet::lt_32(li3, two_s) { true => { (li3, lv3, 0xFFFFFFFF, 0, 0) }, false => { let (_,adj): (bool, u32) = jet::subtract_32(li3, s); (0xFFFFFFFF, 0, adj, lv3, 1) } };
+    let (ii4, iv4, pi4, piv4, pinc4): (u32, u128, u32, u128, u32) = match jet::lt_32(li4, two_s) { true => { (li4, lv4, 0xFFFFFFFF, 0, 0) }, false => { let (_,adj): (bool, u32) = jet::subtract_32(li4, s); (0xFFFFFFFF, 0, adj, lv4, 1) } };
+    let (ii5, iv5, pi5, piv5, pinc5): (u32, u128, u32, u128, u32) = match jet::lt_32(li5, two_s) { true => { (li5, lv5, 0xFFFFFFFF, 0, 0) }, false => { let (_,adj): (bool, u32) = jet::subtract_32(li5, s); (0xFFFFFFFF, 0, adj, lv5, 1) } };
+
+    let (_, p1): (bool, u32) = jet::add_32(pinc4, pinc5);
+    let (_, p2): (bool, u32) = jet::add_32(pinc3, p1);
+    let (_, p3): (bool, u32) = jet::add_32(pinc2, p2);
+    let (_, p4): (bool, u32) = jet::add_32(pinc1, p3);
+    let (_, p_count): (bool, u32) = jet::add_32(pinc0, p4);
+
+    let (i_idxs, i_vals): ([u32; 6], [u128; 6]) = pors_compact6([ii0,ii1,ii2,ii3,ii4,ii5], [iv0,iv1,iv2,iv3,iv4,iv5]);
+    let (p_idxs, p_vals): ([u32; 6], [u128; 6]) = pors_compact6([pi0,pi1,pi2,pi3,pi4,pi5], [piv0,piv1,piv2,piv3,piv4,piv5]);
+
+    (i_idxs, i_vals, p_idxs, p_vals, p_count)
+}
+
+fn pors_check_padding_step(idx: u32, state: (bool, u32, [u128; 91])) -> (bool, u32, [u128; 91]) {
+    let (is_valid, auth_pos, auth): (bool, u32, [u128; 91]) = state;
+    let check: bool = match jet::lt_32(idx, auth_pos) {
+        true => { true },
+        false => {
+            let val: u128 = get_at_array_128_91(auth, idx);
+            eq_128(val, 0)
+        }
+    };
+    let next_valid: bool = match is_valid { true => { check }, false => { false } };
+    (next_valid, auth_pos, auth)
+}
+
+fn pors_octopus_verify(
+    i_idxs: [u32; 6],
+    i_vals: [u128; 6],
+    auth: [u128; 91],
+    p_idxs: [u32; 6],
+    p_vals: [u128; 6],
+    p_count: u32,
+    base_ctx: Ctx8
+) -> (u128, u32) {
+    let levels: [u32; 24] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
+    let init: ([u32;6],[u128;6],[u128;91],u32,[u32;6],[u128;6],u32,Ctx8) =
+        (i_idxs, i_vals, auth, 0, p_idxs, p_vals, p_count, base_ctx);
+
+    let (final_idxs, final_vals, _, final_auth_pos, _, _, _, _): ([u32;6],[u128;6],[u128;91],u32,[u32;6],[u128;6],u32,Ctx8) =
+        array_fold::<pors_octopus_level_step, 24>(levels, init);
+
+    let [root_idx, si1, si2, si3, si4, si5]: [u32; 6] = final_idxs;
+    let [root_val, _, _, _, _, _]: [u128; 6] = final_vals;
+
+    assert!(jet::eq_32(root_idx, 0));
+    assert!(jet::eq_32(si1, 0xFFFFFFFF));
+    assert!(jet::eq_32(si2, 0xFFFFFFFF));
+    assert!(jet::eq_32(si3, 0xFFFFFFFF));
+    assert!(jet::eq_32(si4, 0xFFFFFFFF));
+    assert!(jet::eq_32(si5, 0xFFFFFFFF));
+
+    (root_val, final_auth_pos)
+}
+
+#endif
