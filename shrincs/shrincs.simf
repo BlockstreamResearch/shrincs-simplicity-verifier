@@ -11,16 +11,16 @@ fn shrincs_verify(proof: SHRINCSSignProof) {
 
     let hash_ctx: Ctx8 = jet::sha_256_ctx_8_add_16(jet::sha_256_ctx_8_add_32(jet::sha_256_ctx_8_add_16(jet::sha_256_ctx_8_init(), public_parameter), 0), 0);
 
-    let roots: u256 = match signature {
-        Left(uxmss: UXMSSSignature) => {
-            <(u128, u128)>::into((restore_uxmss_signature((message, seed_root, uxmss), hash_ctx), root_part))
-        },
-        Right(sphincs: SPHINCSSignature) => {
-            <(u128, u128)>::into((root_part, sphincs_verify((message, seed_root, sphincs), hash_ctx)))
-        },
-    };
-
-    let (root, _): (u128, u128) = <u256>::into(jet::sha_256_ctx_8_finalize(jet::sha_256_ctx_8_add_32(jet::sha_256_ctx_8_add_8(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_16(hash_ctx, 0), 17), 0), 0), roots)));
+    let (root, _): (u128, u128) = <u256>::into(jet::sha_256_ctx_8_finalize(jet::sha_256_ctx_8_add_32(jet::sha_256_ctx_8_add_8(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_4(jet::sha_256_ctx_8_add_16(hash_ctx, 0), 17), 0), 0), 
+        match signature {
+            Left(uxmss: UXMSSSignature) => {
+                <(u128, u128)>::into((restore_uxmss_signature((message, seed_root, uxmss), hash_ctx), root_part))
+            },
+            Right(sphincs: SPHINCSSignature) => {
+                <(u128, u128)>::into((root_part, sphincs_verify((message, seed_root, sphincs), hash_ctx)))
+            },
+        }
+    )));
 
     assert!(eq_128(root, expected_root));
 }
