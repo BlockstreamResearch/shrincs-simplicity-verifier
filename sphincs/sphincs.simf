@@ -6,8 +6,7 @@
 #include "../types.simf"
 
 fn shrincs_extract_ht_bits(base_ctx: Ctx8, digest: u256) -> u32 {
-    let blk1: u256 = pors_xof_block(base_ctx, digest, 1);
-    pors_extract_24bits(blk1, 192)
+    pors_extract_24bits(pors_xof_block(base_ctx, digest, 1), 192)
 }
 
 fn shrincs_root_hash(hash_ctx: Ctx8, pk_sf: u128, pk_sl: u128) -> u128 {
@@ -43,19 +42,16 @@ fn sphincs_verify(proof: SPHINCSSignProof, hash_ctx: Ctx8) -> u128 {
         
     let digest: u256 = pors_h_msg(base_ctx_0, r, pk_root, message);
 
-    let indices: [u32; 6] = pors_digest_to_indices(base_ctx_0, digest);
     let ht_bits: u32 = shrincs_extract_ht_bits(base_ctx_0, digest);
 
-    let leaf_idx_0: u32 = jet::and_32(ht_bits, 4095);
     let tree_idx_0: u32 = jet::right_shift_32(12, ht_bits);
-    let pors_tree_adrs_2: u64 = <(u32, u32)>::into((0, ht_bits));
     
     let base_ctx_pors: Ctx8 = jet::sha_256_ctx_8_add_8(
         jet::sha_256_ctx_8_add_4(
-        jet::sha_256_ctx_8_add_4(hash_ctx, 0), 0), pors_tree_adrs_2);
+        jet::sha_256_ctx_8_add_4(hash_ctx, 0), 0), <(u32, u32)>::into((0, ht_bits)));
         
     let (i_idxs, i_vals, p_idxs, p_vals, p_count): ([u32; 6], [u128; 6], [u32; 6], [u128; 6], u32) = 
-        pors_build_initial_sets(sk_values, indices, base_ctx_pors);
+        pors_build_initial_sets(sk_values,  pors_digest_to_indices(base_ctx_0, digest), base_ctx_pors);
         
     let (pors_root, final_auth_pos): (u128, u32) = 
         pors_octopus_verify(i_idxs, i_vals, auth_nodes, p_idxs, p_vals, p_count, base_ctx_pors);
@@ -87,19 +83,17 @@ fn sphincs_verify(proof: SPHINCSSignProof, hash_ctx: Ctx8) -> u128 {
     };
     assert!(padding_ok);
 
-    let pors_pk: u128 = pors_compress_root(base_ctx_pors, pors_root);
-
     let [xmss_sig_0, xmss_sig_1]: [XMSSSignature; 2] = ht_sig;
-    let msg_1: u128 = sphincs_get_xmss_pub_key(
-        xmss_sig_0, pk_seed, pk_root, pors_pk, leaf_idx_0, hash_ctx, 0, 0, <(u32, u32)>::into((0, tree_idx_0))
-    );
     
-    let leaf_idx_1: u32 = tree_idx_0; 
-    let pk_sl: u128 = sphincs_get_xmss_pub_key(
-        xmss_sig_1, pk_seed, pk_root, msg_1, leaf_idx_1, hash_ctx, 1, 0, 0
-    );
-    
-    pk_sl
+    sphincs_get_xmss_pub_key(
+        xmss_sig_1, pk_seed, pk_root, 
+        sphincs_get_xmss_pub_key(
+            xmss_sig_0, pk_seed, pk_root, 
+            pors_compress_root(base_ctx_pors, pors_root), 
+            jet::and_32(ht_bits, 4095), hash_ctx, 0, 0, <(u32, u32)>::into((0, tree_idx_0))
+        ), 
+        tree_idx_0, hash_ctx, 1, 0, 0
+    )
 }
 
 #endif
