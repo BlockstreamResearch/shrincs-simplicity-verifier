@@ -8,15 +8,7 @@
 fn get_lamport_pub_key(private: KeyPair, ctx: ()) -> (KeyPair, ()) {
     let (key1, key2): KeyPair = private;
 
-    let hash1: Ctx8 = jet::sha_256_ctx_8_init();
-    let hash1: Ctx8 = jet::sha_256_ctx_8_add_32(hash1, key1);
-    let hash1: u256 = jet::sha_256_ctx_8_finalize(hash1);
-
-    let hash2: Ctx8 = jet::sha_256_ctx_8_init();
-    let hash2: Ctx8 = jet::sha_256_ctx_8_add_32(hash2, key2);
-    let hash2: u256 = jet::sha_256_ctx_8_finalize(hash2);
-
-    ((hash1, hash2), ())
+    ((sha256_of_256(key1), sha256_of_256(key2)), ())
 }
 
 fn get_lamport_signature(el: KeyPair, ctx: (u256, u8)) -> (u256, (u256, u8)) {
@@ -86,11 +78,7 @@ fn check_lamport_signature(el: u256, ctx: (u8, u256, [KeyPair; 256])) -> (u8, u2
     let bit: u1 = get_bit_at(message_hash, bit_pos);
     let (_, _, pk_elem, _): (u8, u8, u256, u1) = array_fold::<get_lamport_pub_key_iter, 256>(pub_key, (0, idx, 0, bit));
 
-    let hash: Ctx8 = jet::sha_256_ctx_8_init();
-    let hash: Ctx8 = jet::sha_256_ctx_8_add_32(hash, el);
-    let hash: u256 = jet::sha_256_ctx_8_finalize(hash);
-
-    assert!(jet::eq_256(hash, pk_elem));
+    assert!(jet::eq_256(sha256_of_256(el), pk_elem));
 
     let (_, new_idx): (bool, u8) = jet::add_8(idx, 1);
     (new_idx, message_hash, pub_key)
