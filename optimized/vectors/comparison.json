@@ -11,8 +11,8 @@
   "budget_needed_wu": 18848,
   "annex_padding_bytes": 14656,
   "witness_stack_bytes": 18800,
-  "tx_weight_wu": 19499,
-  "tx_vsize_vb": 4875,
+  "tx_weight_wu": 19503,
+  "tx_vsize_vb": 4876,
   "witness_only_vb": 4700.0
  },
  {
@@ -27,8 +27,8 @@
   "budget_needed_wu": 3623,
   "annex_padding_bytes": 0,
   "witness_stack_bytes": 5166,
-  "tx_weight_wu": 5865,
-  "tx_vsize_vb": 1467,
+  "tx_weight_wu": 5869,
+  "tx_vsize_vb": 1468,
   "witness_only_vb": 1291.5
  },
  {
@@ -43,8 +43,8 @@
   "budget_needed_wu": 2725,
   "annex_padding_bytes": 0,
   "witness_stack_bytes": 2696,
-  "tx_weight_wu": 3395,
-  "tx_vsize_vb": 849,
+  "tx_weight_wu": 3399,
+  "tx_vsize_vb": 850,
   "witness_only_vb": 674.0
  },
  {
@@ -59,8 +59,8 @@
   "budget_needed_wu": 18901,
   "annex_padding_bytes": 14690,
   "witness_stack_bytes": 18853,
-  "tx_weight_wu": 19552,
-  "tx_vsize_vb": 4888,
+  "tx_weight_wu": 19556,
+  "tx_vsize_vb": 4889,
   "witness_only_vb": 4713.2
  },
  {
@@ -75,8 +75,8 @@
   "budget_needed_wu": 3666,
   "annex_padding_bytes": 0,
   "witness_stack_bytes": 5185,
-  "tx_weight_wu": 5884,
-  "tx_vsize_vb": 1471,
+  "tx_weight_wu": 5888,
+  "tx_vsize_vb": 1472,
   "witness_only_vb": 1296.2
  },
  {
@@ -91,8 +91,8 @@
   "budget_needed_wu": 2747,
   "annex_padding_bytes": 0,
   "witness_stack_bytes": 2851,
-  "tx_weight_wu": 3550,
-  "tx_vsize_vb": 888,
+  "tx_weight_wu": 3554,
+  "tx_vsize_vb": 889,
   "witness_only_vb": 712.8
  },
  {
@@ -107,8 +107,8 @@
   "budget_needed_wu": 19304,
   "annex_padding_bytes": 14923,
   "witness_stack_bytes": 19256,
-  "tx_weight_wu": 19955,
-  "tx_vsize_vb": 4989,
+  "tx_weight_wu": 19959,
+  "tx_vsize_vb": 4990,
   "witness_only_vb": 4814.0
  },
  {
@@ -123,8 +123,8 @@
   "budget_needed_wu": 3979,
   "annex_padding_bytes": 0,
   "witness_stack_bytes": 5351,
-  "tx_weight_wu": 6050,
-  "tx_vsize_vb": 1513,
+  "tx_weight_wu": 6054,
+  "tx_vsize_vb": 1514,
   "witness_only_vb": 1337.8
  },
  {
@@ -139,8 +139,8 @@
   "budget_needed_wu": 2950,
   "annex_padding_bytes": 0,
   "witness_stack_bytes": 3410,
-  "tx_weight_wu": 4109,
-  "tx_vsize_vb": 1028,
+  "tx_weight_wu": 4113,
+  "tx_vsize_vb": 1029,
   "witness_only_vb": 852.5
  },
  {
@@ -155,8 +155,8 @@
   "budget_needed_wu": 23845,
   "annex_padding_bytes": 17968,
   "witness_stack_bytes": 23797,
-  "tx_weight_wu": 24496,
-  "tx_vsize_vb": 6124,
+  "tx_weight_wu": 24500,
+  "tx_vsize_vb": 6125,
   "witness_only_vb": 5949.2
  },
  {
@@ -171,8 +171,8 @@
   "budget_needed_wu": 7509,
   "annex_padding_bytes": 616,
   "witness_stack_bytes": 7461,
-  "tx_weight_wu": 8160,
-  "tx_vsize_vb": 2040,
+  "tx_weight_wu": 8164,
+  "tx_vsize_vb": 2041,
   "witness_only_vb": 1865.2
  },
  {
@@ -187,8 +187,8 @@
   "budget_needed_wu": 5120,
   "annex_padding_bytes": 164,
   "witness_stack_bytes": 5070,
-  "tx_weight_wu": 5769,
-  "tx_vsize_vb": 1443,
+  "tx_weight_wu": 5773,
+  "tx_vsize_vb": 1444,
   "witness_only_vb": 1267.5
  },
  {
@@ -203,8 +203,8 @@
   "budget_needed_wu": 29194,
   "annex_padding_bytes": 21550,
   "witness_stack_bytes": 29146,
-  "tx_weight_wu": 29845,
-  "tx_vsize_vb": 7462,
+  "tx_weight_wu": 29849,
+  "tx_vsize_vb": 7463,
   "witness_only_vb": 7286.5
  },
  {
@@ -219,8 +219,8 @@
   "budget_needed_wu": 11669,
   "annex_padding_bytes": 3008,
   "witness_stack_bytes": 11621,
-  "tx_weight_wu": 12320,
-  "tx_vsize_vb": 3080,
+  "tx_weight_wu": 12324,
+  "tx_vsize_vb": 3081,
   "witness_only_vb": 2905.2
  },
  {
@@ -235,8 +235,8 @@
   "budget_needed_wu": 7679,
   "annex_padding_bytes": 1001,
   "witness_stack_bytes": 7631,
-  "tx_weight_wu": 8330,
-  "tx_vsize_vb": 2083,
+  "tx_weight_wu": 8334,
+  "tx_vsize_vb": 2084,
   "witness_only_vb": 1907.8
  },
  {
@@ -251,8 +251,8 @@
   "budget_needed_wu": 49161,
   "annex_padding_bytes": 40478,
   "witness_stack_bytes": 49113,
-  "tx_weight_wu": 49812,
-  "tx_vsize_vb": 12453,
+  "tx_weight_wu": 49816,
+  "tx_vsize_vb": 12454,
   "witness_only_vb": 12278.2
  },
  {
@@ -267,8 +267,8 @@
   "budget_needed_wu": 16225,
   "annex_padding_bytes": 6608,
   "witness_stack_bytes": 16177,
-  "tx_weight_wu": 16876,
-  "tx_vsize_vb": 4219,
+  "tx_weight_wu": 16880,
+  "tx_vsize_vb": 4220,
   "witness_only_vb": 4044.2
  },
  {
@@ -283,8 +283,8 @@
   "budget_needed_wu": 10019,
   "annex_padding_bytes": 2987,
   "witness_stack_bytes": 9971,
-  "tx_weight_wu": 10670,
-  "tx_vsize_vb": 2668,
+  "tx_weight_wu": 10674,
+  "tx_vsize_vb": 2669,
   "witness_only_vb": 2492.8
  }
 ]

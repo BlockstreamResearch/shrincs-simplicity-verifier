@@ -6,15 +6,15 @@ the program's static cost bound (milli-WU) must be <= budget * 1000. If the natu
 padding bytes are added in an annex element (rust-simplicity's Cost::get_padding does exactly this).
 
 Witness stack: [simplicity witness, simplicity program, script (32-byte CMR), control block (33 bytes)] (+ annex).
-Base tx (non-witness) for a 1-input, 1-output + fee-output explicit Liquid transaction: 173 bytes
-  version 4 + flag 1 + vin count 1 + input 41 + vout count 1 + output (33 asset + 9 value + 1 nonce + 1 + 34 script)
-  + fee output (33 + 9 + 1 + 1) + locktime 4.
+Base tx (non-witness) for a 1-input, 1-output + fee-output explicit Liquid transaction: 174 bytes
+  version 4 + flag 1 + vin count 1 + input 41 (prevout 32+4, empty scriptSig 1, sequence 4) + vout count 1
+  + output 78 (33 asset + 9 value + 1 nonce + 1 + 34 P2TR script) + fee output 44 (33 + 9 + 1 + 1) + locktime 4.
 Witness part also carries 7 bytes of empty issuance/pegin/range/surjection proof fields.
 weight = 3 * base + (base + 7 + W); vsize = ceil(weight / 4).
 """
 import json, math, sys
 
-BASE_TX = 173
+BASE_TX = 174
 WITNESS_EXTRA = 7
 
 def varint(n):

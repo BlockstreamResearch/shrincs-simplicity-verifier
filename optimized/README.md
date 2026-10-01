@@ -7,7 +7,7 @@ accept/reject behaviour, written for the Liquid/Elements cost model.
 
 All numbers below were measured with the SimplicityHL compiler (master @ 351eb06, simplicity-lang 0.9.0,
 same cost model as the version bundled in the repo) and a transaction model for a 1-input / 1-output + fee
-explicit Liquid transaction (173 base bytes, `weight = 3·base + total`, `vsize = ceil(weight / 4)`).
+explicit Liquid transaction (174 base bytes, `weight = 3·base + total`, `vsize = ceil(weight / 4)`).
 
 ## Short answer to the "2846 vB" question
 
@@ -18,35 +18,35 @@ does today and what the same scheme costs when the Simplicity program is written
 * What makes the current transactions big is not data but the **CPU budget rule** of Simplicity on
   Elements (`src/script/interpreter.cpp`): `budget = witness-stack bytes + 50` and the program's static
   cost bound (milli-WU) must be ≤ `budget · 1000`. With `main`'s program the q=1 stateful verification has
-  a bound of 18.85 M mWU, so ~14.7 KB of padding has to be added to the witness. That is where ~4,875 vB
+  a bound of 18.85 M mWU, so ~14.7 KB of padding has to be added to the witness. That is where ~4,876 vB
   (9,439 vB in the older performance report) come from.
 * 2846 vB corresponds to a witness stack of ~10.7 KB, i.e. a cost bound ≤ ~10.7 M mWU — a 43% reduction
   from `main`, which is clearly reachable (both `optimize_fors` and this work are far below it).
-* This work needs **849 vB** for q=1 with no padding at all: 1161 B of signature data + 1461 B of program + 74 B of
-  script/control/prefixes = 2696 B of witness stack (674 vB) plus a 173 B base transaction.
+* This work needs **850 vB** for q=1 with no padding at all: 1161 B of signature data + 1461 B of program + 74 B of
+  script/control/prefixes = 2696 B of witness stack (674 vB) plus a 174 B base transaction.
 
 ## Results
 
 | vector | version | cost bound (mWU) | program B | witness B | padding B | witness stack B | tx vsize (vB) |
 |---|---|---:|---:|---:|---:|---:|---:|
-| stateful q=1 | main (HEAD) | 18,847,005 | 2905 | 1162 | 14,656 | 18,800 | **4,875** |
-| stateful q=1 | optimize_fors | 3,622,507 | 3930 | 1162 | 0 | 5,166 | **1,467** |
-| stateful q=1 | this work | 2,724,245 | 1461 | 1161 | 0 | 2,696 | **849** |
-| stateful q=2 | main (HEAD) | 18,900,825 | 2908 | 1178 | 14,690 | 18,853 | 4,888 |
-| stateful q=2 | optimize_fors | 3,665,103 | 3933 | 1178 | 0 | 5,185 | 1,471 |
-| stateful q=2 | this work | 2,746,381 | 1600 | 1177 | 0 | 2,851 | 888 |
-| stateful q=10 | main (HEAD) | 19,303,947 | 2950 | 1306 | 14,923 | 19,256 | 4,989 |
-| stateful q=10 | optimize_fors | 3,978,433 | 3971 | 1306 | 0 | 5,351 | 1,513 |
-| stateful q=10 | this work | 2,949,895 | 2030 | 1306 | 0 | 3,410 | 1,028 |
-| stateful q=100 | main (HEAD) | 23,844,013 | 3006 | 2746 | 17,968 | 23,797 | 6,124 |
-| stateful q=100 | optimize_fors | 7,508,339 | 4022 | 2746 | 616 | 7,461 | 2,040 |
-| stateful q=100 | this work | 5,119,931 | 2085 | 2746 | 164 | 5,070 | 1,443 |
-| stateful q=207 | main (HEAD) | 29,194,000 | 3077 | 4442 | 21,550 | 29,146 | 7,462 |
-| stateful q=207 | optimize_fors | 11,668,682 | 4094 | 4442 | 3,008 | 11,621 | 3,080 |
-| stateful q=207 | this work | 7,678,200 | 2111 | 4442 | 1,001 | 7,631 | 2,083 |
-| stateless | main (HEAD) | 49,160,743 | 4101 | 4457 | 40,478 | 49,113 | 12,453 |
-| stateless | optimize_fors | 16,224,611 | 5035 | 4457 | 6,608 | 16,177 | 4,219 |
-| stateless | this work | 10,018,140 | 2514 | 4393 | 2,987 | 9,971 | 2,668 |
+| stateful q=1 | main (HEAD) | 18,847,005 | 2905 | 1162 | 14,656 | 18,800 | **4,876** |
+| stateful q=1 | optimize_fors | 3,622,507 | 3930 | 1162 | 0 | 5,166 | **1,468** |
+| stateful q=1 | this work | 2,724,245 | 1461 | 1161 | 0 | 2,696 | **850** |
+| stateful q=2 | main (HEAD) | 18,900,825 | 2908 | 1178 | 14,690 | 18,853 | 4,889 |
+| stateful q=2 | optimize_fors | 3,665,103 | 3933 | 1178 | 0 | 5,185 | 1,472 |
+| stateful q=2 | this work | 2,746,381 | 1600 | 1177 | 0 | 2,851 | 889 |
+| stateful q=10 | main (HEAD) | 19,303,947 | 2950 | 1306 | 14,923 | 19,256 | 4,990 |
+| stateful q=10 | optimize_fors | 3,978,433 | 3971 | 1306 | 0 | 5,351 | 1,514 |
+| stateful q=10 | this work | 2,949,895 | 2030 | 1306 | 0 | 3,410 | 1,029 |
+| stateful q=100 | main (HEAD) | 23,844,013 | 3006 | 2746 | 17,968 | 23,797 | 6,125 |
+| stateful q=100 | optimize_fors | 7,508,339 | 4022 | 2746 | 616 | 7,461 | 2,041 |
+| stateful q=100 | this work | 5,119,931 | 2085 | 2746 | 164 | 5,070 | 1,444 |
+| stateful q=207 | main (HEAD) | 29,194,000 | 3077 | 4442 | 21,550 | 29,146 | 7,463 |
+| stateful q=207 | optimize_fors | 11,668,682 | 4094 | 4442 | 3,008 | 11,621 | 3,081 |
+| stateful q=207 | this work | 7,678,200 | 2111 | 4442 | 1,001 | 7,631 | 2,084 |
+| stateless | main (HEAD) | 49,160,743 | 4101 | 4457 | 40,478 | 49,113 | 12,454 |
+| stateless | optimize_fors | 16,224,611 | 5035 | 4457 | 6,608 | 16,177 | 4,220 |
+| stateless | this work | 10,018,140 | 2514 | 4393 | 2,987 | 9,971 | 2,669 |
 The stateful transaction is padding-free up to q = 82; the full per-q curve is in `vectors/curve.json`.
 `optimize_fors` numbers are for branch head b4da848 measured with the same harness and the same signatures.
 
@@ -88,6 +88,22 @@ levels (covering every path length ≤ 207 needs a full binary decomposition), w
 more program than q = 1. The q=1 program contains only three hidden nodes (the unused stateless branch, the
 unused `Some` branch of the optional second node, and the unused ordering for the rightmost leaf). A tapleaf
 dedicated to q = 1 would now save only ~13 vB more, so one generic program is enough.
+
+## Where the remaining bytes are, and what is left
+
+For q = 1 the 850 vB split into 174 vB of base transaction (fixed by Liquid), 290 vB of signature data
+(fixed by the scheme), 18 vB of taproot overhead and 368 vB of program. The program's cost bound now sits
+about 20 WU under the budget, so the two quantities trade one-for-one from here: every code-sharing
+rewrite I tried (a shared chain-step function, a fold with the digest rotated in the accumulator, zipped
+witness layouts) saves 15–40 B of program and costs 100–400k mWU, i.e. more padding than it saves.
+The SimplicityHL formulation is at its optimum for this structure. What could still move the number:
+
+* a hand-generated Simplicity DAG (bypassing SimplicityHL's environment-passing code generation) — an
+  estimated 25–35% smaller program and ~40% lower cost, i.e. roughly 720–750 vB for q = 1; a multi-day
+  project with its own generator and test suite;
+* taking the message from `jet::sig_all_hash()` instead of the witness in a real spend: −32 B (−8 vB);
+* nothing on the parameter side: under this cost model a chain element costs 16 B of witness and a bound
+  hash step ~8 B of budget, which makes w = 4 (SHRINCS-L) the cheapest Winternitz choice already.
 
 ## Witness layout
 
