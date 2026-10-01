@@ -28,4 +28,24 @@ fn F##_map_arr_##N(arr: [T1; N], ctx: CTX) -> ([T2; N], CTX) { \
     (<([T2; HALF_N], [T2; HALF_N])>::into((res1, res2)), ctx) \
 }
 
+/// Map an array of size 1, with a read-only invariant passed alongside the
+/// threaded context.
+/// * `INV` is data that is identical for every element. Keeping it out of `CTX`
+///   means it is not part of the return type, so it is not copied back up
+///   through the recursion tree.
+#define DEFINE_MAP_ARR_INV_1(T1, T2, CTX, INV, F) \
+fn F##_map_arr_1(arr: [T1; 1], ctx: CTX, inv: INV) -> ([T2; 1], CTX) { \
+    let (res, ctx): (T2, CTX) = F(<[T1; 1]>::into(arr), ctx, inv); \
+    ([res], ctx) \
+}
+
+/// Map an array of size N = 2^k, with a read-only invariant.
+#define DEFINE_MAP_ARR_INV(T1, T2, CTX, INV, F, N, HALF_N) \
+fn F##_map_arr_##N(arr: [T1; N], ctx: CTX, inv: INV) -> ([T2; N], CTX) { \
+    let (arr1, arr2): ([T1; HALF_N], [T1; HALF_N]) = <[T1; N]>::into(arr); \
+    let (res1, ctx): ([T2; HALF_N], CTX) = F##_map_arr_##HALF_N(arr1, ctx, inv); \
+    let (res2, ctx): ([T2; HALF_N], CTX) = F##_map_arr_##HALF_N(arr2, ctx, inv); \
+    (<([T2; HALF_N], [T2; HALF_N])>::into((res1, res2)), ctx) \
+}
+
 #endif

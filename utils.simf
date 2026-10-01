@@ -1,6 +1,67 @@
 #ifndef IMPORTED_UTILS_SIMF
 #define IMPORTED_UTILS_SIMF
 
+// The 32-byte ADRS, laid out as one half of a block.
+fn adrs_256(layer: u32, tree_1: u32, tree_2: u64, adrs_type: u32, word_1: u32, word_2: u32, word_3: u32) -> u256 {
+    <(u128, u128)>::into((
+        <(u64, u64)>::into((<(u32, u32)>::into((layer, tree_1)), tree_2)),
+        <(u64, u64)>::into((<(u32, u32)>::into((adrs_type, word_1)), <(u32, u32)>::into((word_2, word_3))))
+    ))
+}
+
+fn sha256_tail_16(value: u128, bit_len: u64) -> u256 {
+    <(u128, u128)>::into((value, <(u64, u64)>::into((0x8000000000000000, bit_len))))
+}
+
+fn sha256_tail_0(bit_len: u64) -> u256 {
+    <(u128, u128)>::into((0x80000000000000000000000000000000, <(u64, u64)>::into((0, bit_len))))
+}
+
+fn sha256_finish(midstate: u256, bit_len: u64) -> u256 {
+    jet::sha_256_block(
+        midstate,
+        0x8000000000000000000000000000000000000000000000000000000000000000,
+        <(u128, u128)>::into((0, <(u64, u64)>::into((0, bit_len))))
+    )
+}
+
+fn sha256_finish_4(midstate: u256, value: u32, bit_len: u64) -> u256 {
+    jet::sha_256_block(
+        midstate,
+        <(u128, u128)>::into((<(u32, u32, u32, u32)>::into((value, 0x80000000, 0, 0)), 0)),
+        <(u128, u128)>::into((0, <(u64, u64)>::into((0, bit_len))))
+    )
+}
+
+fn sha256_of_256(value: u256) -> u256 {
+    jet::sha_256_block(jet::sha_256_iv(), value, sha256_tail_0(256))
+}
+
+fn truncate_128(value: u256) -> u128 {
+    let (high, _): (u128, u128) = <u256>::into(value);
+    high
+}
+
+fn wrapping_add_32(a: u32, b: u32) -> u32 {
+    let (_, sum): (bool, u32) = jet::add_32(a, b);
+    sum
+}
+
+fn xmss_path_root(state: (u128, u32, u32, u256, u32, u32, u64)) -> u128 {
+    let (root, _, _, _, _, _, _): (u128, u32, u32, u256, u32, u32, u64) = state;
+    root
+}
+
+fn uxmss_path_root(state: (u128, bool, u256, u32)) -> u128 {
+    let (root, _, _, _): (u128, bool, u256, u32) = state;
+    root
+}
+
+fn wrapping_add_8(a: u8, b: u8) -> u8 {
+    let (_, sum): (bool, u8) = jet::add_8(a, b);
+    sum
+}
+
 fn eq_128(val1: u128, val2: u128) -> bool {
     jet::eq_256(<(u128, u128)>::into((0, val1)), <(u128, u128)>::into((0, val2)))
 }
