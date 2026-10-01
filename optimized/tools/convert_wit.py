@@ -7,7 +7,7 @@ Usage: convert_wit.py <in.wit> <out.wit>
 Output layout:
   IS_STATEFUL: bool
   stateful : HEAD = (pk, key_idx, message, r, counter), SIG = [u128; 64], PATH0 = u128 (first auth node),
-             PATH = List<u128, 256> (remaining auth nodes), ROOT_PART = u128
+             PATH1, PATH2 = Option<u128> (second and third auth node), PATH = List<u128, 256> (the rest), ROOT_PART = u128
   stateless: HEAD_SL = (pk, message, r), FORS = [(sk, [u128; 22]); 5], X{0,1}_COUNTER/_SIG/_PATH, ROOT_PART_SL = u128
 The branch that is not taken gets zero-valued dummies; it is pruned away and nothing of it is encoded.
 """
@@ -87,6 +87,8 @@ def dummy_stateful():
     out['HEAD'] = {'type': '((u128, u128), u32, u256, u256, u32)', 'value': '((0, 0), 0, 0, 0, 0)'}
     out['SIG'] = {'type': '[u128; 64]', 'value': zeros(64)}
     out['PATH0'] = {'type': 'u128', 'value': '0'}
+    out['PATH1'] = {'type': 'Option<u128>', 'value': 'None'}
+    out['PATH2'] = {'type': 'Option<u128>', 'value': 'None'}
     out['PATH'] = {'type': 'List<u128, 256>', 'value': 'list![]'}
     out['ROOT_PART'] = {'type': 'u128', 'value': '0'}
     return out
@@ -106,8 +108,11 @@ def main():
         out['HEAD'] = {'type': '((u128, u128), u32, u256, u256, u32)',
                        'value': '(' + ', '.join([render(pk), render(key_idx), render(message), render(r), render(counter)]) + ')'}
         out['SIG'] = {'type': '[u128; 64]', 'value': render(elems)}
-        out['PATH0'] = {'type': 'u128', 'value': render(path[1][0])}
-        out['PATH'] = {'type': 'List<u128, 256>', 'value': 'list![' + ', '.join(render(x) for x in path[1][1:]) + ']'}
+        nodes = [render(x) for x in path[1]]
+        out['PATH0'] = {'type': 'u128', 'value': nodes[0]}
+        out['PATH1'] = {'type': 'Option<u128>', 'value': 'Some(' + nodes[1] + ')' if len(nodes) > 1 else 'None'}
+        out['PATH2'] = {'type': 'Option<u128>', 'value': 'Some(' + nodes[2] + ')' if len(nodes) > 2 else 'None'}
+        out['PATH'] = {'type': 'List<u128, 256>', 'value': 'list![' + ', '.join(nodes[3:]) + ']'}
         out['ROOT_PART'] = {'type': 'u128', 'value': render(root_part)}
         out.update(dummy_stateless())
     elif sig[0] == 'Right':

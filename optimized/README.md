@@ -22,8 +22,8 @@ does today and what the same scheme costs when the Simplicity program is written
   (9,439 vB in the older performance report) come from.
 * 2846 vB corresponds to a witness stack of ~10.7 KB, i.e. a cost bound ≤ ~10.7 M mWU — a 43% reduction
   from `main`, which is clearly reachable (both `optimize_fors` and this work are far below it).
-* This work needs **933 vB** for q=1 with no padding at all (838 vB with a tapleaf dedicated to q=1); the padding-free floor for this signature
-  encoding is `(signature + program + 65) / 4 ≈ 760 vB` of witness plus the base transaction.
+* This work needs **849 vB** for q=1 with no padding at all: 1161 B of signature data + 1461 B of program + 74 B of
+  script/control/prefixes = 2696 B of witness stack (674 vB) plus a 173 B base transaction.
 
 ## Results
 
@@ -31,24 +31,23 @@ does today and what the same scheme costs when the Simplicity program is written
 |---|---|---:|---:|---:|---:|---:|---:|
 | stateful q=1 | main (HEAD) | 18,847,005 | 2905 | 1162 | 14,656 | 18,800 | **4,875** |
 | stateful q=1 | optimize_fors | 3,622,507 | 3930 | 1162 | 0 | 5,166 | **1,467** |
-| stateful q=1 | this work | 2,732,061 | 1797 | 1162 | 0 | 3,033 | **933** |
-| stateful q=1 | this work, q=1-only tapleaf (2-leaf tree) | 2,701,199 | 1364 | 1161 | 20 | 2,652 | **838** |
+| stateful q=1 | this work | 2,724,245 | 1461 | 1161 | 0 | 2,696 | **849** |
 | stateful q=2 | main (HEAD) | 18,900,825 | 2908 | 1178 | 14,690 | 18,853 | 4,888 |
 | stateful q=2 | optimize_fors | 3,665,103 | 3933 | 1178 | 0 | 5,185 | 1,471 |
-| stateful q=2 | this work | 2,751,995 | 1882 | 1178 | 0 | 3,134 | 959 |
+| stateful q=2 | this work | 2,746,381 | 1600 | 1177 | 0 | 2,851 | 888 |
 | stateful q=10 | main (HEAD) | 19,303,947 | 2950 | 1306 | 14,923 | 19,256 | 4,989 |
 | stateful q=10 | optimize_fors | 3,978,433 | 3971 | 1306 | 0 | 5,351 | 1,513 |
-| stateful q=10 | this work | 2,944,365 | 1937 | 1306 | 0 | 3,317 | 1,004 |
+| stateful q=10 | this work | 2,949,895 | 2030 | 1306 | 0 | 3,410 | 1,028 |
 | stateful q=100 | main (HEAD) | 23,844,013 | 3006 | 2746 | 17,968 | 23,797 | 6,124 |
 | stateful q=100 | optimize_fors | 7,508,339 | 4022 | 2746 | 616 | 7,461 | 2,040 |
-| stateful q=100 | this work | 5,116,251 | 2004 | 2746 | 242 | 5,067 | 1,442 |
+| stateful q=100 | this work | 5,119,931 | 2085 | 2746 | 164 | 5,070 | 1,443 |
 | stateful q=207 | main (HEAD) | 29,194,000 | 3077 | 4442 | 21,550 | 29,146 | 7,462 |
 | stateful q=207 | optimize_fors | 11,668,682 | 4094 | 4442 | 3,008 | 11,621 | 3,080 |
-| stateful q=207 | this work | 7,674,876 | 2016 | 4442 | 1,092 | 7,627 | 2,082 |
+| stateful q=207 | this work | 7,678,200 | 2111 | 4442 | 1,001 | 7,631 | 2,083 |
 | stateless | main (HEAD) | 49,160,743 | 4101 | 4457 | 40,478 | 49,113 | 12,453 |
 | stateless | optimize_fors | 16,224,611 | 5035 | 4457 | 6,608 | 16,177 | 4,219 |
-| stateless | this work | 10,006,268 | 2521 | 4393 | 2,968 | 9,959 | 2,665 |
-The stateful transaction is padding-free up to q = 69; the full per-q curve is in `vectors/curve.json`.
+| stateless | this work | 10,018,140 | 2514 | 4393 | 2,987 | 9,971 | 2,668 |
+The stateful transaction is padding-free up to q = 82; the full per-q curve is in `vectors/curve.json`.
 `optimize_fors` numbers are for branch head b4da848 measured with the same harness and the same signatures.
 
 ## Where the cost goes (and why the rewrite helps)
@@ -76,16 +75,19 @@ What the rewrite does differently:
 * the message digits come from a free cast of the digest (`u128 → (bool, bool) × 64`), chains are
   straight-line hash expressions behind two bit matches, and the leaf hash is streamed inside the fold accumulator;
 * the WOTS+C checksum is a bit-parallel field sum of the digest (two `multiply_64` tricks), not 64 additions;
-* the first auth node is its own witness, so the "rightmost leaf" case is one `match` and the fold step has none;
+* the first auth node is its own witness, so the "rightmost leaf" case is one `match` and the fold step has none; the
+  second and third auth nodes are `Option<u128>` witnesses and the list fold only exists inside their `Some` branches,
+  so a q=1 or q=2 spend never carries the fold's eight pruned levels (8 × 32 B of hidden CMRs);
 * the stateless branch applies the same rules to FORS (5 trees × 22 nodes), the hypertree index extraction
   (64-bit shifts instead of a 256-bit shifter), and the two XMSS layers; `full_right_shift_32_1` yields the
   parent index and the direction bit in one jet; `add_32`/shift results are carried as raw pairs in the accumulator;
 * constants are built from shared 64/128-bit halves so that the pruned program carries fewer `word` bytes.
 
 Each pruned `case` branch costs a 32-byte hidden CMR in the program; the list fold over the auth path has 8
-levels, so 256 B of the q=1 program are hidden nodes. That is inherent: covering every path length ≤ 207 needs
-a full binary decomposition. A tapleaf dedicated to q = 1 avoids the fold entirely (`shrincs_opt_q1leaf.simf`,
-1364 B); the second leaf of the tree costs 32 B of control block.
+levels (covering every path length ≤ 207 needs a full binary decomposition), which is why q ≥ 3 carries 256 B
+more program than q = 1. The q=1 program contains only three hidden nodes (the unused stateless branch, the
+unused `Some` branch of the optional second node, and the unused ordering for the rightmost leaf). A tapleaf
+dedicated to q = 1 would now save only ~13 vB more, so one generic program is enough.
 
 ## Witness layout
 
@@ -100,7 +102,7 @@ The branch that is not taken is pruned to a single hidden node and its witness v
 on-chain witness is the signature plus 1 bit. (`r` of the two XMSS signatures is unused by the verifier and is
 not carried, which is why the stateless witness is 64 B smaller than before.)
 
-`tools/convert_wit.py` converts the repo's single-`PROOF` witness files (`examples/shrincs/*.wit`); `tools/vectors_to_wit.py` converts raw
+`tools/convert_wit.py` converts the repo's single-`PROOF` witness files; `tools/vectors_to_wit.py` converts raw
 signatures from the C++ signer into both formats.
 
 ## Validation
@@ -111,10 +113,11 @@ signatures from the C++ signer into both formats.
   the commit that matches the repo's witnesses) via `tools/gen_vectors.cpp`. All 210 verify with `main`'s
   program and with this program (`check` reports identical verdicts for every vector).
 * Tamper tests (`tools/tamper_test.py`): every component of the stateful and stateless witnesses was modified
-  (pk, key index, message, r, counter, first/last chain element, each auth path, FORS sk/path, XMSS counters,
-  signature elements and paths, stateless root) — all rejected.
+  (pk, key index, message, r, counter, first/last chain element, each auth node incl. the optional ones, FORS
+  sk/path, XMSS counters, signature elements and paths, stateless root) — all rejected; a q=2 signature presented
+  with the second node absent is rejected as well.
 * Both compilers give the same CMR for `shrincs_opt.simf`
-  (`21713feaae63e718d10a409feed27a71e4ae7d74777bb9a389135a6cc8cfa6fa`).
+  (`59e27a35b311e877790cd797ca3567bf10b59751129134762bc112d3fbd76177`).
 
 ### Toolchain note
 
@@ -128,7 +131,7 @@ which also prunes with maximal sharing, #379) to produce the on-chain program.
 ## Reproducing
 
 ```
-# compile + run + prune + measure one witness (the harness pulls SimplicityHL master from git)
+# compile + run + prune + measure one witness (needs a SimplicityHL checkout, see tools/harness/Cargo.toml)
 cd tools/harness && cargo build --release
 ./target/release/check ../../shrincs_opt.simf ../../examples/stateful_q1.wit
 ./target/release/measure ../../shrincs_opt.simf ../../examples/stateful_q1.wit   # detailed cost attribution
@@ -146,4 +149,4 @@ python3 tools/vectors_to_wit.py vectors.jsonl vec/
 * Key-bound program: embed `pk_seed`/root as constants → −48 B witness, no final root hash; the program is then
   the key (which it already is via the taproot commitment).
 * Take the message from `jet::sig_all_hash()` instead of the witness → −32 B witness.
-* Dedicated tapleaves per range of q (q = 1 shown above; e.g. q ≤ 15 with `List<u128, 16>`).
+* Dedicated tapleaves per branch / per range of q (worth ~13 vB at q = 1 now; more for q ≥ 3 if a small `List<u128, 16>` leaf is added).

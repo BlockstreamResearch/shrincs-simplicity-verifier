@@ -76,6 +76,8 @@ def dummy_stateful_opt():
     out['HEAD'] = {'type': '((u128, u128), u32, u256, u256, u32)', 'value': '((0, 0), 0, 0, 0, 0)'}
     out['SIG'] = {'type': '[u128; 64]', 'value': zeros(64)}
     out['PATH0'] = {'type': 'u128', 'value': '0'}
+    out['PATH1'] = {'type': 'Option<u128>', 'value': 'None'}
+    out['PATH2'] = {'type': 'Option<u128>', 'value': 'None'}
     out['PATH'] = {'type': 'List<u128, 256>', 'value': 'list![]'}
     out['ROOT_PART'] = {'type': 'u128', 'value': '0'}
     return out
@@ -103,7 +105,9 @@ def main():
             opt['HEAD'] = {'type': '((u128, u128), u32, u256, u256, u32)', 'value': f"({pk_str}, {q}, {u(msg)}, {u(r)}, {u(counter)})"}
             opt['SIG'] = {'type': '[u128; 64]', 'value': arr([u(e) for e in elems])}
             opt['PATH0'] = {'type': 'u128', 'value': u(path[0])}
-            opt['PATH'] = {'type': 'List<u128, 256>', 'value': 'list![' + ', '.join(u(x) for x in path[1:]) + ']'}
+            opt['PATH1'] = {'type': 'Option<u128>', 'value': 'Some(' + u(path[1]) + ')' if len(path) > 1 else 'None'}
+            opt['PATH2'] = {'type': 'Option<u128>', 'value': 'Some(' + u(path[2]) + ')' if len(path) > 2 else 'None'}
+            opt['PATH'] = {'type': 'List<u128, 256>', 'value': 'list![' + ', '.join(u(x) for x in path[3:]) + ']'}
             opt['ROOT_PART'] = {'type': 'u128', 'value': u(sl_root)}
             opt.update(dummy_stateless_opt())
             meta = {'name': name, 'kind': 'stateful', 'q': q, 'sig_bytes': len(rec['sig']) // 2, 'cpp_verify': rec['cpp_verify']}

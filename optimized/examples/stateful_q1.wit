@@ -15,6 +15,14 @@
   "type": "u128",
   "value": "278383999423802883450225662559784840723"
  },
+ "PATH1": {
+  "type": "Option<u128>",
+  "value": "None"
+ },
+ "PATH2": {
+  "type": "Option<u128>",
+  "value": "None"
+ },
  "PATH": {
   "type": "List<u128, 256>",
   "value": "list![]"

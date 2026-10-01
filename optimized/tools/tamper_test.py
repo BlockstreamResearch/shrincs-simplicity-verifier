@@ -26,6 +26,9 @@ if stateful:
     # HEAD = ((seed, root), key_idx, message, r, counter): numbers 0..5
     cases += [('HEAD.pk_seed', 'HEAD', 0), ('HEAD.pk_root', 'HEAD', 1), ('HEAD.key_idx', 'HEAD', 2), ('HEAD.message', 'HEAD', 3), ('HEAD.r', 'HEAD', 4), ('HEAD.counter', 'HEAD', 5)]
     cases += [('SIG[0]', 'SIG', 0), ('SIG[63]', 'SIG', 63), ('PATH0', 'PATH0', 0), ('ROOT_PART', 'ROOT_PART', 0)]
+    for k in ('PATH1', 'PATH2'):
+        if k in w and nums(w[k]['value']):
+            cases += [(k, k, 0)]
     if len(nums(w['PATH']['value'])) > 0:
         cases += [('PATH[last]', 'PATH', len(nums(w['PATH']['value'])) - 1)]
 else:

@@ -1,6 +1,6 @@
 [
  {
-  "vector": "stateful_q1",
+  "vector": "stateful q=1",
   "version": "main (HEAD)",
   "ok": true,
   "cost": 18847005,
@@ -16,7 +16,7 @@
   "witness_only_vb": 4700.0
  },
  {
-  "vector": "stateful_q1",
+  "vector": "stateful q=1",
   "version": "optimize_fors",
   "ok": true,
   "cost": 3622507,
@@ -32,23 +32,23 @@
   "witness_only_vb": 1291.5
  },
  {
-  "vector": "stateful_q1",
+  "vector": "stateful q=1",
   "version": "this work",
   "ok": true,
-  "cost": 2740253,
-  "program_bytes": 1799,
-  "witness_bytes": 1162,
-  "cmr": "684dff364256dc30062cebe1349ab64e7a7bc8d293cc1bb3409e8a9b1b2aa2c8",
-  "natural_stack_bytes": 3035,
-  "budget_needed_wu": 2741,
+  "cost": 2724245,
+  "program_bytes": 1461,
+  "witness_bytes": 1161,
+  "cmr": "59e27a35b311e877790cd797ca3567bf10b59751129134762bc112d3fbd76177",
+  "natural_stack_bytes": 2696,
+  "budget_needed_wu": 2725,
   "annex_padding_bytes": 0,
-  "witness_stack_bytes": 3035,
-  "tx_weight_wu": 3734,
-  "tx_vsize_vb": 934,
-  "witness_only_vb": 758.8
+  "witness_stack_bytes": 2696,
+  "tx_weight_wu": 3395,
+  "tx_vsize_vb": 849,
+  "witness_only_vb": 674.0
  },
  {
-  "vector": "stateful_q2",
+  "vector": "stateful q=2",
   "version": "main (HEAD)",
   "ok": true,
   "cost": 18900825,
@@ -64,7 +64,7 @@
   "witness_only_vb": 4713.2
  },
  {
-  "vector": "stateful_q2",
+  "vector": "stateful q=2",
   "version": "optimize_fors",
   "ok": true,
   "cost": 3665103,
@@ -80,23 +80,23 @@
   "witness_only_vb": 1296.2
  },
  {
-  "vector": "stateful_q2",
+  "vector": "stateful q=2",
   "version": "this work",
   "ok": true,
-  "cost": 2765945,
-  "program_bytes": 1835,
-  "witness_bytes": 1178,
-  "cmr": "684dff364256dc30062cebe1349ab64e7a7bc8d293cc1bb3409e8a9b1b2aa2c8",
-  "natural_stack_bytes": 3087,
-  "budget_needed_wu": 2766,
+  "cost": 2746381,
+  "program_bytes": 1600,
+  "witness_bytes": 1177,
+  "cmr": "59e27a35b311e877790cd797ca3567bf10b59751129134762bc112d3fbd76177",
+  "natural_stack_bytes": 2851,
+  "budget_needed_wu": 2747,
   "annex_padding_bytes": 0,
-  "witness_stack_bytes": 3087,
-  "tx_weight_wu": 3786,
-  "tx_vsize_vb": 947,
-  "witness_only_vb": 771.8
+  "witness_stack_bytes": 2851,
+  "tx_weight_wu": 3550,
+  "tx_vsize_vb": 888,
+  "witness_only_vb": 712.8
  },
  {
-  "vector": "stateful_q10",
+  "vector": "stateful q=10",
   "version": "main (HEAD)",
   "ok": true,
   "cost": 19303947,
@@ -112,7 +112,7 @@
   "witness_only_vb": 4814.0
  },
  {
-  "vector": "stateful_q10",
+  "vector": "stateful q=10",
   "version": "optimize_fors",
   "ok": true,
   "cost": 3978433,
@@ -128,23 +128,23 @@
   "witness_only_vb": 1337.8
  },
  {
-  "vector": "stateful_q10",
+  "vector": "stateful q=10",
   "version": "this work",
   "ok": true,
-  "cost": 3008443,
-  "program_bytes": 1890,
+  "cost": 2949895,
+  "program_bytes": 2030,
   "witness_bytes": 1306,
-  "cmr": "684dff364256dc30062cebe1349ab64e7a7bc8d293cc1bb3409e8a9b1b2aa2c8",
-  "natural_stack_bytes": 3270,
-  "budget_needed_wu": 3009,
+  "cmr": "59e27a35b311e877790cd797ca3567bf10b59751129134762bc112d3fbd76177",
+  "natural_stack_bytes": 3410,
+  "budget_needed_wu": 2950,
   "annex_padding_bytes": 0,
-  "witness_stack_bytes": 3270,
-  "tx_weight_wu": 3969,
-  "tx_vsize_vb": 993,
-  "witness_only_vb": 817.5
+  "witness_stack_bytes": 3410,
+  "tx_weight_wu": 4109,
+  "tx_vsize_vb": 1028,
+  "witness_only_vb": 852.5
  },
  {
-  "vector": "stateful_q100",
+  "vector": "stateful q=100",
   "version": "main (HEAD)",
   "ok": true,
   "cost": 23844013,
@@ -160,7 +160,7 @@
   "witness_only_vb": 5949.2
  },
  {
-  "vector": "stateful_q100",
+  "vector": "stateful q=100",
   "version": "optimize_fors",
   "ok": true,
   "cost": 7508339,
@@ -176,23 +176,23 @@
   "witness_only_vb": 1865.2
  },
  {
-  "vector": "stateful_q100",
+  "vector": "stateful q=100",
   "version": "this work",
   "ok": true,
-  "cost": 5744269,
-  "program_bytes": 1957,
+  "cost": 5119931,
+  "program_bytes": 2085,
   "witness_bytes": 2746,
-  "cmr": "684dff364256dc30062cebe1349ab64e7a7bc8d293cc1bb3409e8a9b1b2aa2c8",
-  "natural_stack_bytes": 4777,
-  "budget_needed_wu": 5745,
-  "annex_padding_bytes": 917,
-  "witness_stack_bytes": 5697,
-  "tx_weight_wu": 6396,
-  "tx_vsize_vb": 1599,
-  "witness_only_vb": 1424.2
+  "cmr": "59e27a35b311e877790cd797ca3567bf10b59751129134762bc112d3fbd76177",
+  "natural_stack_bytes": 4905,
+  "budget_needed_wu": 5120,
+  "annex_padding_bytes": 164,
+  "witness_stack_bytes": 5070,
+  "tx_weight_wu": 5769,
+  "tx_vsize_vb": 1443,
+  "witness_only_vb": 1267.5
  },
  {
-  "vector": "stateful_q207",
+  "vector": "stateful q=207",
   "version": "main (HEAD)",
   "ok": true,
   "cost": 29194000,
@@ -208,7 +208,7 @@
   "witness_only_vb": 7286.5
  },
  {
-  "vector": "stateful_q207",
+  "vector": "stateful q=207",
   "version": "optimize_fors",
   "ok": true,
   "cost": 11668682,
@@ -224,23 +224,23 @@
   "witness_only_vb": 2905.2
  },
  {
-  "vector": "stateful_q207",
+  "vector": "stateful q=207",
   "version": "this work",
   "ok": true,
-  "cost": 8967090,
-  "program_bytes": 1968,
+  "cost": 7678200,
+  "program_bytes": 2111,
   "witness_bytes": 4442,
-  "cmr": "684dff364256dc30062cebe1349ab64e7a7bc8d293cc1bb3409e8a9b1b2aa2c8",
-  "natural_stack_bytes": 6484,
-  "budget_needed_wu": 8968,
-  "annex_padding_bytes": 2433,
-  "witness_stack_bytes": 8920,
-  "tx_weight_wu": 9619,
-  "tx_vsize_vb": 2405,
-  "witness_only_vb": 2230.0
+  "cmr": "59e27a35b311e877790cd797ca3567bf10b59751129134762bc112d3fbd76177",
+  "natural_stack_bytes": 6627,
+  "budget_needed_wu": 7679,
+  "annex_padding_bytes": 1001,
+  "witness_stack_bytes": 7631,
+  "tx_weight_wu": 8330,
+  "tx_vsize_vb": 2083,
+  "witness_only_vb": 1907.8
  },
  {
-  "vector": "stateless_0",
+  "vector": "stateless",
   "version": "main (HEAD)",
   "ok": true,
   "cost": 49160743,
@@ -256,7 +256,7 @@
   "witness_only_vb": 12278.2
  },
  {
-  "vector": "stateless_0",
+  "vector": "stateless",
   "version": "optimize_fors",
   "ok": true,
   "cost": 16224611,
@@ -272,19 +272,19 @@
   "witness_only_vb": 4044.2
  },
  {
-  "vector": "stateless_0",
+  "vector": "stateless",
   "version": "this work",
   "ok": true,
-  "cost": 10006268,
-  "program_bytes": 2521,
+  "cost": 10018140,
+  "program_bytes": 2514,
   "witness_bytes": 4393,
-  "cmr": "684dff364256dc30062cebe1349ab64e7a7bc8d293cc1bb3409e8a9b1b2aa2c8",
-  "natural_stack_bytes": 6988,
-  "budget_needed_wu": 10007,
-  "annex_padding_bytes": 2968,
-  "witness_stack_bytes": 9959,
-  "tx_weight_wu": 10658,
-  "tx_vsize_vb": 2665,
-  "witness_only_vb": 2489.8
+  "cmr": "59e27a35b311e877790cd797ca3567bf10b59751129134762bc112d3fbd76177",
+  "natural_stack_bytes": 6981,
+  "budget_needed_wu": 10019,
+  "annex_padding_bytes": 2987,
+  "witness_stack_bytes": 9971,
+  "tx_weight_wu": 10670,
+  "tx_vsize_vb": 2668,
+  "witness_only_vb": 2492.8
  }
 ]

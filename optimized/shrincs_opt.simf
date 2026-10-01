@@ -15,7 +15,8 @@
 //
 // Witness layout (see convert_wit.py):
 //   IS_STATEFUL: bool
-//   stateful : HEAD = (pk, key_idx, message, r, counter), SIG = [u128; 64], PATH0 = u128, PATH = List<u128, 256>, ROOT_PART = u128
+//   stateful : HEAD = (pk, key_idx, message, r, counter), SIG = [u128; 64], PATH0 = u128 (first auth node),
+//              PATH1, PATH2 = Option<u128> (second/third auth node), PATH = List<u128, 256> (the rest), ROOT_PART = u128
 //   stateless: HEAD_SL = (pk, message, r), FORS = [(sk, [u128; 22]); 5], X{0,1}_COUNTER: u32, X{0,1}_SIG: [u128; 64],
 //              X{0,1}_PATH: [u128; 12], ROOT_PART_SL = u128
 // Only the branch that is taken survives pruning; the other branch becomes a single 32-byte hidden node and its witness
@@ -23,11 +24,11 @@
 
 // ====================== shared helpers ======================
 
-fn sha256_finish(midstate: u256, bit_len: u64) -> u256 {
+fn sha256_finish(midstate: u256, bit_len: u32) -> u256 {
     jet::sha_256_block(
         midstate,
-        <(u128, u128)>::into((<(u64, u64)>::into((0x8000000000000000, 0)), 0)),
-        <(u128, u128)>::into((0, <(u64, u64)>::into((0, bit_len))))
+        <(u128, u128)>::into((<(u64, u64)>::into((<(u32, u32)>::into((0x80000000, 0)), 0)), 0)),
+        <(u128, u128)>::into((0, <(u64, u64)>::into((0, <(u32, u32)>::into((0, bit_len))))))
     )
 }
 
@@ -42,10 +43,10 @@ fn wrapping_add_32(a: u32, b: u32) -> u32 {
 }
 
 fn digit_sum_64(x: u64) -> u64 {
-    let (_, y): (bool, u64) = jet::add_64(jet::and_64(x, 0x3333333333333333), jet::and_64(jet::right_shift_64(2, x), 0x3333333333333333));
-    let (_, z): (bool, u64) = jet::add_64(jet::and_64(y, 0x0F0F0F0F0F0F0F0F), jet::and_64(jet::right_shift_64(4, y), 0x0F0F0F0F0F0F0F0F));
+    let (_, y): (bool, u64) = jet::add_64(jet::and_64(x, <(u32, u32)>::into((0x33333333, 0x33333333))), jet::and_64(jet::right_shift_64(2, x), <(u32, u32)>::into((0x33333333, 0x33333333))));
+    let (_, z): (bool, u64) = jet::add_64(jet::and_64(y, <(u32, u32)>::into((0x0F0F0F0F, 0x0F0F0F0F))), jet::and_64(jet::right_shift_64(4, y), <(u32, u32)>::into((0x0F0F0F0F, 0x0F0F0F0F))));
     // z holds 8 byte-sized partial sums (each <= 12); multiply by 0x0101..01 puts their total in the top byte.
-    let (_, lo): (u64, u64) = <u128>::into(jet::multiply_64(z, 0x0101010101010101));
+    let (_, lo): (u64, u64) = <u128>::into(jet::multiply_64(z, <(u32, u32)>::into((0x01010101, 0x01010101))));
     jet::right_shift_64(56, lo)
 }
 
@@ -87,7 +88,7 @@ fn sf_hash_message(message: u256, r: u256, pk_seed: u128, root: u128, counter: u
             ))))
         ),
         <(u128, u128)>::into((<(u64, u64)>::into((<(u32, u32)>::into((counter, 0x80000000)), 0)), 0)),
-        <(u128, u128)>::into((0, <(u64, u64)>::into((0, 544))))
+        <(u128, u128)>::into((0, <(u64, u64)>::into((0, <(u32, u32)>::into((0, 544))))))
     ))
 }
 
@@ -168,7 +169,7 @@ fn sf_leaf_init_h(head: ((u128, u128), u32, u256, u256, u32)) -> (u256, (u128, u
 
 fn sf_leaf_finish(acc: (u256, (u128, u128), u32, u64, u256)) -> u128 {
     let (sha, pending, _, _, _): (u256, (u128, u128), u32, u64, u256) = acc;
-    truncate_128(jet::sha_256_block(sha, <(u128, u128)>::into(pending), <(u128, u128)>::into((<(u64, u64)>::into((0x8000000000000000, 0)), <(u64, u64)>::into((0, 8960))))))
+    truncate_128(jet::sha_256_block(sha, <(u128, u128)>::into(pending), <(u128, u128)>::into((<(u64, u64)>::into((<(u32, u32)>::into((0x80000000, 0)), 0)), <(u64, u64)>::into((0, <(u32, u32)>::into((0, 8960))))))))
 }
 
 fn sf_wots_leaf(sig: [u128; 64], head: ((u128, u128), u32, u256, u256, u32)) -> u128 {
@@ -292,7 +293,7 @@ fn sl_group_step(el: ([u128; 8], u16), acc: (u256, (u128, u128), u32, u128, u64,
 
 fn sl_leaf_finish(acc: (u256, (u128, u128), u32, u128, u64, u256)) -> u128 {
     let (sha, pending, _, _, _, _): (u256, (u128, u128), u32, u128, u64, u256) = acc;
-    truncate_128(jet::sha_256_block(sha, <(u128, u128)>::into(pending), <(u128, u128)>::into((<(u64, u64)>::into((0x8000000000000000, 0)), <(u64, u64)>::into((0, 8960))))))
+    truncate_128(jet::sha_256_block(sha, <(u128, u128)>::into(pending), <(u128, u128)>::into((<(u64, u64)>::into((<(u32, u32)>::into((0x80000000, 0)), 0)), <(u64, u64)>::into((0, <(u32, u32)>::into((0, 8960))))))))
 }
 
 // ---------- XMSS layer ----------
@@ -323,7 +324,7 @@ fn sl_wots_digits(counter: u32, ctx: (u128, u32, u128, (u128, u128), u256, u32))
             <(u128, u128)>::into((pk_seed, message))
         ),
         <(u128, u128)>::into((<(u64, u64)>::into((<(u32, u32)>::into((counter, 0x80000000)), 0)), 0)),
-        <(u128, u128)>::into((0, <(u64, u64)>::into((0, 544))))
+        <(u128, u128)>::into((0, <(u64, u64)>::into((0, <(u32, u32)>::into((0, 544))))))
     )))
 }
 
@@ -487,7 +488,19 @@ fn sl_check_root(ctx: (u128, u32, u128, (u128, u128), u256, u32), uxmss_root: u1
 
 fn main() {
     match witness::IS_STATEFUL {
-        true => sf_check_root(fold::<sf_path_step, 256>(witness::PATH, sf_path_init(witness::HEAD, witness::SIG, witness::PATH0)), witness::ROOT_PART),
+        true => {
+            let ctx: (u128, (bool, u32), u256, u128) = sf_path_init(witness::HEAD, witness::SIG, witness::PATH0);
+            sf_check_root(
+                match witness::PATH1 {
+                    None => ctx,
+                    Some(p1: u128) => match witness::PATH2 {
+                        None => sf_path_step(p1, ctx),
+                        Some(p2: u128) => fold::<sf_path_step, 256>(witness::PATH, sf_path_step(p2, sf_path_step(p1, ctx))),
+                    },
+                },
+                witness::ROOT_PART
+            )
+        },
         false => sl_check_root(
             sl_xmss_layer(witness::X1_COUNTER, witness::X1_SIG, witness::X1_PATH,
                 sl_xmss_layer(witness::X0_COUNTER, witness::X0_SIG, witness::X0_PATH,
