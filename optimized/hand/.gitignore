@@ -1,0 +1,4 @@
+programs_all/
+witnesses_all/
+.tamper_spec.json
+__pycache__/

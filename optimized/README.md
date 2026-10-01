@@ -27,26 +27,38 @@ does today and what the same scheme costs when the Simplicity program is written
 
 ## Results
 
+**Update:** [`hand/`](./hand/) contains the stateful branch rewritten as a hand-laid-out Simplicity DAG (no SimplicityHL
+code generation). It brings the first-signature transaction from 850 to **704 vB** and the lifetime average from
+1,495 to 1,195 vB with one tapleaf per key index; see [`hand/README.md`](./hand/README.md) for the full table, the
+tapleaf layouts and the test suite. The rows marked "hand-written DAG" below come from it; everything else in this
+file describes the SimplicityHL program.
+
 | vector | version | cost bound (mWU) | program B | witness B | padding B | witness stack B | tx vsize (vB) |
 |---|---|---:|---:|---:|---:|---:|---:|
 | stateful q=1 | main (HEAD) | 18,847,005 | 2905 | 1162 | 14,656 | 18,800 | **4,876** |
 | stateful q=1 | optimize_fors | 3,622,507 | 3930 | 1162 | 0 | 5,166 | **1,468** |
 | stateful q=1 | this work | 2,724,245 | 1461 | 1161 | 0 | 2,696 | **850** |
+| stateful q=1 | hand-written DAG (`hand/`) | 2,136,142 | 846 | 1161 | 0 | 2,113 | **704** |
 | stateful q=2 | main (HEAD) | 18,900,825 | 2908 | 1178 | 14,690 | 18,853 | 4,889 |
 | stateful q=2 | optimize_fors | 3,665,103 | 3933 | 1178 | 0 | 5,185 | 1,472 |
 | stateful q=2 | this work | 2,746,381 | 1600 | 1177 | 0 | 2,851 | 889 |
+| stateful q=2 | hand-written DAG (`hand/`) | 2,154,191 | 886 | 1177 | 0 | 2,169 | 718 |
 | stateful q=10 | main (HEAD) | 19,303,947 | 2950 | 1306 | 14,923 | 19,256 | 4,990 |
 | stateful q=10 | optimize_fors | 3,978,433 | 3971 | 1306 | 0 | 5,351 | 1,514 |
 | stateful q=10 | this work | 2,949,895 | 2030 | 1306 | 0 | 3,410 | 1,029 |
+| stateful q=10 | hand-written DAG (`hand/`, per-index tapleaf) | 2,305,300 | 857 | 1300 | 0 | 2,489 | 798 |
 | stateful q=100 | main (HEAD) | 23,844,013 | 3006 | 2746 | 17,968 | 23,797 | 6,125 |
 | stateful q=100 | optimize_fors | 7,508,339 | 4022 | 2746 | 616 | 7,461 | 2,041 |
 | stateful q=100 | this work | 5,119,931 | 2085 | 2746 | 164 | 5,070 | 1,444 |
+| stateful q=100 | hand-written DAG (`hand/`, per-index tapleaf) | 3,894,930 | 953 | 2740 | 0 | 4,025 | 1,182 |
 | stateful q=207 | main (HEAD) | 29,194,000 | 3077 | 4442 | 21,550 | 29,146 | 7,463 |
 | stateful q=207 | optimize_fors | 11,668,682 | 4094 | 4442 | 3,008 | 11,621 | 3,081 |
 | stateful q=207 | this work | 7,678,200 | 2111 | 4442 | 1,001 | 7,631 | 2,084 |
+| stateful q=207 | hand-written DAG (`hand/`, own tapleaf) | 5,844,336 | 977 | 4436 | 243 | 5,795 | 1,625 |
 | stateless | main (HEAD) | 49,160,743 | 4101 | 4457 | 40,478 | 49,113 | 12,454 |
 | stateless | optimize_fors | 16,224,611 | 5035 | 4457 | 6,608 | 16,177 | 4,220 |
 | stateless | this work | 10,018,140 | 2514 | 4393 | 2,987 | 9,971 | 2,669 |
+| stateless | stateless-only SimplicityHL tapleaf (`hand/programs/stateless_leaf.simf`) | 10,017,638 | 2473 | 4392 | 2,964 | 9,970 | 2,669 |
 The stateful transaction is padding-free up to q = 82; the full per-q curve is in `vectors/curve.json`.
 `optimize_fors` numbers are for branch head b4da848 measured with the same harness and the same signatures.
 
@@ -98,9 +110,8 @@ rewrite I tried (a shared chain-step function, a fold with the digest rotated in
 witness layouts) saves 15–40 B of program and costs 100–400k mWU, i.e. more padding than it saves.
 The SimplicityHL formulation is at its optimum for this structure. What could still move the number:
 
-* a hand-generated Simplicity DAG (bypassing SimplicityHL's environment-passing code generation) — an
-  estimated 25–35% smaller program and ~40% lower cost, i.e. roughly 720–750 vB for q = 1; a multi-day
-  project with its own generator and test suite;
+* a hand-generated Simplicity DAG (bypassing SimplicityHL's environment-passing code generation) — done, see
+  [`hand/`](./hand/): 846 B program, 2.14 M mWU, 704 vB for q = 1;
 * taking the message from `jet::sig_all_hash()` instead of the witness in a real spend: −32 B (−8 vB);
 * nothing on the parameter side: under this cost model a chain element costs 16 B of witness and a bound
   hash step ~8 B of budget, which makes w = 4 (SHRINCS-L) the cheapest Winternitz choice already.
