@@ -5,7 +5,7 @@
  },
  "HEAD": {
   "type": "((u128, u128), u32, u256, u256, u32)",
-  "value": "((0xb635ef10af1b120cec1095d7745fec06, 0x0f8fbe02641f3479bd3131c0d5253926), 0, 0, 0, 0)"
+  "value": "((0, 0), 0, 0, 0, 0)"
  },
  "SIG": {
   "type": "[u128; 64]",
@@ -21,7 +21,7 @@
  },
  "ROOT_PART": {
   "type": "u128",
-  "value": "0xe24e6a43f74040ce1cbc1bcde351374b"
+  "value": "0"
  },
  "HEAD_SL": {
   "type": "((u128, u128), u256, u256)",
