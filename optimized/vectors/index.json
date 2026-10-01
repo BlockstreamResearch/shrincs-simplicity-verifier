@@ -1,0 +1,1469 @@
+[
+ {
+  "name": "stateful_q1",
+  "kind": "stateful",
+  "q": 1,
+  "sig_bytes": 1092,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q2",
+  "kind": "stateful",
+  "q": 2,
+  "sig_bytes": 1108,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q3",
+  "kind": "stateful",
+  "q": 3,
+  "sig_bytes": 1124,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q4",
+  "kind": "stateful",
+  "q": 4,
+  "sig_bytes": 1140,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q5",
+  "kind": "stateful",
+  "q": 5,
+  "sig_bytes": 1156,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q6",
+  "kind": "stateful",
+  "q": 6,
+  "sig_bytes": 1172,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q7",
+  "kind": "stateful",
+  "q": 7,
+  "sig_bytes": 1188,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q8",
+  "kind": "stateful",
+  "q": 8,
+  "sig_bytes": 1204,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q9",
+  "kind": "stateful",
+  "q": 9,
+  "sig_bytes": 1220,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q10",
+  "kind": "stateful",
+  "q": 10,
+  "sig_bytes": 1236,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q11",
+  "kind": "stateful",
+  "q": 11,
+  "sig_bytes": 1252,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q12",
+  "kind": "stateful",
+  "q": 12,
+  "sig_bytes": 1268,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q13",
+  "kind": "stateful",
+  "q": 13,
+  "sig_bytes": 1284,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q14",
+  "kind": "stateful",
+  "q": 14,
+  "sig_bytes": 1300,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q15",
+  "kind": "stateful",
+  "q": 15,
+  "sig_bytes": 1316,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q16",
+  "kind": "stateful",
+  "q": 16,
+  "sig_bytes": 1332,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q17",
+  "kind": "stateful",
+  "q": 17,
+  "sig_bytes": 1348,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q18",
+  "kind": "stateful",
+  "q": 18,
+  "sig_bytes": 1364,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q19",
+  "kind": "stateful",
+  "q": 19,
+  "sig_bytes": 1380,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q20",
+  "kind": "stateful",
+  "q": 20,
+  "sig_bytes": 1396,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q21",
+  "kind": "stateful",
+  "q": 21,
+  "sig_bytes": 1412,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q22",
+  "kind": "stateful",
+  "q": 22,
+  "sig_bytes": 1428,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q23",
+  "kind": "stateful",
+  "q": 23,
+  "sig_bytes": 1444,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q24",
+  "kind": "stateful",
+  "q": 24,
+  "sig_bytes": 1460,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q25",
+  "kind": "stateful",
+  "q": 25,
+  "sig_bytes": 1476,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q26",
+  "kind": "stateful",
+  "q": 26,
+  "sig_bytes": 1492,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q27",
+  "kind": "stateful",
+  "q": 27,
+  "sig_bytes": 1508,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q28",
+  "kind": "stateful",
+  "q": 28,
+  "sig_bytes": 1524,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q29",
+  "kind": "stateful",
+  "q": 29,
+  "sig_bytes": 1540,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q30",
+  "kind": "stateful",
+  "q": 30,
+  "sig_bytes": 1556,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q31",
+  "kind": "stateful",
+  "q": 31,
+  "sig_bytes": 1572,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q32",
+  "kind": "stateful",
+  "q": 32,
+  "sig_bytes": 1588,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q33",
+  "kind": "stateful",
+  "q": 33,
+  "sig_bytes": 1604,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q34",
+  "kind": "stateful",
+  "q": 34,
+  "sig_bytes": 1620,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q35",
+  "kind": "stateful",
+  "q": 35,
+  "sig_bytes": 1636,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q36",
+  "kind": "stateful",
+  "q": 36,
+  "sig_bytes": 1652,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q37",
+  "kind": "stateful",
+  "q": 37,
+  "sig_bytes": 1668,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q38",
+  "kind": "stateful",
+  "q": 38,
+  "sig_bytes": 1684,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q39",
+  "kind": "stateful",
+  "q": 39,
+  "sig_bytes": 1700,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q40",
+  "kind": "stateful",
+  "q": 40,
+  "sig_bytes": 1716,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q41",
+  "kind": "stateful",
+  "q": 41,
+  "sig_bytes": 1732,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q42",
+  "kind": "stateful",
+  "q": 42,
+  "sig_bytes": 1748,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q43",
+  "kind": "stateful",
+  "q": 43,
+  "sig_bytes": 1764,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q44",
+  "kind": "stateful",
+  "q": 44,
+  "sig_bytes": 1780,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q45",
+  "kind": "stateful",
+  "q": 45,
+  "sig_bytes": 1796,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q46",
+  "kind": "stateful",
+  "q": 46,
+  "sig_bytes": 1812,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q47",
+  "kind": "stateful",
+  "q": 47,
+  "sig_bytes": 1828,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q48",
+  "kind": "stateful",
+  "q": 48,
+  "sig_bytes": 1844,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q49",
+  "kind": "stateful",
+  "q": 49,
+  "sig_bytes": 1860,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q50",
+  "kind": "stateful",
+  "q": 50,
+  "sig_bytes": 1876,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q51",
+  "kind": "stateful",
+  "q": 51,
+  "sig_bytes": 1892,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q52",
+  "kind": "stateful",
+  "q": 52,
+  "sig_bytes": 1908,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q53",
+  "kind": "stateful",
+  "q": 53,
+  "sig_bytes": 1924,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q54",
+  "kind": "stateful",
+  "q": 54,
+  "sig_bytes": 1940,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q55",
+  "kind": "stateful",
+  "q": 55,
+  "sig_bytes": 1956,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q56",
+  "kind": "stateful",
+  "q": 56,
+  "sig_bytes": 1972,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q57",
+  "kind": "stateful",
+  "q": 57,
+  "sig_bytes": 1988,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q58",
+  "kind": "stateful",
+  "q": 58,
+  "sig_bytes": 2004,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q59",
+  "kind": "stateful",
+  "q": 59,
+  "sig_bytes": 2020,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q60",
+  "kind": "stateful",
+  "q": 60,
+  "sig_bytes": 2036,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q61",
+  "kind": "stateful",
+  "q": 61,
+  "sig_bytes": 2052,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q62",
+  "kind": "stateful",
+  "q": 62,
+  "sig_bytes": 2068,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q63",
+  "kind": "stateful",
+  "q": 63,
+  "sig_bytes": 2084,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q64",
+  "kind": "stateful",
+  "q": 64,
+  "sig_bytes": 2100,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q65",
+  "kind": "stateful",
+  "q": 65,
+  "sig_bytes": 2116,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q66",
+  "kind": "stateful",
+  "q": 66,
+  "sig_bytes": 2132,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q67",
+  "kind": "stateful",
+  "q": 67,
+  "sig_bytes": 2148,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q68",
+  "kind": "stateful",
+  "q": 68,
+  "sig_bytes": 2164,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q69",
+  "kind": "stateful",
+  "q": 69,
+  "sig_bytes": 2180,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q70",
+  "kind": "stateful",
+  "q": 70,
+  "sig_bytes": 2196,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q71",
+  "kind": "stateful",
+  "q": 71,
+  "sig_bytes": 2212,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q72",
+  "kind": "stateful",
+  "q": 72,
+  "sig_bytes": 2228,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q73",
+  "kind": "stateful",
+  "q": 73,
+  "sig_bytes": 2244,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q74",
+  "kind": "stateful",
+  "q": 74,
+  "sig_bytes": 2260,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q75",
+  "kind": "stateful",
+  "q": 75,
+  "sig_bytes": 2276,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q76",
+  "kind": "stateful",
+  "q": 76,
+  "sig_bytes": 2292,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q77",
+  "kind": "stateful",
+  "q": 77,
+  "sig_bytes": 2308,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q78",
+  "kind": "stateful",
+  "q": 78,
+  "sig_bytes": 2324,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q79",
+  "kind": "stateful",
+  "q": 79,
+  "sig_bytes": 2340,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q80",
+  "kind": "stateful",
+  "q": 80,
+  "sig_bytes": 2356,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q81",
+  "kind": "stateful",
+  "q": 81,
+  "sig_bytes": 2372,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q82",
+  "kind": "stateful",
+  "q": 82,
+  "sig_bytes": 2388,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q83",
+  "kind": "stateful",
+  "q": 83,
+  "sig_bytes": 2404,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q84",
+  "kind": "stateful",
+  "q": 84,
+  "sig_bytes": 2420,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q85",
+  "kind": "stateful",
+  "q": 85,
+  "sig_bytes": 2436,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q86",
+  "kind": "stateful",
+  "q": 86,
+  "sig_bytes": 2452,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q87",
+  "kind": "stateful",
+  "q": 87,
+  "sig_bytes": 2468,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q88",
+  "kind": "stateful",
+  "q": 88,
+  "sig_bytes": 2484,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q89",
+  "kind": "stateful",
+  "q": 89,
+  "sig_bytes": 2500,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q90",
+  "kind": "stateful",
+  "q": 90,
+  "sig_bytes": 2516,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q91",
+  "kind": "stateful",
+  "q": 91,
+  "sig_bytes": 2532,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q92",
+  "kind": "stateful",
+  "q": 92,
+  "sig_bytes": 2548,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q93",
+  "kind": "stateful",
+  "q": 93,
+  "sig_bytes": 2564,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q94",
+  "kind": "stateful",
+  "q": 94,
+  "sig_bytes": 2580,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q95",
+  "kind": "stateful",
+  "q": 95,
+  "sig_bytes": 2596,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q96",
+  "kind": "stateful",
+  "q": 96,
+  "sig_bytes": 2612,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q97",
+  "kind": "stateful",
+  "q": 97,
+  "sig_bytes": 2628,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q98",
+  "kind": "stateful",
+  "q": 98,
+  "sig_bytes": 2644,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q99",
+  "kind": "stateful",
+  "q": 99,
+  "sig_bytes": 2660,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q100",
+  "kind": "stateful",
+  "q": 100,
+  "sig_bytes": 2676,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q101",
+  "kind": "stateful",
+  "q": 101,
+  "sig_bytes": 2692,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q102",
+  "kind": "stateful",
+  "q": 102,
+  "sig_bytes": 2708,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q103",
+  "kind": "stateful",
+  "q": 103,
+  "sig_bytes": 2724,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q104",
+  "kind": "stateful",
+  "q": 104,
+  "sig_bytes": 2740,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q105",
+  "kind": "stateful",
+  "q": 105,
+  "sig_bytes": 2756,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q106",
+  "kind": "stateful",
+  "q": 106,
+  "sig_bytes": 2772,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q107",
+  "kind": "stateful",
+  "q": 107,
+  "sig_bytes": 2788,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q108",
+  "kind": "stateful",
+  "q": 108,
+  "sig_bytes": 2804,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q109",
+  "kind": "stateful",
+  "q": 109,
+  "sig_bytes": 2820,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q110",
+  "kind": "stateful",
+  "q": 110,
+  "sig_bytes": 2836,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q111",
+  "kind": "stateful",
+  "q": 111,
+  "sig_bytes": 2852,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q112",
+  "kind": "stateful",
+  "q": 112,
+  "sig_bytes": 2868,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q113",
+  "kind": "stateful",
+  "q": 113,
+  "sig_bytes": 2884,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q114",
+  "kind": "stateful",
+  "q": 114,
+  "sig_bytes": 2900,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q115",
+  "kind": "stateful",
+  "q": 115,
+  "sig_bytes": 2916,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q116",
+  "kind": "stateful",
+  "q": 116,
+  "sig_bytes": 2932,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q117",
+  "kind": "stateful",
+  "q": 117,
+  "sig_bytes": 2948,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q118",
+  "kind": "stateful",
+  "q": 118,
+  "sig_bytes": 2964,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q119",
+  "kind": "stateful",
+  "q": 119,
+  "sig_bytes": 2980,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q120",
+  "kind": "stateful",
+  "q": 120,
+  "sig_bytes": 2996,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q121",
+  "kind": "stateful",
+  "q": 121,
+  "sig_bytes": 3012,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q122",
+  "kind": "stateful",
+  "q": 122,
+  "sig_bytes": 3028,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q123",
+  "kind": "stateful",
+  "q": 123,
+  "sig_bytes": 3044,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q124",
+  "kind": "stateful",
+  "q": 124,
+  "sig_bytes": 3060,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q125",
+  "kind": "stateful",
+  "q": 125,
+  "sig_bytes": 3076,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q126",
+  "kind": "stateful",
+  "q": 126,
+  "sig_bytes": 3092,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q127",
+  "kind": "stateful",
+  "q": 127,
+  "sig_bytes": 3108,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q128",
+  "kind": "stateful",
+  "q": 128,
+  "sig_bytes": 3124,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q129",
+  "kind": "stateful",
+  "q": 129,
+  "sig_bytes": 3140,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q130",
+  "kind": "stateful",
+  "q": 130,
+  "sig_bytes": 3156,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q131",
+  "kind": "stateful",
+  "q": 131,
+  "sig_bytes": 3172,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q132",
+  "kind": "stateful",
+  "q": 132,
+  "sig_bytes": 3188,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q133",
+  "kind": "stateful",
+  "q": 133,
+  "sig_bytes": 3204,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q134",
+  "kind": "stateful",
+  "q": 134,
+  "sig_bytes": 3220,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q135",
+  "kind": "stateful",
+  "q": 135,
+  "sig_bytes": 3236,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q136",
+  "kind": "stateful",
+  "q": 136,
+  "sig_bytes": 3252,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q137",
+  "kind": "stateful",
+  "q": 137,
+  "sig_bytes": 3268,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q138",
+  "kind": "stateful",
+  "q": 138,
+  "sig_bytes": 3284,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q139",
+  "kind": "stateful",
+  "q": 139,
+  "sig_bytes": 3300,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q140",
+  "kind": "stateful",
+  "q": 140,
+  "sig_bytes": 3316,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q141",
+  "kind": "stateful",
+  "q": 141,
+  "sig_bytes": 3332,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q142",
+  "kind": "stateful",
+  "q": 142,
+  "sig_bytes": 3348,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q143",
+  "kind": "stateful",
+  "q": 143,
+  "sig_bytes": 3364,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q144",
+  "kind": "stateful",
+  "q": 144,
+  "sig_bytes": 3380,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q145",
+  "kind": "stateful",
+  "q": 145,
+  "sig_bytes": 3396,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q146",
+  "kind": "stateful",
+  "q": 146,
+  "sig_bytes": 3412,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q147",
+  "kind": "stateful",
+  "q": 147,
+  "sig_bytes": 3428,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q148",
+  "kind": "stateful",
+  "q": 148,
+  "sig_bytes": 3444,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q149",
+  "kind": "stateful",
+  "q": 149,
+  "sig_bytes": 3460,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q150",
+  "kind": "stateful",
+  "q": 150,
+  "sig_bytes": 3476,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q151",
+  "kind": "stateful",
+  "q": 151,
+  "sig_bytes": 3492,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q152",
+  "kind": "stateful",
+  "q": 152,
+  "sig_bytes": 3508,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q153",
+  "kind": "stateful",
+  "q": 153,
+  "sig_bytes": 3524,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q154",
+  "kind": "stateful",
+  "q": 154,
+  "sig_bytes": 3540,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q155",
+  "kind": "stateful",
+  "q": 155,
+  "sig_bytes": 3556,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q156",
+  "kind": "stateful",
+  "q": 156,
+  "sig_bytes": 3572,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q157",
+  "kind": "stateful",
+  "q": 157,
+  "sig_bytes": 3588,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q158",
+  "kind": "stateful",
+  "q": 158,
+  "sig_bytes": 3604,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q159",
+  "kind": "stateful",
+  "q": 159,
+  "sig_bytes": 3620,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q160",
+  "kind": "stateful",
+  "q": 160,
+  "sig_bytes": 3636,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q161",
+  "kind": "stateful",
+  "q": 161,
+  "sig_bytes": 3652,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q162",
+  "kind": "stateful",
+  "q": 162,
+  "sig_bytes": 3668,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q163",
+  "kind": "stateful",
+  "q": 163,
+  "sig_bytes": 3684,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q164",
+  "kind": "stateful",
+  "q": 164,
+  "sig_bytes": 3700,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q165",
+  "kind": "stateful",
+  "q": 165,
+  "sig_bytes": 3716,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q166",
+  "kind": "stateful",
+  "q": 166,
+  "sig_bytes": 3732,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q167",
+  "kind": "stateful",
+  "q": 167,
+  "sig_bytes": 3748,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q168",
+  "kind": "stateful",
+  "q": 168,
+  "sig_bytes": 3764,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q169",
+  "kind": "stateful",
+  "q": 169,
+  "sig_bytes": 3780,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q170",
+  "kind": "stateful",
+  "q": 170,
+  "sig_bytes": 3796,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q171",
+  "kind": "stateful",
+  "q": 171,
+  "sig_bytes": 3812,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q172",
+  "kind": "stateful",
+  "q": 172,
+  "sig_bytes": 3828,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q173",
+  "kind": "stateful",
+  "q": 173,
+  "sig_bytes": 3844,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q174",
+  "kind": "stateful",
+  "q": 174,
+  "sig_bytes": 3860,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q175",
+  "kind": "stateful",
+  "q": 175,
+  "sig_bytes": 3876,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q176",
+  "kind": "stateful",
+  "q": 176,
+  "sig_bytes": 3892,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q177",
+  "kind": "stateful",
+  "q": 177,
+  "sig_bytes": 3908,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q178",
+  "kind": "stateful",
+  "q": 178,
+  "sig_bytes": 3924,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q179",
+  "kind": "stateful",
+  "q": 179,
+  "sig_bytes": 3940,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q180",
+  "kind": "stateful",
+  "q": 180,
+  "sig_bytes": 3956,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q181",
+  "kind": "stateful",
+  "q": 181,
+  "sig_bytes": 3972,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q182",
+  "kind": "stateful",
+  "q": 182,
+  "sig_bytes": 3988,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q183",
+  "kind": "stateful",
+  "q": 183,
+  "sig_bytes": 4004,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q184",
+  "kind": "stateful",
+  "q": 184,
+  "sig_bytes": 4020,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q185",
+  "kind": "stateful",
+  "q": 185,
+  "sig_bytes": 4036,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q186",
+  "kind": "stateful",
+  "q": 186,
+  "sig_bytes": 4052,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q187",
+  "kind": "stateful",
+  "q": 187,
+  "sig_bytes": 4068,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q188",
+  "kind": "stateful",
+  "q": 188,
+  "sig_bytes": 4084,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q189",
+  "kind": "stateful",
+  "q": 189,
+  "sig_bytes": 4100,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q190",
+  "kind": "stateful",
+  "q": 190,
+  "sig_bytes": 4116,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q191",
+  "kind": "stateful",
+  "q": 191,
+  "sig_bytes": 4132,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q192",
+  "kind": "stateful",
+  "q": 192,
+  "sig_bytes": 4148,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q193",
+  "kind": "stateful",
+  "q": 193,
+  "sig_bytes": 4164,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q194",
+  "kind": "stateful",
+  "q": 194,
+  "sig_bytes": 4180,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q195",
+  "kind": "stateful",
+  "q": 195,
+  "sig_bytes": 4196,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q196",
+  "kind": "stateful",
+  "q": 196,
+  "sig_bytes": 4212,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q197",
+  "kind": "stateful",
+  "q": 197,
+  "sig_bytes": 4228,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q198",
+  "kind": "stateful",
+  "q": 198,
+  "sig_bytes": 4244,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q199",
+  "kind": "stateful",
+  "q": 199,
+  "sig_bytes": 4260,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q200",
+  "kind": "stateful",
+  "q": 200,
+  "sig_bytes": 4276,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q201",
+  "kind": "stateful",
+  "q": 201,
+  "sig_bytes": 4292,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q202",
+  "kind": "stateful",
+  "q": 202,
+  "sig_bytes": 4308,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q203",
+  "kind": "stateful",
+  "q": 203,
+  "sig_bytes": 4324,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q204",
+  "kind": "stateful",
+  "q": 204,
+  "sig_bytes": 4340,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q205",
+  "kind": "stateful",
+  "q": 205,
+  "sig_bytes": 4356,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q206",
+  "kind": "stateful",
+  "q": 206,
+  "sig_bytes": 4372,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateful_q207",
+  "kind": "stateful",
+  "q": 207,
+  "sig_bytes": 4372,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateless_0",
+  "kind": "stateless",
+  "sig_bytes": 4392,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateless_1",
+  "kind": "stateless",
+  "sig_bytes": 4392,
+  "cpp_verify": true
+ },
+ {
+  "name": "stateless_2",
+  "kind": "stateless",
+  "sig_bytes": 4392,
+  "cpp_verify": true
+ }
+]

@@ -29,6 +29,11 @@ brew install mcpp
 * `make shrincs_example MODE={stateful|stateless}` - runs SHRINCS verification example
     * *Use `MODE=stateful` for XMSS-based stateful trees or `MODE=stateless` for SPHINCS-like stateless verification.*
 
+## ⚡ Optimized verifier
+[`optimized/shrincs_opt.simf`](./optimized/shrincs_opt.simf) is a reimplementation of `shrincs_verify` with the same hash layouts, written for the Simplicity cost model (split witnesses, no wide environments, streamed leaf hash, lean path steps). For the first stateful signature it needs no CPU-budget padding at all: 1797 B program + 1162 B witness, cost bound 2.73 M mWU, ≈ 933 vB per Liquid transaction. See [`optimized/README.md`](./optimized/README.md) for the full comparison, the witness layout, converters, test vectors and the measurement harness.
+
+* `make shrincs_opt_example MODE={stateful|stateless}` - runs the optimized verifier on the converted example witnesses
+
 ## 🚀 Usage
 To execute this code, import the required signature file using `#include` directive and then run:
 ```bash
