@@ -7,61 +7,44 @@
 #include "../utils.simf"
 #include "../types.simf"
 
-// The counter type bounds the loop: for_while unrolls 2^N iterations for a u{N}
-// counter. With w = 4 a chain is at most 3 hashes long, so u2 (4 iterations) is
-// enough -- a u8 counter would unroll the body 256 times.
-fn sphincs_wots_tw_hash_n_times_iter(key_hash: u128, ctx: (u2, u32, u32, u256, u2, u32, u32, u64, u32), counter: u2) -> Either<u128, u128> {
-    let (n, chain_idx, key_index, midstate, from_idx, layer_adrs, tree_adrs_1, tree_adrs_2, wots_type): (u2, u32, u32, u256, u2, u32, u32, u64, u32) = ctx;
-    let (_, hashed_times): (bool, u8) = jet::add_8(<(u4, (u2, u2))>::into((0, (0, counter))), <(u4, (u2, u2))>::into((0, (0, from_idx))));
+fn wots_digit_sum(message_hash: u128) -> u8 {
+    let (high, low): (u64, u64) = <u128>::into(message_hash);
+    let high0: u64 = wrapping_add_64(jet::and_64(high, 0x3333333333333333), jet::and_64(jet::right_shift_64(2, high), 0x3333333333333333));
+    let high1: u64 = wrapping_add_64(jet::and_64(high0, 0x0f0f0f0f0f0f0f0f), jet::and_64(jet::right_shift_64(4, high0), 0x0f0f0f0f0f0f0f0f));
+    let high2: u64 = wrapping_add_64(jet::and_64(high1, 0x00ff00ff00ff00ff), jet::and_64(jet::right_shift_64(8, high1), 0x00ff00ff00ff00ff));
+    let high3: u64 = wrapping_add_64(jet::and_64(high2, 0x0000ffff0000ffff), jet::and_64(jet::right_shift_64(16, high2), 0x0000ffff0000ffff));
+    let high4: u64 = wrapping_add_64(jet::and_64(high3, 0x00000000ffffffff), jet::and_64(jet::right_shift_64(32, high3), 0x00000000ffffffff));
+    let low0: u64 = wrapping_add_64(jet::and_64(low, 0x3333333333333333), jet::and_64(jet::right_shift_64(2, low), 0x3333333333333333));
+    let low1: u64 = wrapping_add_64(jet::and_64(low0, 0x0f0f0f0f0f0f0f0f), jet::and_64(jet::right_shift_64(4, low0), 0x0f0f0f0f0f0f0f0f));
+    let low2: u64 = wrapping_add_64(jet::and_64(low1, 0x00ff00ff00ff00ff), jet::and_64(jet::right_shift_64(8, low1), 0x00ff00ff00ff00ff));
+    let low3: u64 = wrapping_add_64(jet::and_64(low2, 0x0000ffff0000ffff), jet::and_64(jet::right_shift_64(16, low2), 0x0000ffff0000ffff));
+    let low4: u64 = wrapping_add_64(jet::and_64(low3, 0x00000000ffffffff), jet::and_64(jet::right_shift_64(32, low3), 0x00000000ffffffff));
+    let (_, (_, (_, total))): (u32, (u16, (u8, u8))) = <u64>::into(wrapping_add_64(high4, low4));
+    total
+}
 
-    match jet::eq_8(<(u4, (u2, u2))>::into((0, (0, counter))), <(u4, (u2, u2))>::into((0, (0, n)))) {
-        true => Left(key_hash),
-        false => {
-            let (hash, _): (u128, u128) = <u256>::into(jet::sha_256_block(midstate, adrs_256(layer_adrs, tree_adrs_1, tree_adrs_2, wots_type, key_index, chain_idx, <(u16, (u8, u8))>::into((0, (0, hashed_times)))), sha256_tail_16(key_hash, 896)));
-
-            Right(hash)
-        }
+fn wots_chain_from_digit(value: u128, digit: u2, chain_idx: u32, adrs_hi: u128, adrs_mid: u64, midstate: u256) -> u128 {
+    let (bit_high, bit_low): (u1, u1) = <u2>::into(digit);
+    match <u1>::into(bit_high) {
+        false => match <u1>::into(bit_low) {
+            false => truncate_128(jet::sha_256_block(midstate, <(u128, u128)>::into((adrs_hi, <(u64, u64)>::into((adrs_mid, <(u32, u32)>::into((chain_idx, 2)))))), <(u128, u128)>::into((truncate_128(jet::sha_256_block(midstate, <(u128, u128)>::into((adrs_hi, <(u64, u64)>::into((adrs_mid, <(u32, u32)>::into((chain_idx, 1)))))), <(u128, u128)>::into((truncate_128(jet::sha_256_block(midstate, <(u128, u128)>::into((adrs_hi, <(u64, u64)>::into((adrs_mid, <(u32, u32)>::into((chain_idx, 0)))))), <(u128, u128)>::into((value, 0x80000000000000000000000000000380)))), 0x80000000000000000000000000000380)))), 0x80000000000000000000000000000380)))),
+            true => truncate_128(jet::sha_256_block(midstate, <(u128, u128)>::into((adrs_hi, <(u64, u64)>::into((adrs_mid, <(u32, u32)>::into((chain_idx, 2)))))), <(u128, u128)>::into((truncate_128(jet::sha_256_block(midstate, <(u128, u128)>::into((adrs_hi, <(u64, u64)>::into((adrs_mid, <(u32, u32)>::into((chain_idx, 1)))))), <(u128, u128)>::into((value, 0x80000000000000000000000000000380)))), 0x80000000000000000000000000000380)))),
+        },
+        true => match <u1>::into(bit_low) {
+            false => truncate_128(jet::sha_256_block(midstate, <(u128, u128)>::into((adrs_hi, <(u64, u64)>::into((adrs_mid, <(u32, u32)>::into((chain_idx, 2)))))), <(u128, u128)>::into((value, 0x80000000000000000000000000000380)))),
+            true => value,
+        },
     }
 }
 
-// Only (message_hash, idx, checksum) changes from chain to chain; the address
-// fields and the midstate are the same for all 64 chains, so they travel as a
-// read-only invariant instead of being copied back out of every recursion step.
-fn sphincs_restore_wots_tw_signature(el: u128, ctx: (u8, u8), inv: (u128, u32, u256, u32, u32, u64, u32)) -> (u128, (u8, u8)) {
-    let (idx, checksum): (u8, u8) = ctx;
-    let (message_hash, key_idx, midstate, layer_adrs, tree_adrs_1, tree_adrs_2, wots_type): (u128, u32, u256, u32, u32, u64, u32) = inv;
+fn sphincs_wots_tw_leaf(signature: [u128; 64], message_hash: u128, key_index: u32, midstate: u256, layer_adrs: u32, tree_adrs_1: u32, tree_adrs_2: u64, wots_type: u32, pk_type: u32) -> u128 {
+    let adrs_hi: u128 = <(u64, u64)>::into((<(u32, u32)>::into((layer_adrs, tree_adrs_1)), tree_adrs_2));
+    let adrs_mid: u64 = <(u32, u32)>::into((wots_type, key_index));
+    let leaf_adrs_mid: u64 = <(u32, u32)>::into((pk_type, key_index));
+    let [s00, s01, s02, s03, s04, s05, s06, s07, s08, s09, s10, s11, s12, s13, s14, s15, s16, s17, s18, s19, s20, s21, s22, s23, s24, s25, s26, s27, s28, s29, s30, s31, s32, s33, s34, s35, s36, s37, s38, s39, s40, s41, s42, s43, s44, s45, s46, s47, s48, s49, s50, s51, s52, s53, s54, s55, s56, s57, s58, s59, s60, s61, s62, s63]: [u128; 64] = signature;
+    let (d00, d01, d02, d03, d04, d05, d06, d07, d08, d09, d10, d11, d12, d13, d14, d15, d16, d17, d18, d19, d20, d21, d22, d23, d24, d25, d26, d27, d28, d29, d30, d31, d32, d33, d34, d35, d36, d37, d38, d39, d40, d41, d42, d43, d44, d45, d46, d47, d48, d49, d50, d51, d52, d53, d54, d55, d56, d57, d58, d59, d60, d61, d62, d63): (u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2, u2) = <u128>::into(message_hash);
 
-    let (n1, n2, n3, n4): (u2, u2, u2, u2) = <u8>::into(get_byte_at_128(message_hash, jet::divide_8(idx, 4)));
-    let idx_mod: u8 = jet::modulo_8(idx, 4);
-
-    let n: u2 = match jet::eq_8(idx_mod, 0) {
-        true => n1,
-        false => {
-            match jet::eq_8(idx_mod, 1) {
-                true => n2,
-                false => {
-                    match jet::eq_8(idx_mod, 2) {
-                        true => n3,
-                        false => n4,
-                    }
-                }
-            }
-        }
-    };
-
-    let (_, s_n): (bool, u8) = jet::subtract_8(3, <(u4, (u2, u2))>::into((0, (0, n))));
-    let (_, (_, s_n)): (u4, (u2, u2)) = <u8>::into(s_n);
-    let (_, checksum): (bool, u8) = jet::add_8(checksum, <(u4, (u2, u2))>::into((0, (0, n))));
-
-    (unwrap_left::<u128>(for_while::<sphincs_wots_tw_hash_n_times_iter>(el, (s_n, <(u16, (u8, u8))>::into((0, (0, idx))), key_idx, midstate, n, layer_adrs, tree_adrs_1, tree_adrs_2, wots_type))), (wrapping_add_8(idx, 1), checksum))
+    truncate_128(jet::sha_256_block(jet::sha_256_block(jet::sha_256_block(jet::sha_256_block(jet::sha_256_block(jet::sha_256_block(jet::sha_256_block(jet::sha_256_block(jet::sha_256_block(jet::sha_256_block(jet::sha_256_block(jet::sha_256_block(jet::sha_256_block(jet::sha_256_block(jet::sha_256_block(jet::sha_256_block(jet::sha_256_block(midstate, <(u128, u128)>::into((adrs_hi, <(u64, u64)>::into((leaf_adrs_mid, 0)))), <(u128, u128)>::into((wots_chain_from_digit(s00, d00, 0, adrs_hi, adrs_mid, midstate), wots_chain_from_digit(s01, d01, 1, adrs_hi, adrs_mid, midstate)))), <(u128, u128)>::into((wots_chain_from_digit(s02, d02, 2, adrs_hi, adrs_mid, midstate), wots_chain_from_digit(s03, d03, 3, adrs_hi, adrs_mid, midstate))), <(u128, u128)>::into((wots_chain_from_digit(s04, d04, 4, adrs_hi, adrs_mid, midstate), wots_chain_from_digit(s05, d05, 5, adrs_hi, adrs_mid, midstate)))), <(u128, u128)>::into((wots_chain_from_digit(s06, d06, 6, adrs_hi, adrs_mid, midstate), wots_chain_from_digit(s07, d07, 7, adrs_hi, adrs_mid, midstate))), <(u128, u128)>::into((wots_chain_from_digit(s08, d08, 8, adrs_hi, adrs_mid, midstate), wots_chain_from_digit(s09, d09, 9, adrs_hi, adrs_mid, midstate)))), <(u128, u128)>::into((wots_chain_from_digit(s10, d10, 10, adrs_hi, adrs_mid, midstate), wots_chain_from_digit(s11, d11, 11, adrs_hi, adrs_mid, midstate))), <(u128, u128)>::into((wots_chain_from_digit(s12, d12, 12, adrs_hi, adrs_mid, midstate), wots_chain_from_digit(s13, d13, 13, adrs_hi, adrs_mid, midstate)))), <(u128, u128)>::into((wots_chain_from_digit(s14, d14, 14, adrs_hi, adrs_mid, midstate), wots_chain_from_digit(s15, d15, 15, adrs_hi, adrs_mid, midstate))), <(u128, u128)>::into((wots_chain_from_digit(s16, d16, 16, adrs_hi, adrs_mid, midstate), wots_chain_from_digit(s17, d17, 17, adrs_hi, adrs_mid, midstate)))), <(u128, u128)>::into((wots_chain_from_digit(s18, d18, 18, adrs_hi, adrs_mid, midstate), wots_chain_from_digit(s19, d19, 19, adrs_hi, adrs_mid, midstate))), <(u128, u128)>::into((wots_chain_from_digit(s20, d20, 20, adrs_hi, adrs_mid, midstate), wots_chain_from_digit(s21, d21, 21, adrs_hi, adrs_mid, midstate)))), <(u128, u128)>::into((wots_chain_from_digit(s22, d22, 22, adrs_hi, adrs_mid, midstate), wots_chain_from_digit(s23, d23, 23, adrs_hi, adrs_mid, midstate))), <(u128, u128)>::into((wots_chain_from_digit(s24, d24, 24, adrs_hi, adrs_mid, midstate), wots_chain_from_digit(s25, d25, 25, adrs_hi, adrs_mid, midstate)))), <(u128, u128)>::into((wots_chain_from_digit(s26, d26, 26, adrs_hi, adrs_mid, midstate), wots_chain_from_digit(s27, d27, 27, adrs_hi, adrs_mid, midstate))), <(u128, u128)>::into((wots_chain_from_digit(s28, d28, 28, adrs_hi, adrs_mid, midstate), wots_chain_from_digit(s29, d29, 29, adrs_hi, adrs_mid, midstate)))), <(u128, u128)>::into((wots_chain_from_digit(s30, d30, 30, adrs_hi, adrs_mid, midstate), wots_chain_from_digit(s31, d31, 31, adrs_hi, adrs_mid, midstate))), <(u128, u128)>::into((wots_chain_from_digit(s32, d32, 32, adrs_hi, adrs_mid, midstate), wots_chain_from_digit(s33, d33, 33, adrs_hi, adrs_mid, midstate)))), <(u128, u128)>::into((wots_chain_from_digit(s34, d34, 34, adrs_hi, adrs_mid, midstate), wots_chain_from_digit(s35, d35, 35, adrs_hi, adrs_mid, midstate))), <(u128, u128)>::into((wots_chain_from_digit(s36, d36, 36, adrs_hi, adrs_mid, midstate), wots_chain_from_digit(s37, d37, 37, adrs_hi, adrs_mid, midstate)))), <(u128, u128)>::into((wots_chain_from_digit(s38, d38, 38, adrs_hi, adrs_mid, midstate), wots_chain_from_digit(s39, d39, 39, adrs_hi, adrs_mid, midstate))), <(u128, u128)>::into((wots_chain_from_digit(s40, d40, 40, adrs_hi, adrs_mid, midstate), wots_chain_from_digit(s41, d41, 41, adrs_hi, adrs_mid, midstate)))), <(u128, u128)>::into((wots_chain_from_digit(s42, d42, 42, adrs_hi, adrs_mid, midstate), wots_chain_from_digit(s43, d43, 43, adrs_hi, adrs_mid, midstate))), <(u128, u128)>::into((wots_chain_from_digit(s44, d44, 44, adrs_hi, adrs_mid, midstate), wots_chain_from_digit(s45, d45, 45, adrs_hi, adrs_mid, midstate)))), <(u128, u128)>::into((wots_chain_from_digit(s46, d46, 46, adrs_hi, adrs_mid, midstate), wots_chain_from_digit(s47, d47, 47, adrs_hi, adrs_mid, midstate))), <(u128, u128)>::into((wots_chain_from_digit(s48, d48, 48, adrs_hi, adrs_mid, midstate), wots_chain_from_digit(s49, d49, 49, adrs_hi, adrs_mid, midstate)))), <(u128, u128)>::into((wots_chain_from_digit(s50, d50, 50, adrs_hi, adrs_mid, midstate), wots_chain_from_digit(s51, d51, 51, adrs_hi, adrs_mid, midstate))), <(u128, u128)>::into((wots_chain_from_digit(s52, d52, 52, adrs_hi, adrs_mid, midstate), wots_chain_from_digit(s53, d53, 53, adrs_hi, adrs_mid, midstate)))), <(u128, u128)>::into((wots_chain_from_digit(s54, d54, 54, adrs_hi, adrs_mid, midstate), wots_chain_from_digit(s55, d55, 55, adrs_hi, adrs_mid, midstate))), <(u128, u128)>::into((wots_chain_from_digit(s56, d56, 56, adrs_hi, adrs_mid, midstate), wots_chain_from_digit(s57, d57, 57, adrs_hi, adrs_mid, midstate)))), <(u128, u128)>::into((wots_chain_from_digit(s58, d58, 58, adrs_hi, adrs_mid, midstate), wots_chain_from_digit(s59, d59, 59, adrs_hi, adrs_mid, midstate))), <(u128, u128)>::into((wots_chain_from_digit(s60, d60, 60, adrs_hi, adrs_mid, midstate), wots_chain_from_digit(s61, d61, 61, adrs_hi, adrs_mid, midstate)))), <(u128, u128)>::into((wots_chain_from_digit(s62, d62, 62, adrs_hi, adrs_mid, midstate), wots_chain_from_digit(s63, d63, 63, adrs_hi, adrs_mid, midstate))), sha256_tail_0(8960)))
 }
-
-DEFINE_MAP_ARR_INV_1(u128, u128, (u8, u8), (u128, u32, u256, u32, u32, u64, u32), sphincs_restore_wots_tw_signature)
-DEFINE_MAP_ARR_INV(u128, u128, (u8, u8), (u128, u32, u256, u32, u32, u64, u32), sphincs_restore_wots_tw_signature, 2, 1)
-DEFINE_MAP_ARR_INV(u128, u128, (u8, u8), (u128, u32, u256, u32, u32, u64, u32), sphincs_restore_wots_tw_signature, 4, 2)
-DEFINE_MAP_ARR_INV(u128, u128, (u8, u8), (u128, u32, u256, u32, u32, u64, u32), sphincs_restore_wots_tw_signature, 8, 4)
-DEFINE_MAP_ARR_INV(u128, u128, (u8, u8), (u128, u32, u256, u32, u32, u64, u32), sphincs_restore_wots_tw_signature, 16, 8)
-DEFINE_MAP_ARR_INV(u128, u128, (u8, u8), (u128, u32, u256, u32, u32, u64, u32), sphincs_restore_wots_tw_signature, 32, 16)
-DEFINE_MAP_ARR_INV(u128, u128, (u8, u8), (u128, u32, u256, u32, u32, u64, u32), sphincs_restore_wots_tw_signature, 64, 32)
 
 #endif

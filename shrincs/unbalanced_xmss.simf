@@ -12,11 +12,9 @@ fn shrincs_get_root_from_path_iter(el: u128, ctx: (u128, bool, u256, u32)) -> (u
         false => (node, el),
     };
 
-    let (hash, _): (u128, u128) = <u256>::into(sha256_finish(jet::sha_256_block(midstate, adrs_256(0, 0, 0, 2, 0, tree_height, 0), <(u128, u128)>::into((left, right))), 1024));
-
-    let (_, tree_height): (bool, u32) = jet::add_32(tree_height, 1);
-
-    (hash, true, midstate, tree_height)
+    (truncate_128(jet::sha_256_block(jet::sha_256_block(midstate,
+        <(u128, u128)>::into((0, <(u64, u64)>::into((0x0000000200000000, <(u32, u32)>::into((tree_height, 0)))))),
+        <(u128, u128)>::into((left, right))), 0x8000000000000000000000000000000000000000000000000000000000000000, <(u128, u128)>::into((0, 1024)))), true, midstate, wrapping_add_32(tree_height, 1))
 }
 
 fn restore_uxmss_signature(proof: UXMSSSignProof, midstate: u256) -> u128 {
@@ -29,8 +27,7 @@ fn restore_uxmss_signature(proof: UXMSSSignProof, midstate: u256) -> u128 {
 
     let (message, _): (u128, u128) = <u256>::into(sha256_finish_4(jet::sha_256_block(jet::sha_256_iv(), adrs_256(0, 0, 0, 3, key_idx, 0, 0), <(u128, u128)>::into((pk_seed, message))), counter, 544));
 
-    let (pk, (_, checksum)): ([u128; 64], (u8, u8)) = sphincs_restore_wots_tw_signature_map_arr_64(message_signature, (0, 0), (message, key_idx, midstate, 0, 0, 0, 0));
-    assert!(jet::eq_8(checksum, 140));
+    assert!(jet::eq_8(wots_digit_sum(message), 140));
 
     // hsf + 1
     let (_, tree_height): (bool, u32) = match jet::eq_32(key_idx, 207) {
@@ -38,7 +35,7 @@ fn restore_uxmss_signature(proof: UXMSSSignProof, midstate: u256) -> u128 {
         false => jet::subtract_32(207, key_idx),
     };
 
-    uxmss_path_root(fold::<shrincs_get_root_from_path_iter, 512>(merkle_path, (sphincs_hash_leaf_xmss(pk, (key_idx, midstate, 0, 0, 0, 1)), jet::eq_32(key_idx, 207), midstate, tree_height)))
+    uxmss_path_root(fold::<shrincs_get_root_from_path_iter, 512>(merkle_path, (sphincs_wots_tw_leaf(message_signature, message, key_idx, midstate, 0, 0, 0, 0, 1), jet::eq_32(key_idx, 207), midstate, tree_height)))
 }
 
 #endif
