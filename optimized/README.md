@@ -27,11 +27,11 @@ does today and what the same scheme costs when the Simplicity program is written
 
 ## Results
 
-**Update:** [`hand/`](./hand/) contains the stateful branch rewritten as a hand-laid-out Simplicity DAG (no SimplicityHL
-code generation). It brings the first-signature transaction from 850 to **704 vB** and the lifetime average from
-1,495 to 1,195 vB with one tapleaf per key index; see [`hand/README.md`](./hand/README.md) for the full table, the
-tapleaf layouts and the test suite. The rows marked "hand-written DAG" below come from it; everything else in this
-file describes the SimplicityHL program.
+**Update:** [`hand/`](./hand/) contains both branches rewritten as hand-laid-out Simplicity DAGs (no SimplicityHL
+code generation). They bring the first-signature transaction from 850 to **704 vB**, the lifetime average from
+1,495 to 1,195 vB with one tapleaf per key index, and the stateless transaction from 2,669 to **1,750 vB**; see
+[`hand/README.md`](./hand/README.md) for the full table, the tapleaf layouts and the test suite. The rows marked
+"hand-written DAG" below come from it; everything else in this file describes the SimplicityHL program.
 
 | vector | version | cost bound (mWU) | program B | witness B | padding B | witness stack B | tx vsize (vB) |
 |---|---|---:|---:|---:|---:|---:|---:|
@@ -54,11 +54,11 @@ file describes the SimplicityHL program.
 | stateful q=207 | main (HEAD) | 29,194,000 | 3077 | 4442 | 21,550 | 29,146 | 7,463 |
 | stateful q=207 | optimize_fors | 11,668,682 | 4094 | 4442 | 3,008 | 11,621 | 3,081 |
 | stateful q=207 | this work | 7,678,200 | 2111 | 4442 | 1,001 | 7,631 | 2,084 |
-| stateful q=207 | hand-written DAG (`hand/`, own tapleaf) | 5,844,336 | 977 | 4436 | 243 | 5,795 | 1,625 |
+| stateful q=207 | hand-written DAG (`hand/`, own tapleaf) | 5,644,656 | 1008 | 4436 | 12 | 5,595 | 1,575 |
 | stateless | main (HEAD) | 49,160,743 | 4101 | 4457 | 40,478 | 49,113 | 12,454 |
 | stateless | optimize_fors | 16,224,611 | 5035 | 4457 | 6,608 | 16,177 | 4,220 |
 | stateless | this work | 10,018,140 | 2514 | 4393 | 2,987 | 9,971 | 2,669 |
-| stateless | stateless-only SimplicityHL tapleaf (`hand/programs/stateless_leaf.simf`) | 10,017,638 | 2473 | 4392 | 2,964 | 9,970 | 2,669 |
+| stateless | hand-written DAG (`hand/programs/stateless_sum32.simpl`, own tapleaf) | 6,257,532 | 1750 | 4409 | 0 | 6,297 | 1,750 |
 The stateful transaction is padding-free up to q = 82; the full per-q curve is in `vectors/curve.json`.
 `optimize_fors` numbers are for branch head b4da848 measured with the same harness and the same signatures.
 

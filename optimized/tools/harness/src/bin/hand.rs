@@ -1,25 +1,14 @@
-// hand: harness for hand-written Simplicity programs (rust-simplicity human-readable encoding).
-//
-//   hand <program.simpl> <witness.json>              parse, bind witnesses, prune against the dummy Elements env,
-//                                                    execute, print one JSON line {ok, cost, program_bytes, witness_bytes, cmr}
-//   hand <program.simpl> <witness.json> --nodes      also print node-kind counts / hidden CMRs / constant bits (stderr)
-//   hand <program.simpl> <witness.json> --attr       per-definition unpruned cost bounds (type variables not fixed by the
-//                                                    definition itself default to 1, so these are lower bounds)
-//   hand <program.simpl> <witness.json> --roundtrip  decode the serialised (program, witness) bytes as a node would and
-//                                                    re-run them
-//   hand <program.simpl> <witness.json> <out.bin>    write the serialised program
-//
-// `cost` is the bound a node computes after decoding the serialised program (the consensus value); it can be a few
-// hundred mWU below the bound of the DAG before serialisation because pruned witness types shrink. Never panics on a
-// failed verification: the JSON line carries the stage and the error.
+// hand: parse a hand-written Simplicity program (human-readable encoding), bind witnesses from a JSON spec,
+// prune against the dummy Elements env, execute, and report cost / sizes. One JSON line, never panics on failure.
 //
 // Witness spec JSON: {"name": VALUE, ...} where VALUE is one of
 //   {"w": "<hex>"}                      word of 4*len(hex) bits (power of two)
 //   {"p": [VALUE, VALUE]}               product
 //   {"none": TYPE}                      left injection of unit into 1 + TYPE
 //   {"some": VALUE}                     right injection into 1 + ty(VALUE)
+//   {"l": VALUE, "t": TYPE}             left injection into ty(VALUE) + TYPE
+//   {"r": VALUE, "t": TYPE}             right injection into TYPE + ty(VALUE)
 //   TYPE: {"w": bits} | {"p": [TYPE, TYPE]} | {"opt": TYPE}
-// Names bind to the `witness` definitions of the program; names the program does not use are ignored.
 use simplicityhl::simplicity;
 use simplicity::human_encoding::Forest;
 use simplicity::jet::Elements;
@@ -80,6 +69,10 @@ fn value(spec: &serde_json::Value) -> Value {
         Value::none(ty(t))
     } else if let Some(v) = o.get("some") {
         Value::some(value(v))
+    } else if let Some(v) = o.get("l") {
+        Value::left(value(v), ty(o.get("t").expect("l needs t (type of the right side)")))
+    } else if let Some(v) = o.get("r") {
+        Value::right(ty(o.get("t").expect("r needs t (type of the left side)")), value(v))
     } else {
         panic!("bad value spec {}", spec)
     }

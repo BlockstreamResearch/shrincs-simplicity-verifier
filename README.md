@@ -34,7 +34,7 @@ brew install mcpp
 
 * `make shrincs_opt_example MODE={stateful|stateless}` - runs the optimized verifier on the converted example witnesses
 
-[`optimized/hand/`](./optimized/hand/) goes one step further for the stateful branch: the verifier is generated directly as a Simplicity DAG (rust-simplicity human-readable encoding, no SimplicityHL code generation) — 846 B program, cost bound 2.14 M mWU, ≈ 704 vB for the first signature, and 1,195 vB on average over a key's 207 signatures with one tapleaf per key index (SimplicityHL rewrite: 850 / 1,495 vB). See [`optimized/hand/README.md`](./optimized/hand/README.md).
+[`optimized/hand/`](./optimized/hand/) goes one step further: both branches are generated directly as Simplicity DAGs (rust-simplicity human-readable encoding, no SimplicityHL code generation) — stateful: 846 B program, cost bound 2.14 M mWU, ≈ 704 vB for the first signature and 1,195 vB on average over a key's 207 signatures with one tapleaf per key index (SimplicityHL rewrite: 850 / 1,495 vB); stateless: 1750 B program, 6.26 M mWU, ≈ 1,750 vB (SimplicityHL rewrite: 2,669 vB). See [`optimized/hand/README.md`](./optimized/hand/README.md).
 
 * `make hand_example` - builds the harness and runs the hand-written verifier on the q = 1 witness
 

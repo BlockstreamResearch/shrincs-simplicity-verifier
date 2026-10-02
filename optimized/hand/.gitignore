@@ -1,4 +1,7 @@
 programs_all/
 witnesses_all/
+witnesses_sl/
+witnesses_sl_b/
 .tamper_spec.json
+.tamper_spec_sl.json
 __pycache__/

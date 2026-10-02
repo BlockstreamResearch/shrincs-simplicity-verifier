@@ -6161,18 +6161,18 @@
    "witness_only_vb": 1537.8
   },
   "layout2": {
-   "program": "q193 (hot-pad)",
-   "cost": 5598585,
-   "program_bytes": 936,
+   "program": "q193 (hot-pad+nested)",
+   "cost": 5398905,
+   "program_bytes": 967,
    "witness_bytes": 4228,
    "control_block": 289,
-   "natural_stack_bytes": 5496,
-   "budget_needed_wu": 5599,
-   "annex_padding_bytes": 52,
-   "witness_stack_bytes": 5549,
-   "tx_weight_wu": 6252,
-   "tx_vsize_vb": 1563,
-   "witness_only_vb": 1387.2
+   "natural_stack_bytes": 5527,
+   "budget_needed_wu": 5399,
+   "annex_padding_bytes": 0,
+   "witness_stack_bytes": 5527,
+   "tx_weight_wu": 6230,
+   "tx_vsize_vb": 1558,
+   "witness_only_vb": 1381.8
   }
  },
  {
@@ -6193,18 +6193,18 @@
    "witness_only_vb": 1542.2
   },
   "layout2": {
-   "program": "q194 (hot-pad)",
-   "cost": 5631628,
-   "program_bytes": 950,
+   "program": "q194 (hot-pad+nested)",
+   "cost": 5431948,
+   "program_bytes": 982,
    "witness_bytes": 4244,
    "control_block": 289,
-   "natural_stack_bytes": 5526,
-   "budget_needed_wu": 5632,
-   "annex_padding_bytes": 55,
-   "witness_stack_bytes": 5582,
-   "tx_weight_wu": 6285,
-   "tx_vsize_vb": 1572,
-   "witness_only_vb": 1395.5
+   "natural_stack_bytes": 5558,
+   "budget_needed_wu": 5432,
+   "annex_padding_bytes": 0,
+   "witness_stack_bytes": 5558,
+   "tx_weight_wu": 6261,
+   "tx_vsize_vb": 1566,
+   "witness_only_vb": 1389.5
   }
  },
  {
@@ -6225,18 +6225,18 @@
    "witness_only_vb": 1545.0
   },
   "layout2": {
-   "program": "q195 (hot-pad)",
-   "cost": 5648799,
-   "program_bytes": 950,
+   "program": "q195 (hot-pad+nested)",
+   "cost": 5449119,
+   "program_bytes": 982,
    "witness_bytes": 4260,
    "control_block": 289,
-   "natural_stack_bytes": 5542,
-   "budget_needed_wu": 5649,
-   "annex_padding_bytes": 56,
-   "witness_stack_bytes": 5599,
-   "tx_weight_wu": 6302,
-   "tx_vsize_vb": 1576,
-   "witness_only_vb": 1399.8
+   "natural_stack_bytes": 5574,
+   "budget_needed_wu": 5450,
+   "annex_padding_bytes": 0,
+   "witness_stack_bytes": 5574,
+   "tx_weight_wu": 6277,
+   "tx_vsize_vb": 1570,
+   "witness_only_vb": 1393.5
   }
  },
  {
@@ -6257,18 +6257,18 @@
    "witness_only_vb": 1549.5
   },
   "layout2": {
-   "program": "q196 (hot-pad)",
-   "cost": 5666226,
-   "program_bytes": 965,
+   "program": "q196 (hot-pad+nested)",
+   "cost": 5466546,
+   "program_bytes": 997,
    "witness_bytes": 4276,
    "control_block": 289,
-   "natural_stack_bytes": 5573,
-   "budget_needed_wu": 5667,
-   "annex_padding_bytes": 43,
-   "witness_stack_bytes": 5617,
-   "tx_weight_wu": 6320,
-   "tx_vsize_vb": 1580,
-   "witness_only_vb": 1404.2
+   "natural_stack_bytes": 5605,
+   "budget_needed_wu": 5467,
+   "annex_padding_bytes": 0,
+   "witness_stack_bytes": 5605,
+   "tx_weight_wu": 6308,
+   "tx_vsize_vb": 1577,
+   "witness_only_vb": 1401.2
   }
  },
  {
@@ -6289,18 +6289,18 @@
    "witness_only_vb": 1555.8
   },
   "layout2": {
-   "program": "q197 (hot-pad)",
-   "cost": 5683653,
-   "program_bytes": 950,
+   "program": "q197 (hot-pad+nested)",
+   "cost": 5483973,
+   "program_bytes": 982,
    "witness_bytes": 4292,
    "control_block": 289,
-   "natural_stack_bytes": 5574,
-   "budget_needed_wu": 5684,
-   "annex_padding_bytes": 59,
-   "witness_stack_bytes": 5634,
-   "tx_weight_wu": 6337,
-   "tx_vsize_vb": 1585,
-   "witness_only_vb": 1408.5
+   "natural_stack_bytes": 5606,
+   "budget_needed_wu": 5484,
+   "annex_padding_bytes": 0,
+   "witness_stack_bytes": 5606,
+   "tx_weight_wu": 6309,
+   "tx_vsize_vb": 1578,
+   "witness_only_vb": 1401.5
   }
  },
  {
@@ -6321,18 +6321,18 @@
    "witness_only_vb": 1560.2
   },
   "layout2": {
-   "program": "q198 (hot-pad)",
-   "cost": 5701592,
-   "program_bytes": 965,
+   "program": "q198 (hot-pad+nested)",
+   "cost": 5501912,
+   "program_bytes": 997,
    "witness_bytes": 4308,
    "control_block": 289,
-   "natural_stack_bytes": 5605,
-   "budget_needed_wu": 5702,
-   "annex_padding_bytes": 46,
-   "witness_stack_bytes": 5652,
-   "tx_weight_wu": 6355,
-   "tx_vsize_vb": 1589,
-   "witness_only_vb": 1413.0
+   "natural_stack_bytes": 5637,
+   "budget_needed_wu": 5502,
+   "annex_padding_bytes": 0,
+   "witness_stack_bytes": 5637,
+   "tx_weight_wu": 6340,
+   "tx_vsize_vb": 1585,
+   "witness_only_vb": 1409.2
   }
  },
  {
@@ -6353,18 +6353,18 @@
    "witness_only_vb": 1566.5
   },
   "layout2": {
-   "program": "q199 (hot-pad)",
-   "cost": 5719019,
-   "program_bytes": 965,
+   "program": "q199 (hot-pad+nested)",
+   "cost": 5519339,
+   "program_bytes": 997,
    "witness_bytes": 4324,
    "control_block": 289,
-   "natural_stack_bytes": 5621,
-   "budget_needed_wu": 5720,
-   "annex_padding_bytes": 48,
-   "witness_stack_bytes": 5670,
-   "tx_weight_wu": 6373,
-   "tx_vsize_vb": 1594,
-   "witness_only_vb": 1417.5
+   "natural_stack_bytes": 5653,
+   "budget_needed_wu": 5520,
+   "annex_padding_bytes": 0,
+   "witness_stack_bytes": 5653,
+   "tx_weight_wu": 6356,
+   "tx_vsize_vb": 1589,
+   "witness_only_vb": 1413.2
   }
  },
  {
@@ -6385,18 +6385,18 @@
    "witness_only_vb": 1571.0
   },
   "layout2": {
-   "program": "q200 (hot-pad)",
-   "cost": 5736702,
-   "program_bytes": 980,
+   "program": "q200 (hot-pad+nested)",
+   "cost": 5537022,
+   "program_bytes": 1012,
    "witness_bytes": 4340,
    "control_block": 289,
-   "natural_stack_bytes": 5652,
-   "budget_needed_wu": 5737,
-   "annex_padding_bytes": 34,
-   "witness_stack_bytes": 5687,
-   "tx_weight_wu": 6390,
-   "tx_vsize_vb": 1598,
-   "witness_only_vb": 1421.8
+   "natural_stack_bytes": 5684,
+   "budget_needed_wu": 5538,
+   "annex_padding_bytes": 0,
+   "witness_stack_bytes": 5684,
+   "tx_weight_wu": 6387,
+   "tx_vsize_vb": 1597,
+   "witness_only_vb": 1421.0
   }
  },
  {
@@ -6417,18 +6417,18 @@
    "witness_only_vb": 1577.2
   },
   "layout2": {
-   "program": "q201 (hot-pad)",
-   "cost": 5754385,
-   "program_bytes": 950,
+   "program": "q201 (hot-pad+nested)",
+   "cost": 5554705,
+   "program_bytes": 982,
    "witness_bytes": 4356,
    "control_block": 289,
-   "natural_stack_bytes": 5638,
-   "budget_needed_wu": 5755,
-   "annex_padding_bytes": 66,
-   "witness_stack_bytes": 5705,
-   "tx_weight_wu": 6408,
-   "tx_vsize_vb": 1602,
-   "witness_only_vb": 1426.2
+   "natural_stack_bytes": 5670,
+   "budget_needed_wu": 5555,
+   "annex_padding_bytes": 0,
+   "witness_stack_bytes": 5670,
+   "tx_weight_wu": 6373,
+   "tx_vsize_vb": 1594,
+   "witness_only_vb": 1417.5
   }
  },
  {
@@ -6449,18 +6449,18 @@
    "witness_only_vb": 1581.8
   },
   "layout2": {
-   "program": "q202 (hot-pad)",
-   "cost": 5773348,
-   "program_bytes": 965,
+   "program": "q202 (hot-pad+nested)",
+   "cost": 5573668,
+   "program_bytes": 997,
    "witness_bytes": 4372,
    "control_block": 289,
-   "natural_stack_bytes": 5669,
-   "budget_needed_wu": 5774,
-   "annex_padding_bytes": 54,
-   "witness_stack_bytes": 5724,
-   "tx_weight_wu": 6427,
-   "tx_vsize_vb": 1607,
-   "witness_only_vb": 1431.0
+   "natural_stack_bytes": 5701,
+   "budget_needed_wu": 5574,
+   "annex_padding_bytes": 0,
+   "witness_stack_bytes": 5701,
+   "tx_weight_wu": 6404,
+   "tx_vsize_vb": 1601,
+   "witness_only_vb": 1425.2
   }
  },
  {
@@ -6481,18 +6481,18 @@
    "witness_only_vb": 1588.0
   },
   "layout2": {
-   "program": "q203 (hot-pad)",
-   "cost": 5790775,
-   "program_bytes": 962,
+   "program": "q203 (hot-pad+nested)",
+   "cost": 5591095,
+   "program_bytes": 993,
    "witness_bytes": 4388,
    "control_block": 289,
-   "natural_stack_bytes": 5682,
-   "budget_needed_wu": 5791,
-   "annex_padding_bytes": 58,
-   "witness_stack_bytes": 5741,
-   "tx_weight_wu": 6444,
-   "tx_vsize_vb": 1611,
-   "witness_only_vb": 1435.2
+   "natural_stack_bytes": 5713,
+   "budget_needed_wu": 5592,
+   "annex_padding_bytes": 0,
+   "witness_stack_bytes": 5713,
+   "tx_weight_wu": 6416,
+   "tx_vsize_vb": 1604,
+   "witness_only_vb": 1428.2
   }
  },
  {
@@ -6513,18 +6513,18 @@
    "witness_only_vb": 1592.5
   },
   "layout2": {
-   "program": "q204 (hot-pad)",
-   "cost": 5808458,
-   "program_bytes": 977,
+   "program": "q204 (hot-pad+nested)",
+   "cost": 5608778,
+   "program_bytes": 1008,
    "witness_bytes": 4404,
    "control_block": 289,
-   "natural_stack_bytes": 5713,
-   "budget_needed_wu": 5809,
-   "annex_padding_bytes": 45,
-   "witness_stack_bytes": 5759,
-   "tx_weight_wu": 6462,
-   "tx_vsize_vb": 1616,
-   "witness_only_vb": 1439.8
+   "natural_stack_bytes": 5744,
+   "budget_needed_wu": 5609,
+   "annex_padding_bytes": 0,
+   "witness_stack_bytes": 5744,
+   "tx_weight_wu": 6447,
+   "tx_vsize_vb": 1612,
+   "witness_only_vb": 1436.0
   }
  },
  {
@@ -6545,18 +6545,18 @@
    "witness_only_vb": 1598.8
   },
   "layout2": {
-   "program": "q205 (hot-pad)",
-   "cost": 5826141,
-   "program_bytes": 961,
+   "program": "q205 (hot-pad+nested)",
+   "cost": 5626461,
+   "program_bytes": 993,
    "witness_bytes": 4420,
    "control_block": 289,
-   "natural_stack_bytes": 5713,
-   "budget_needed_wu": 5827,
-   "annex_padding_bytes": 63,
-   "witness_stack_bytes": 5777,
-   "tx_weight_wu": 6480,
-   "tx_vsize_vb": 1620,
-   "witness_only_vb": 1444.2
+   "natural_stack_bytes": 5745,
+   "budget_needed_wu": 5627,
+   "annex_padding_bytes": 0,
+   "witness_stack_bytes": 5745,
+   "tx_weight_wu": 6448,
+   "tx_vsize_vb": 1612,
+   "witness_only_vb": 1436.2
   }
  },
  {
@@ -6596,31 +6596,63 @@
   "simplicityhl_vsize": 2084,
   "layout1": {
    "program": "q207",
-   "cost": 5844336,
-   "program_bytes": 977,
+   "cost": 5644656,
+   "program_bytes": 1008,
    "witness_bytes": 4436,
    "control_block": 97,
-   "natural_stack_bytes": 5551,
-   "budget_needed_wu": 5845,
-   "annex_padding_bytes": 243,
-   "witness_stack_bytes": 5795,
-   "tx_weight_wu": 6498,
-   "tx_vsize_vb": 1625,
-   "witness_only_vb": 1448.8
+   "natural_stack_bytes": 5582,
+   "budget_needed_wu": 5645,
+   "annex_padding_bytes": 12,
+   "witness_stack_bytes": 5595,
+   "tx_weight_wu": 6298,
+   "tx_vsize_vb": 1575,
+   "witness_only_vb": 1398.8
   },
   "layout2": {
-   "program": "q207 (hot-pad)",
-   "cost": 5844336,
-   "program_bytes": 977,
+   "program": "q207 (hot-pad+nested)",
+   "cost": 5644656,
+   "program_bytes": 1008,
    "witness_bytes": 4436,
    "control_block": 289,
-   "natural_stack_bytes": 5745,
-   "budget_needed_wu": 5845,
-   "annex_padding_bytes": 49,
-   "witness_stack_bytes": 5795,
-   "tx_weight_wu": 6498,
-   "tx_vsize_vb": 1625,
-   "witness_only_vb": 1448.8
+   "natural_stack_bytes": 5776,
+   "budget_needed_wu": 5645,
+   "annex_padding_bytes": 0,
+   "witness_stack_bytes": 5776,
+   "tx_weight_wu": 6479,
+   "tx_vsize_vb": 1620,
+   "witness_only_vb": 1444.0
+  }
+ },
+ {
+  "q": "stateless",
+  "simplicityhl_vsize": 2669,
+  "layout1": {
+   "program": "stateless (sum32)",
+   "cost": 6257532,
+   "program_bytes": 1750,
+   "witness_bytes": 4409,
+   "control_block": 97,
+   "natural_stack_bytes": 6297,
+   "budget_needed_wu": 6258,
+   "annex_padding_bytes": 0,
+   "witness_stack_bytes": 6297,
+   "tx_weight_wu": 7000,
+   "tx_vsize_vb": 1750,
+   "witness_only_vb": 1574.2
+  },
+  "layout2": {
+   "program": "stateless (sum4)",
+   "cost": 6385824,
+   "program_bytes": 1665,
+   "witness_bytes": 4409,
+   "control_block": 289,
+   "natural_stack_bytes": 6406,
+   "budget_needed_wu": 6386,
+   "annex_padding_bytes": 0,
+   "witness_stack_bytes": 6406,
+   "tx_weight_wu": 7109,
+   "tx_vsize_vb": 1778,
+   "witness_only_vb": 1601.5
   }
  }
 ]

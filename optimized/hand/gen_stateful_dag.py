@@ -12,6 +12,7 @@ Usage: gen_stateful_dag.py <out.simpl> [--fixed-q=N | --no-last] [--hot-pad] [--
   --hot-pad    build the SHA padding block of the path/root/message hashes from 128-bit words (-4.8k mWU per path node,
                +28 bytes): better for key indices above ~60, where the spend is CPU-budget bound
   --cost-bound use wide constant words everywhere (only for spends whose size is set by the CPU budget)
+  --nested-chain WOTS steps as nested expressions (about -4k mWU per chain, +40 bytes): for budget-bound spends
   --hot-zero / --hot-tail  width of the zero / padding-tail words used in the WOTS chain step (bigger = fewer cycles,
                more bytes); the defaults (128) are the right trade for every program we measured
   --e4         layout of the auth-path state (A: ((h, node), (root, ms)), B: (node, (h, (root, ms)))); the serialised
@@ -64,6 +65,7 @@ HOT_TAIL = 128
 HOT_PAD = False
 NO_LAST = False
 COST_BOUND = False
+NESTED = False
 for a in sys.argv[2:]:
     if a == '--no-last': NO_LAST = True
     if a == '--cost-bound': COST_BOUND = True; HOT_PAD = True
@@ -71,6 +73,7 @@ for a in sys.argv[2:]:
     if a.startswith('--hot-zero='): HOT_ZERO = int(a.split('=')[1])
     if a.startswith('--hot-tail='): HOT_TAIL = int(a.split('=')[1])
     if a == '--hot-pad': HOT_PAD = True
+    if a == '--nested-chain': NESTED = True
 
 # ---------- constants ----------
 def word(bits, v):
@@ -172,11 +175,24 @@ Y, IDX, MS, PRE64 = P('OH'), P('IOH'), P('IIOH'), P('IIIH')
 def stepy(k):
     a = pair(Z128, pair(PRE64, pair(IDX, c32(k))))
     return comp(pair(MS, pair(a, pair(Y, TAIL896))), 'sha_take')
-define('f2', stepy(2))
-define('f1', pair(stepy(1), drop('iden')))
-define('f0', pair(stepy(0), drop('iden')))
-define('f12', comp('f1', 'f2'))
-define('f012', comp('f0', 'f12'))
+if NESTED:
+    # steps as nested expressions over one environment: the inner step's 256-bit SHA state feeds the outer block through
+    # `comp inner (pair (take iden) TAIL)`; no environment is rebuilt between steps, one truncation per chain.
+    # Fewer cycles (about -4k mWU per chain), more nodes: for CPU-budget-bound spends.
+    def adrs_k(k): return pair(Z128, pair(PRE64, pair(IDX, c32(k))))
+    first = pair(Y, TAIL896)
+    def nest(k, ypart): return J('sha_256_block', pair(MS, pair(adrs_k(k), ypart)))
+    def over(inner): return comp(inner, pair(take('iden'), TAIL896))
+    n01 = nest(1, over(nest(0, first)))
+    define('f012', comp(nest(2, over(n01)), take('iden')))
+    define('f12', comp(nest(2, over(nest(1, first))), take('iden')))
+    define('f2', comp(nest(2, first), take('iden')))
+else:
+    define('f2', stepy(2))
+    define('f1', pair(stepy(1), drop('iden')))
+    define('f0', pair(stepy(0), drop('iden')))
+    define('f12', comp('f1', 'f2'))
+    define('f012', comp('f0', 'f12'))
 define('chain', case(drop(case(drop('f012'), drop('f12'))), drop(case(drop('f2'), drop(take('iden'))))))
 
 # ---------- digit sum of 4 two-bit digits packed in a byte ----------
